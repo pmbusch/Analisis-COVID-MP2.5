@@ -20,6 +20,10 @@ f_remover_acentos <- function(x){
     str_replace_all("Ñ","N")
 }
 
+f_split_n <- function(X,Sep,N){
+  X %>% str_split(Sep) %>% sapply(function(x) x[N])
+}
+
 cuartilHora <- function(x){
   retVal = 'NA'
   if (x<7){
