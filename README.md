@@ -1,4 +1,3 @@
-# Analisis-COVID-MP2.5
 Evaluación de los efectos de la exposición prolongada a MP2.5 derivado del uso de leña y las incidencias por COVID-19 en el centro sur de Chile
 ================
 Análisis epidemiológico de la incidencia de COVID-19 y el uso intensivo de leña en las regiones sur y centro de Chile
