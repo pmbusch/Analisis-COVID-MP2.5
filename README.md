@@ -2,7 +2,7 @@ Evaluación de los efectos de la exposición prolongada a MP2.5 derivado del uso
 ================
 Análisis epidemiológico de la incidencia de COVID-19 y el uso intensivo de leña en las regiones sur y centro de Chile
 
-Se busca determinar la relación entre la contaminación atmosferica de MP2.5 generada por la combustión de leña y 
+Se busca determinar la relación entre la contaminación atmosférica de MP2.5 generada por la combustión de leña y 
 los contagios y fatalidades del COVID-19
 
 El proyecto se subdivide en las siguientes secciones:
