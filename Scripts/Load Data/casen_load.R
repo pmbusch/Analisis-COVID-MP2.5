@@ -23,12 +23,14 @@ df_casen$expr %>% sum()
 
 
 ## INGRESO -------
-# ytot: Ingreso total
-# y1: Mes pasado Salario líquido trabajo principal
+# ytotcor: Ingreso total corregido
+# yautcor: Ingreso autónomo corregido
 df_ingreso <- df_casen %>% 
   group_by(comuna) %>% 
-  summarise(ingreso_media=weighted.mean(ytot,w = expc,na.rm=T),
-            ingreso_mediana=weighted.median(ytot, w = expc,na.rm=T)) %>% 
+  summarise(ingresoTotal_media=weighted.mean(ytotcor,w = expc,na.rm=T),
+            ingresoTotal_mediana=weighted.median(ytotcor, w = expc,na.rm=T),
+            ingresoAutonomo_media=weighted.mean(yautcor,w = expc,na.rm=T),
+            ingresoAutonomo_mediana=weighted.median(yautcor, w = expc,na.rm=T)) %>% 
   ungroup() %>% 
   left_join(codigos_territoriales, by = c("comuna"="codigo_comuna")) %>% 
   rename(codigo_comuna=comuna)
@@ -59,11 +61,27 @@ df_prevision <- df_casen %>%
   left_join(codigos_territoriales, by = c("comuna"="codigo_comuna")) %>% 
   rename(codigo_comuna=comuna)
 
+## OCUPADOS
+# o9a: o9a. ¿Cuál es su ocupación u oficio?
+# o1: La semana pasada, ¿trabajó al menos una hora, sin considerar los quehaceres del hogar?
+df_ocupacion <- df_casen %>% 
+  filter(!is.na(o1)) %>% 
+  group_by(comuna,o1) %>% 
+  summarise(hab=sum(expc,na.rm=T)) %>% 
+  mutate(perc=hab/sum(hab),
+         o1=if_else(o1==1,"Si","No")) %>% 
+  ungroup() %>% 
+  left_join(codigos_territoriales, by = c("comuna"="codigo_comuna")) %>% 
+  rename(codigo_comuna=comuna)
+
+# Dejo porcentaje ocupacion
+df_ocupacion <- df_ocupacion %>% filter(o1=="Si") %>% rename(perc_ocupado=perc)
 
 ## AGRUPAR TODO -------
-df_casen <- df_ingreso
+df_casen <- left_join(df_ingreso, 
+                      df_ocupacion %>% select(codigo_comuna, perc_ocupado))
 
 
-rm(df_codigoSalud, df_codigoEducacion, df_ingreso, df_prevision, df_educacion)
+# rm(df_codigoSalud, df_codigoEducacion, df_ingreso, df_prevision, df_educacion)
 
 ## EoF
