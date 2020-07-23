@@ -3,7 +3,7 @@
 ## PBH Julio 2020
 
 # Paquetes a usar
-lista_paquetes <- c("tidyverse", "kableExtra","openair","chilemapas",
+lista_paquetes <- c("tidyverse", "kableExtra","openair","chilemapas","lwgeom",
                     "flextable", "filesstrings","purrr", "readr", "extrafont",
                     "stringr", "ggmap", "readxl", "leaflet", "mapview", "purrr",
                     "skimr", "readr", "patchwork", "ggridges", "lubridate","ggrepel")

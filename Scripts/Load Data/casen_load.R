@@ -1,0 +1,69 @@
+### Analisis-COVID-MP2.5
+## CASEN: Datos socioeconomicos
+## PBH Julio 2020
+
+library(casen)
+library(spatstat) #weighted median
+
+# Ejecutar solo para descargar datos
+# casen::descargar_casen_github(anios=2017, carpeta = "Data/Data Modelo/Casen")
+
+df_casen <- read_rds("Data/Data Modelo/Casen/2017.rds")
+
+df_casen %>% names()
+
+## Para homologar codigos comunales, debo agregar un 0 a las regiones (ej: 01)
+df_casen <- df_casen %>% 
+  mutate(comuna=paste(if_else(str_length(comuna)==4,"0",""),
+                      comuna,sep=""))
+
+# Factor expansion
+df_casen$expc %>% sum()
+df_casen$expr %>% sum()
+
+
+## INGRESO -------
+# ytot: Ingreso total
+# y1: Mes pasado Salario líquido trabajo principal
+df_ingreso <- df_casen %>% 
+  group_by(comuna) %>% 
+  summarise(ingreso_media=weighted.mean(ytot,w = expc,na.rm=T),
+            ingreso_mediana=weighted.median(ytot, w = expc,na.rm=T)) %>% 
+  ungroup() %>% 
+  left_join(codigos_territoriales, by = c("comuna"="codigo_comuna")) %>% 
+  rename(codigo_comuna=comuna)
+
+## EDUCACION ------------
+# e6a: Cuál fue el nivel educacional más alto alcanzado o el nivel educacional actual
+df_codigoEducacion <- read_excel("Data/Data Modelo/Casen/Codigos_CASEN.xlsx", sheet = "e6a")
+
+df_educacion <- df_casen %>% 
+  group_by(comuna,e6a) %>% 
+  summarise(hab=sum(expc,na.rm=T)) %>% 
+  mutate(perc=hab/sum(hab)) %>% 
+  ungroup() %>% 
+  left_join(df_codigoEducacion, by=c("e6a"="codigo")) %>% 
+  left_join(codigos_territoriales, by = c("comuna"="codigo_comuna")) %>% 
+  rename(codigo_comuna=comuna)
+
+## SALUD PREVISION -------
+# s12: A qué sistema previsional de salud pertenece usted
+df_codigoSalud <- read_excel("Data/Data Modelo/Casen/Codigos_CASEN.xlsx", sheet = "s12")
+
+df_prevision <- df_casen %>% 
+  group_by(comuna,s12) %>% 
+  summarise(hab=sum(expc,na.rm=T)) %>% 
+  mutate(perc=hab/sum(hab)) %>% 
+  ungroup() %>% 
+  left_join(df_codigoSalud, by=c("s12"="codigo")) %>% 
+  left_join(codigos_territoriales, by = c("comuna"="codigo_comuna")) %>% 
+  rename(codigo_comuna=comuna)
+
+
+## AGRUPAR TODO -------
+df_casen <- df_ingreso
+
+
+rm(df_codigoSalud, df_codigoEducacion, df_ingreso, df_prevision, df_educacion)
+
+## EoF
