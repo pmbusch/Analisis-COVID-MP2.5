@@ -12,6 +12,7 @@ El proyecto se subdivide en las siguientes secciones:
 **Fuente Datos:**
 * Contagios y mortalidad por COVID-19: PENDIENTE
 * Concentración ambiental (MP2.5, CO y NO2): SINCA. Disponible en: https://sinca.mma.gob.cl/
+	* MP2.5
 * Tasa de Mortalidad: PENDIENTE
 * Población: CENSO 2017 (https://www.censo2017.cl/)
 * Vivientas: CENSO 2017 (https://www.censo2017.cl/)
