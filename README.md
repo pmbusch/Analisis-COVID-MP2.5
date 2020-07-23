@@ -20,15 +20,16 @@ El proyecto se subdivide en las siguientes secciones:
 * Tasa de Mortalidad: **PENDIENTE**
 * Demografía: CENSO 2017 (https://www.censo2017.cl/)
 	* Población
-	* Vivientas
-	* Tipo Material Viviendas
+	* Urbano-Rural
 	* Población originaria
+	* Viviendas
+	* Tipo Material Viviendas
 * Mapas de Chile: librería de R *chilemapas* (https://cran.r-project.org/web/packages/chilemapas/index.html)
-* Meterología: **PENDIENTE**
+* Meteorología: **PENDIENTE**
 	* Temperatura
 	* Humedad
 * Información Socioeconómica: CASEN 2017 (http://observatorio.ministeriodesarrollosocial.gob.cl/casen-multidimensional/casen/casen_2017.php)
-	* Ingreso total e ingreso autonomo: *ytotcor* e *yautcor*
+	* Ingreso total e ingreso autónomo: *ytotcor* e *yautcor*
 	* Nivel educacional: *e6a* 
 	* Previsión de Salud: *s12* 
 	* Ocupado: *o1*
