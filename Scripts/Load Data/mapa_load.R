@@ -1,5 +1,5 @@
 ### Analisis-COVID-MP2.5
-## Carga Poblacion, codigos comunales y mapas
+## Carga Poblacion, codigos comunales y mapas con superficies
 ## PBH Julio 2020
 
 
@@ -13,10 +13,17 @@ df_poblacion$poblacion %>% sum()
 
 ## MAPAS ---------
 
+# Saco del mapa a Isla de Pascua y Juan Fernandez
+mapa_comuna <- mapa_comunas %>% 
+  filter(!(codigo_comuna %in% c("05201","05104"))) %>% 
+  mutate(superficie=st_area(geometry),
+         perimetro=st_length(geometry))
+
+
 # Levels regiones
 levels_region <- c("XV","I","II","III","IV","V","M","VI","VII","VIII",
                    "IX","XIV","X","XI","XII")
-# Saco del mapa a Isla de Pascua y Juan Fernandez
+
 mapa_regiones <- generar_regiones(mapa_comunas %>% filter(codigo_comuna!="05201" &
                                                        codigo_comuna!="05104"))
 mapa_regiones$codigo_region %>% unique()
@@ -38,8 +45,8 @@ mapa_regiones <- mapa_regiones %>% mutate(
     codigo_region=="14" ~ "XIV",
     codigo_region=="15" ~ "XV",
     codigo_region=="16" ~ "VIII",
-    T ~ "otro") %>% factor(levels = levels_region))
-
-mapa_comunas <- mapa_comunas
+    T ~ "otro") %>% factor(levels = levels_region),
+  superficie=st_area(geometry),
+  perimetro=st_length(geometry))
 
 ## EoF
