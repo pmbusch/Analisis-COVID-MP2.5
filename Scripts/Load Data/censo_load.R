@@ -14,14 +14,27 @@ df_censo <- df_censo %>%
   mutate(COMUNA=paste(if_else(str_length(REGION)==1,"0",""),
                       COMUNA,sep=""))
 
-## Poblacion la obtengo de Chilemapas
+## Nota: Poblacion por edad la obtengo de Chilemapas
+
+
+## URBANO-RURAL -------------
+df_rural <- df_censo %>% 
+  group_by(COMUNA, AREA) %>% 
+  summarise(poblacion=sum(PERSONAS,na.rm=T)) %>% 
+  mutate(perc_rural=poblacion/sum(poblacion)) %>%
+  filter(AREA=="2") %>% # 2: Area rural
+  ungroup() %>% 
+  left_join(codigos_territoriales, by = c("COMUNA"="codigo_comuna")) %>% 
+  rename(codigo_comuna=COMUNA)
+
+
 ## Porcentaje Pueblo Originario ---------
 # PUEBLO: Total de personas que se consideran pertenecientes a un pueblo indígena u originario
 df_puebloOrig <- df_censo %>% 
   group_by(COMUNA) %>% 
   summarise(poblacion=sum(PERSONAS,na.rm=T),
             pueblo=sum(PUEBLO,na.rm=T),
-            porc_pueblo=pueblo/poblacion) %>% 
+            perc_pueblo=pueblo/poblacion) %>% 
   ungroup() %>% 
   left_join(codigos_territoriales, by = c("COMUNA"="codigo_comuna")) %>% 
   rename(codigo_comuna=COMUNA)
@@ -59,10 +72,10 @@ df_material <- df_censo %>%
 
 
 ## Agrupo Todo ---------------
-df_censo <- left_join(df_puebloOrig,
-                      df_viviendas %>% select(codigo_comuna,viviendas), 
-                      by=c("codigo_comuna"))
+df_censo2 <- df_puebloOrig %>% 
+  left_join(df_viviendas %>% select(codigo_comuna,viviendas)) %>% 
+  left_join(df_rural %>% select(codigo_comuna, perc_rural))
 
 
-rm(df_puebloOrig,df_viviendas,df_material,df_codigoMaterial)
+# rm(df_puebloOrig,df_viviendas,df_material,df_codigoMaterial)
 ## EoF
