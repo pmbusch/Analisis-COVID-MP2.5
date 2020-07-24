@@ -9,7 +9,7 @@ source("Scripts/00-CargaLibrerias.R", encoding = "UTF-8")
 source("Scripts/Load Data/mapa_load.R", encoding = "UTF-8")
 source("Scripts/Load Data/censo_load.R", encoding = "UTF-8")
 source("Scripts/Load Data/casen_load.R", encoding = "UTF-8")
-source("Scripts/Load Data/lena_load.R", encoding = "UTF-8") #debe ejecutarse dp de mapa_load
+source("Scripts/Load Data/lena_load.R", encoding = "UTF-8")
 
 
 ## Data ya cargada
