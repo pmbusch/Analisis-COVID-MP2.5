@@ -12,7 +12,7 @@ source("Scripts/Load Data/casen_load.R", encoding = "UTF-8")
 source("Scripts/Load Data/lena_load.R", encoding = "UTF-8")
 
 
-## Data ya cargada
+## Data ya cargada (o bajada)
 df_conc <- read_delim("Data/Data Modelo/Datos_Concentraciones.csv", 
                       delim = ";", skip = 1, na = c("NA"),
                  col_types = "cddddcccccdddccc",
