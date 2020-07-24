@@ -48,6 +48,20 @@ df_educacion <- df_casen %>%
   left_join(codigos_territoriales, by = c("comuna"="codigo_comuna")) %>% 
   rename(codigo_comuna=comuna)
 
+## Agrupo para crear variable: Menor a eduacion media completa 
+df_educacion$e6a %>% unique()
+df_educacion <- df_educacion %>% 
+  filter(e6a!=99) %>% # filtro respuesta no sabe
+  mutate(menor_media=if_else(e6a<8,1,0)) %>% 
+  group_by(codigo_comuna,menor_media) %>% 
+  summarise(hab=sum(hab,na.rm=T)) %>% 
+  mutate(perc=hab/sum(hab)) %>% 
+  ungroup() %>% 
+  filter(menor_media==1) %>% 
+  select(codigo_comuna,perc) %>% 
+  rename(perc_menor_media=perc)
+  
+
 ## SALUD PREVISION -------
 # s12: A qué sistema previsional de salud pertenece usted
 df_codigoSalud <- read_excel("Data/Data Modelo/Casen/Codigos_CASEN.xlsx", sheet = "s12")
@@ -60,6 +74,23 @@ df_prevision <- df_casen %>%
   left_join(df_codigoSalud, by=c("s12"="codigo")) %>% 
   left_join(codigos_territoriales, by = c("comuna"="codigo_comuna")) %>% 
   rename(codigo_comuna=comuna)
+
+
+## Agrupo para crear variable: Porcentaje isapre
+# lo hago distinto para incluir comunas sin nadie con isapre
+df_prevision$s12 %>% unique()
+df_prevision <- df_prevision %>% 
+  filter(s12!=99) %>% # filtro respuesta no sabe
+  mutate(isapre=if_else(s12!=7,1,0)) %>% 
+  group_by(codigo_comuna,isapre) %>% 
+  summarise(hab=sum(hab,na.rm=T)) %>% 
+  mutate(perc=hab/sum(hab)) %>% 
+  ungroup() %>% 
+  filter(isapre==1) %>% 
+  select(codigo_comuna,perc) %>% 
+  mutate(perc=1-perc) %>% 
+  rename(perc_isapre=perc)
+
 
 ## OCUPADOS
 # o9a: o9a. ¿Cuál es su ocupación u oficio?
@@ -79,7 +110,9 @@ df_ocupacion <- df_ocupacion %>% filter(o1=="Si") %>% rename(perc_ocupado=perc)
 
 ## AGRUPAR TODO -------
 df_casen <- left_join(df_ingreso, 
-                      df_ocupacion %>% select(codigo_comuna, perc_ocupado))
+                      df_ocupacion %>% select(codigo_comuna, perc_ocupado)) %>% 
+  left_join(df_educacion) %>% 
+  left_join(df_prevision)
 
 
 # rm(df_codigoSalud, df_codigoEducacion, df_ingreso, df_prevision, df_educacion)
