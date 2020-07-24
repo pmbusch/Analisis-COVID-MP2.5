@@ -25,7 +25,7 @@ El proyecto se subdivide en las siguientes secciones:
 	* Urbano-Rural
 	* Población originaria
 	* Viviendas
-	* Tipo Material Viviendas
+	* Materialidad Viviendas
 * Mapas de Chile: librería de R *chilemapas* (https://cran.r-project.org/web/packages/chilemapas/index.html)
 * Meteorología: Dirección Meteorológica de Chile (https://climatologia.meteochile.gob.cl/)
 	* Temperatura (media, mínima y máxima diaria)
@@ -37,4 +37,4 @@ El proyecto se subdivide en las siguientes secciones:
 	* Ocupado: *o1*
 	* Factor expansión: *expc*
 * Consumo de Leña: 
-	* CDT 2015. MEDICIÓN DEL CONSUMO NACIONAL DE LEÑA Y OTROS COMBUSTIBLES SÓLIDOS DERIVADOS DE LA MADERA”. Tabla 136.
+	* CDT 2015. "Medición del consumo nacional de leña y otros combustibles sólidos derivados de la madera”. Tabla 136.
