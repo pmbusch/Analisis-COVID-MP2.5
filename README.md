@@ -9,15 +9,17 @@ El proyecto se subdivide en las siguientes secciones:
 * Carga de datos necesarios
 * Análisis de la relación mediante series de tiempo y estudios transversales
 
+**Nota:** Si se desea explorar los scripts por separado se recomienda ejecutar el siguiente código para cargar todas las librerías necesarias: *source("Scripts/00-CargaLibrerias.R", encoding = "UTF-8")*
+
 **Fuente Datos:**
 * Datos COVID-19: **PENDIENTE**
 	* Mortalidad
 	* Contagios
+* Tasa de Mortalidad: **PENDIENTE**
 * Concentración ambiental: SINCA (https://sinca.mma.gob.cl/)
 	* MP2.5
 	* CO
 	* NO2
-* Tasa de Mortalidad: **PENDIENTE**
 * Demografía: CENSO 2017 (https://www.censo2017.cl/)
 	* Población
 	* Urbano-Rural
@@ -25,8 +27,8 @@ El proyecto se subdivide en las siguientes secciones:
 	* Viviendas
 	* Tipo Material Viviendas
 * Mapas de Chile: librería de R *chilemapas* (https://cran.r-project.org/web/packages/chilemapas/index.html)
-* Meteorología: **PENDIENTE**
-	* Temperatura
+* Meteorología: Dirección Meteorológica de Chile (https://climatologia.meteochile.gob.cl/)
+	* Temperatura (media, mínima y máxima diaria)
 	* Humedad
 * Información Socioeconómica: CASEN 2017 (http://observatorio.ministeriodesarrollosocial.gob.cl/casen-multidimensional/casen/casen_2017.php)
 	* Ingreso total e ingreso autónomo: *ytotcor* e *yautcor*
@@ -34,4 +36,5 @@ El proyecto se subdivide en las siguientes secciones:
 	* Previsión de Salud: *s12* 
 	* Ocupado: *o1*
 	* Factor expansión: *expc*
-* Consumo de Leña: **PENDIENTE**
+* Consumo de Leña: 
+	* CDT 2015. MEDICIÓN DEL CONSUMO NACIONAL DE LEÑA Y OTROS COMBUSTIBLES SÓLIDOS DERIVADOS DE LA MADERA”. Tabla 136.
