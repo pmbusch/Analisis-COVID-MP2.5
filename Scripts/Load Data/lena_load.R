@@ -5,15 +5,14 @@
 # Fuente datos:
 # CDT 2015. MEDICIÓN DEL CONSUMO NACIONAL DE LEÑA Y OTROS COMBUSTIBLES SÓLIDOS DERIVADOS DE LA MADERA”. Tabla 136
 
-# source("Scripts/Load Data/mapa_load.R", encoding = "UTF-8")
 
 df_lena <- read_excel("Data/Data Modelo/ConsumoLena_CDT.xlsx", sheet="Consumo")
 
 ## Bajamos los datos regiones de consumo de leña al 2018 a nivel comunal mediante la poblacion
 ## Penetracion de lena es igual a nivel de region (no se tiene mayor detalle)
-df_poblacion$codigo_region %>% unique()
 
-df_poblacionZona <- df_poblacion %>% 
+# Uso datos de poblacion de chilemapas
+df_poblacionZona <- left_join(censo_2017_comunas, codigos_territoriales) %>% 
   mutate(zona=case_when(
     codigo_region %in% c("15","01","02","03","04") ~ "ZN",
     codigo_region == "05" ~ "V",
