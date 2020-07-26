@@ -24,6 +24,8 @@ El proyecto se subdivide en las siguientes secciones:
 	* MP2.5
 	* CO
 	* NO2
+* Infraestructura Sanitaria: DEIS (https://deis.minsal.cl/)
+	* Número de Camas *(Listado de Establecimientos de Salud)*
 * Demografía: CENSO 2017 (https://www.censo2017.cl/)
 	* Población
 	* Urbano-Rural
