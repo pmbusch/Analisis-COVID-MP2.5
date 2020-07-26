@@ -25,6 +25,13 @@ df_meteo <- read_delim("Data/Data Modelo/Datos_Meteorologia.csv",
                       locale = locale(encoding = "windows-1252"))
 
 
+## Data Covid -----------
+source("Scripts/Load Data/covidMuertes_load.R", encoding = "UTF-8")
+source("Scripts/Load Data/covidCasos_load.R", encoding = "UTF-8")
+source("Scripts/Load Data/covidPCR_load.R", encoding = "UTF-8")
+source("Scripts/Load Data/covidCuarentena_load.R", encoding = "UTF-8")
+
+
 ## Cargar nuevamente ------
 # Solamente ejecutar para actualizar datos
 source("Scripts/Load Data/sinca_scrap.R", encoding = "UTF-8") # SINCA
