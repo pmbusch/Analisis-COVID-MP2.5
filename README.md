@@ -12,10 +12,14 @@ El proyecto se subdivide en las siguientes secciones:
 **Nota:** Si se desea explorar los scripts por separado se recomienda ejecutar el siguiente código para cargar todas las librerías necesarias: *source("Scripts/00-CargaLibrerias.R", encoding = "UTF-8")*
 
 **Fuente Datos:**
-* Datos COVID-19: **PENDIENTE**
-	* Mortalidad
-	* Contagios
-* Tasa de Mortalidad: **PENDIENTE**
+* Datos COVID-19: MinCiencia (https://github.com/MinCiencia/Datos-COVID19/)
+	* Casos fallecidos por comuna **(producto 38)** o https://github.com/MinCiencia/Datos-COVID19/tree/master/output/producto50
+	* Casos totales por comuna incremental **(producto 1)**
+	* Exámenes PCR por región **(producto 7)**
+	* Cuarentenas Activas e Históricas **(producto 29)**
+* Tasa de Mortalidad: CENSO 2017 y DEIS (compilado por MinCiencia
+	* Población 
+	* Defunciones **(producto 32)**
 * Concentración ambiental: SINCA (https://sinca.mma.gob.cl/)
 	* MP2.5
 	* CO
