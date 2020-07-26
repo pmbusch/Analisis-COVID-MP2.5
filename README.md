@@ -13,13 +13,13 @@ El proyecto se subdivide en las siguientes secciones:
 
 **Fuente Datos:**
 * Datos COVID-19: MinCiencia (https://github.com/MinCiencia/Datos-COVID19/)
-	* Casos fallecidos por comuna **(producto 38)** o https://github.com/MinCiencia/Datos-COVID19/tree/master/output/producto50
-	* Casos totales por comuna incremental **(producto 1)**
-	* Exámenes PCR por región **(producto 7)**
-	* Cuarentenas Activas e Históricas **(producto 29)**
+	* Casos fallecidos por comuna *(producto 38)*
+	* Casos totales por comuna incremental *(producto 1)*
+	* Exámenes PCR por región *(producto 7)*
+	* Cuarentenas Activas e Históricas *(producto 29)*
 * Tasa de Mortalidad: CENSO 2017 y DEIS (compilado por MinCiencia
 	* Población 
-	* Defunciones **(producto 32)**
+	* Defunciones *(producto 32)*
 * Concentración ambiental: SINCA (https://sinca.mma.gob.cl/)
 	* MP2.5
 	* CO
