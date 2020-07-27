@@ -12,10 +12,11 @@ df <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
 # promedio de estaciones con distinta disponibilidad de datos
 
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
+
 df_conc <- df %>% 
   filter(year %in% c(2016,2017,2018,2019)) %>% 
   group_by(comuna, pollutant, unidad, site) %>% 
-  summarise(valor=weighted.mean(valor, count, na.rm=T)) %>% 
+  summarise(valor=mean(valor, na.rm=T)) %>% 
   ungroup() %>% group_by(comuna, pollutant, unidad) %>% 
   summarise(valor=mean(valor, na.rm=T)) %>% ungroup() %>% 
   filter(pollutant=="mp2.5") # solo MP2.5 por el momento

@@ -8,7 +8,6 @@ fecha_inicio <- "2016-01-01"
 fecha_fin <- format(Sys.time(),'%Y-%m-%d')
 contaminantes <- c("mp2.5", "co", "no2")
 
-
 # Scripts necesarios ------------------
 source('Scripts/00-Funciones.R')
 source('Scripts/Load_Data/sinca_funcion_scrap.R')
@@ -32,7 +31,7 @@ df_estaciones$pollutant %>% unique()
 df_descarga <- df_estaciones %>%  
   filter(estacion_enlinea %in% c(T,F) &
            pollutant %in% contaminantes & 
-           metrica=="Horario" )
+           metrica=="Diario" )
 
 
 # Si estaba al dia al momento de recolectar la info, actualizamos la fecha fin

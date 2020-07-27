@@ -4,13 +4,13 @@
 ## PBH Julio 2020
 
 
-# Funcion para descargar y trabajar datos de concentracion
+# Funcion para descargar y trabajar datos de concentracion a nivel diario
 # Recibe el URL de la descarga y nombre del archivo
 f_scrap_sinca <- function(url, file_name = "Descarga.csv", remover_file=T){
   
   # Descarga y Lectura de archivo  --------------
   destino <- paste('Data',"Temp",file_name,sep='/')
-  download.file(url,destfile = destino)
+  download.file(url,destfile = destino, quiet = T)
   
   # csv2 uses sep=; and decimal mark=,
   df_conc <- read_delim(destino, delim=";", na = c("NA"), col_types="ccdddd",
@@ -55,17 +55,15 @@ f_scrap_sinca <- function(url, file_name = "Descarga.csv", remover_file=T){
     mutate(date=paste(str_sub(fecha,5,6),
                       str_sub(fecha,3,4),
                       str_sub(fecha,1,2),sep='-'),
-           horario=paste(str_sub(hora,1,2),'00',sep=':'),
-           date=paste(date,horario,sep=' '))
+           hora=NULL,
+           date=paste(date,sep=''))
   
   # Formato a date
   df_conc <- df_conc %>% 
-    mutate(date = date %>% strptime(format='%d-%m-%y %H:%M', tz="GMT") %>% as_datetime())
+    mutate(date = date %>% strptime(format='%d-%m-%y', tz="GMT") %>% as_date())
   
   # Borrar variables innecesarias
-  df_conc <- df_conc %>% mutate(fecha=NULL,
-                                hora=NULL,
-                                horario=NULL)
+  df_conc <- df_conc %>% mutate(fecha=NULL)
   
   #  Util tener estos dates
   df_conc <- df_conc %>% mutate(year=date %>% year(),
@@ -76,17 +74,18 @@ f_scrap_sinca <- function(url, file_name = "Descarga.csv", remover_file=T){
   df_conc <- df_conc %>% mutate(url=url)
   ## Retorno de datos -----------
   
+  ## Codigo antiguo cuando se descargaban datos horarios
   # Dias con al menos 75% de los datos
-  df_conc_dia <- df_conc %>% group_by(url, year, month, day) %>% 
-    summarise(valor=mean(valor,na.rm=T),count=n()) %>% 
-    filter(count>=18)
+  # df_conc_dia <- df_conc %>% group_by(url, year, month, day) %>% 
+  #   summarise(valor=mean(valor,na.rm=T),count=n()) %>% 
+  #   filter(count>=18)
+  # 
+  # df_conc_mes <- df_conc_dia %>% 
+  #   group_by(url,year, month) %>% 
+  #   summarise(valor=mean(valor,na.rm=T), 
+  #             count=n()) %>% 
+  #   ungroup()
   
-  df_conc_mes <- df_conc_dia %>% 
-    group_by(url,year, month) %>% 
-    summarise(valor=mean(valor,na.rm=T), 
-              count=n()) %>% 
-    ungroup()
-  
-  return(df_conc_mes)
+  return(df_conc)
 } 
 ## EoF
