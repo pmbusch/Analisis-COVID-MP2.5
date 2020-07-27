@@ -7,7 +7,8 @@ los contagios y fatalidades del COVID-19
 
 El proyecto se subdivide en las siguientes secciones:
 * Carga de datos necesarios
-* Análisis de la relación mediante series de tiempo y estudios transversales
+* Análisis exploratorio datos recopilados
+* Análisis de la relación entre COVID-19 y MP2.5 mediante series de tiempo y estudios transversales
 
 **Nota:** Si se desea explorar los scripts por separado se recomienda ejecutar el siguiente código para cargar todas las librerías necesarias: *source("Scripts/00-CargaLibrerias.R", encoding = "UTF-8")*
 
@@ -17,13 +18,13 @@ El proyecto se subdivide en las siguientes secciones:
 	* Casos totales por comuna incremental *(producto 1)*
 	* Exámenes PCR por región *(producto 7)*
 	* Cuarentenas Activas e Históricas *(producto 29)*
-* Tasa de Mortalidad: CENSO 2017 y DEIS (compilado por MinCiencia
-	* Población 
-	* Defunciones *(producto 32)*
 * Concentración ambiental: SINCA (https://sinca.mma.gob.cl/)
 	* MP2.5
 	* CO
 	* NO2
+* Tasa de Mortalidad: CENSO 2017 y DEIS (compilado por MinCiencia)
+	* Población 
+	* Defunciones *(producto 32)*
 * Infraestructura Sanitaria: DEIS (https://deis.minsal.cl/)
 	* Número de Camas *(Listado de Establecimientos de Salud)*
 * Demografía: CENSO 2017 (https://www.censo2017.cl/)
