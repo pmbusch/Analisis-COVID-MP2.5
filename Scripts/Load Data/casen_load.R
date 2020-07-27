@@ -7,9 +7,7 @@ library(spatstat) #weighted median
 
 # Ejecutar solo para descargar datos
 # casen::descargar_casen_github(anios=2017, carpeta = "Data/Data Modelo/Casen")
-
 df_casen <- read_rds("Data/Data Modelo/Casen/2017.rds")
-
 df_casen %>% names()
 
 ## Para homologar codigos comunales, debo agregar un 0 a las regiones (ej: 01)
@@ -38,7 +36,6 @@ df_ingreso <- df_casen %>%
 ## EDUCACION ------------
 # e6a: Cuál fue el nivel educacional más alto alcanzado o el nivel educacional actual
 df_codigoEducacion <- read_excel("Data/Data Modelo/Casen/Codigos_CASEN.xlsx", sheet = "e6a")
-
 df_educacion <- df_casen %>% 
   group_by(comuna,e6a) %>% 
   summarise(hab=sum(expc,na.rm=T)) %>% 
@@ -48,24 +45,10 @@ df_educacion <- df_casen %>%
   left_join(codigos_territoriales, by = c("comuna"="codigo_comuna")) %>% 
   rename(codigo_comuna=comuna)
 
-## Agrupo para crear variable: Menor a eduacion media completa 
-df_educacion$e6a %>% unique()
-df_educacion <- df_educacion %>% 
-  filter(e6a!=99) %>% # filtro respuesta no sabe
-  mutate(menor_media=if_else(e6a<8,1,0)) %>% 
-  group_by(codigo_comuna,menor_media) %>% 
-  summarise(hab=sum(hab,na.rm=T)) %>% 
-  mutate(perc=hab/sum(hab)) %>% 
-  ungroup() %>% 
-  filter(menor_media==1) %>% 
-  select(codigo_comuna,perc) %>% 
-  rename(perc_menor_media=perc)
-  
 
 ## SALUD PREVISION -------
 # s12: A qué sistema previsional de salud pertenece usted
 df_codigoSalud <- read_excel("Data/Data Modelo/Casen/Codigos_CASEN.xlsx", sheet = "s12")
-
 df_prevision <- df_casen %>% 
   group_by(comuna,s12) %>% 
   summarise(hab=sum(expc,na.rm=T)) %>% 
@@ -76,23 +59,7 @@ df_prevision <- df_casen %>%
   rename(codigo_comuna=comuna)
 
 
-## Agrupo para crear variable: Porcentaje isapre
-# lo hago distinto para incluir comunas sin nadie con isapre
-df_prevision$s12 %>% unique()
-df_prevision <- df_prevision %>% 
-  filter(s12!=99) %>% # filtro respuesta no sabe
-  mutate(isapre=if_else(s12!=7,1,0)) %>% 
-  group_by(codigo_comuna,isapre) %>% 
-  summarise(hab=sum(hab,na.rm=T)) %>% 
-  mutate(perc=hab/sum(hab)) %>% 
-  ungroup() %>% 
-  filter(isapre==1) %>% 
-  select(codigo_comuna,perc) %>% 
-  mutate(perc=1-perc) %>% 
-  rename(perc_isapre=perc)
-
-
-## OCUPADOS
+## OCUPADOS -----------
 # o9a: o9a. ¿Cuál es su ocupación u oficio?
 # o1: La semana pasada, ¿trabajó al menos una hora, sin considerar los quehaceres del hogar?
 df_ocupacion <- df_casen %>% 
@@ -104,17 +71,7 @@ df_ocupacion <- df_casen %>%
   ungroup() %>% 
   left_join(codigos_territoriales, by = c("comuna"="codigo_comuna")) %>% 
   rename(codigo_comuna=comuna)
-
 # Dejo porcentaje ocupacion
 df_ocupacion <- df_ocupacion %>% filter(o1=="Si") %>% rename(perc_ocupado=perc)
-
-## AGRUPAR TODO -------
-df_casen <- left_join(df_ingreso, 
-                      df_ocupacion %>% select(codigo_comuna, perc_ocupado)) %>% 
-  left_join(df_educacion) %>% 
-  left_join(df_prevision)
-
-
-rm(df_codigoSalud, df_codigoEducacion, df_ingreso, df_prevision, df_educacion)
 
 ## EoF

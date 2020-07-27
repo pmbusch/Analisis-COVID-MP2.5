@@ -10,52 +10,12 @@ df_poblacion <- left_join(censo_2017_comunas, codigos_territoriales)
 df_poblacion %>% names()
 df_poblacion$poblacion %>% sum()
 
-
-## Dividor en grupos etarios -----------
-df_poblacion$edad %>% unique()
-df_poblacion <- df_poblacion %>% 
-  mutate(grupo_edad=case_when(
-    edad %in% c("0 a 4","5 a 9","10 a 14") ~ "0-14",
-    edad %in% c("15 a 19","20 a 24","25 a 29",
-                "30 a 34","35 a 39","40 a 44") ~ "15-44",
-    edad %in% c("45 a 49","50 a 54","55 a 59","60 a 64") ~ "45-64",
-    T ~ "65+"))
-
-df_edad <- df_poblacion %>% 
-  group_by(codigo_comuna, grupo_edad) %>% 
-  summarise(pob=sum(poblacion,na.rm=T)) %>% 
-  mutate(porc_edad=pob/sum(pob),
-         pob=NULL) %>% ungroup() %>% 
-  filter(grupo_edad!="0-14") %>% spread(grupo_edad,porc_edad)
-
-## Dividir por sexo
-df_sexo <- df_poblacion %>% 
-  group_by(codigo_comuna, sexo) %>% 
-  summarise(pob=sum(poblacion,na.rm=T)) %>% 
-  mutate(porc=pob/sum(pob),
-         pob=NULL) %>% ungroup() %>% 
-  filter(sexo!="hombre") %>% spread(sexo,porc)
-
-
-## Poblacion por comuna ----------
-df_poblacion <- df_poblacion %>% 
-  group_by(codigo_comuna) %>% 
-  summarise(poblacion=sum(poblacion,na.rm=T))
-
-
-df_poblacion <- left_join(df_poblacion, df_edad) %>% 
-  left_join(df_sexo) %>% 
-  left_join(codigos_territoriales)
-
-rm(df_edad,df_sexo)
-
-
 ## MAPAS ---------
 # Saco del mapa a Isla de Pascua y Juan Fernandez
 mapa_comuna <- mapa_comunas %>% 
   filter(!(codigo_comuna %in% c("05201","05104"))) %>% 
-  mutate(superficie=st_area(geometry),
-         perimetro=st_length(geometry))
+  mutate(superficie=st_area(geometry) %>% as.numeric(),
+         perimetro=st_length(geometry) %>% as.numeric())
 
 
 # Levels regiones
@@ -84,7 +44,7 @@ mapa_regiones <- mapa_regiones %>% mutate(
     codigo_region=="15" ~ "XV",
     codigo_region=="16" ~ "VIII",
     T ~ "otro") %>% factor(levels = levels_region),
-  superficie=st_area(geometry),
-  perimetro=st_length(geometry))
+  superficie=st_area(geometry) %>% as.numeric(),
+  perimetro=st_length(geometry) %>% as.numeric())
 
 ## EoF

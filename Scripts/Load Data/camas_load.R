@@ -78,14 +78,4 @@ df_camas <- left_join(df_camas,
                                                     longitud,latitud),
                       by=c("codigo_establecimiento"="codigo_nuevo"))
 
-
-## Agrupo por comuna ----------
-df_camas <- df_camas %>% 
-  group_by(codigo_comuna) %>% 
-  summarise(camas=sum(total,na.rm=T)) %>% ungroup() %>% 
-  left_join(codigos_territoriales)
-
-
-# Limpio WS
-rm(df_camas_priv, df_camas_pub, df_establecimiento)
 ## EoF

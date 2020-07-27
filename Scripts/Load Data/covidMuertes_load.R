@@ -25,7 +25,8 @@ df_muertes$poblacion %>% sum()
 
 ## Parametros --------
 df_muertes <- df_muertes %>% 
-  mutate(tasa_mortalidad=casos_fallecidos/poblacion*1e5)
+  mutate(tasa_mortalidad=casos_fallecidos/poblacion*1e5) %>% 
+  select(codigo_comuna, casos_fallecidos, tasa_mortalidad)
 
 rm(url)
 ## EoF

@@ -34,7 +34,7 @@ df_puebloOrig <- df_censo %>%
   group_by(COMUNA) %>% 
   summarise(poblacion=sum(PERSONAS,na.rm=T),
             pueblo=sum(PUEBLO,na.rm=T),
-            perc_pueblo=pueblo/poblacion) %>% 
+            perc_puebloOrig=pueblo/poblacion) %>% 
   ungroup() %>% 
   left_join(codigos_territoriales, by = c("COMUNA"="codigo_comuna")) %>% 
   rename(codigo_comuna=COMUNA)
@@ -52,10 +52,6 @@ df_viviendas$viviendas %>% sum()
 
 
 ## Tipo Material Viviendas -----------
-# PENDIENTE
-# P03A: Material de los muros exteriores
-# P03B: Material en la cubierta del techo
-# P03C: Material de construcción del piso
 # MATIRREC: total de viviendas con materialidad irrecuperable
 
 ## Nota MATACEP+MATAREC+MATARREC != TOTAL_VIV por alguna razon
@@ -70,6 +66,9 @@ df_material <- df_censo %>%
 df_material$perc_material_irrecuperable %>% range()
 
 
+# P03A: Material de los muros exteriores
+# P03B: Material en la cubierta del techo
+# P03C: Material de construcción del piso
 ## NO UTILIZADO
 # df_codigoMaterial <- read_excel("Data/Data Modelo/Censo2017_16R_ManzanaEntidad_CSV/Codigo_Material.xlsx")
 # df_material <- df_censo %>% 
@@ -84,14 +83,4 @@ df_material$perc_material_irrecuperable %>% range()
 #   left_join(codigos_territoriales, by = c("COMUNA"="codigo_comuna")) %>% 
 #   rename(codigo_comuna=COMUNA)
 
-
-
-## Agrupo Todo ---------------
-df_censo <- df_puebloOrig %>% 
-  left_join(df_viviendas %>% select(codigo_comuna,viviendas)) %>% 
-  left_join(df_rural %>% select(codigo_comuna, perc_rural)) %>% 
-  left_join(df_material %>% select(codigo_comuna,perc_material_irrecuperable))
-
-
-# rm(df_puebloOrig,df_viviendas,df_material,df_codigoMaterial)
 ## EoF

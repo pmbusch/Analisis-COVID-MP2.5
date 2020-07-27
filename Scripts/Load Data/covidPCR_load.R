@@ -3,7 +3,6 @@
 ## Producto 7: Exámenes PCR por región
 ## PBH Julio 2020
 
-
 ## Descarga de datos ---------
 # Url para descarga directa de datos desde el Github del Ministerio de Ciencia
 url <- "https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output"
@@ -17,11 +16,11 @@ df_pcr <- df_pcr %>% na.omit() # limpio NA
 # Sumo los totales
 df_pcr <- df_pcr %>% 
   group_by(region, codigo_region, poblacion) %>% 
-  summarise(pcr_region=sum(numero, na.rm=T)) %>% ungroup()
+  summarise(pcr_region=sum(numero, na.rm=T)) %>% ungroup() %>% 
+  select(codigo_region, pcr_region)
 
 # total pcr
 df_pcr$pcr_region %>% sum()
-df_pcr$poblacion %>% sum()
 
 rm(url)
 ## EoF

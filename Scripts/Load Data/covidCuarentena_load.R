@@ -22,7 +22,6 @@ df_cuarentena <- df_cuarentena %>%
 df_cuarentena %>% group_by(alcance) %>% summarise(count=n()) %>% arrange(desc(count))
 # df_cuarentena <- df_cuarentena %>% arrange(alcance)
 
-
 ## Fecha inicio cuarentena por comuna --------
 df_cuarentena <- df_cuarentena %>% 
   group_by(codigo_comuna) %>% 

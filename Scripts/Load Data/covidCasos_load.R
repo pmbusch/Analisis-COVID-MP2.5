@@ -32,11 +32,12 @@ df_casos$poblacion %>% sum()
 
 ## Parametros --------
 df_casos <- df_casos %>% 
-  mutate(tasa_contagios=casos_confirmados/poblacion*1e5)
-  
-
-df_casos <- df_casos %>% left_join(df_contagioZero %>% select(-comuna))
-
+  mutate(tasa_contagios=casos_confirmados/poblacion*1e5) %>% 
+  left_join(df_contagioZero %>% select(-comuna)) %>% 
+  mutate(dias_primerContagio=(fecha-dia_contagioZero) %>%
+           as.numeric(units="days")) %>% 
+  select(codigo_comuna, casos_confirmados, tasa_contagios, 
+         dias_primerContagio)
 
 rm(url, df_contagioZero)
 ## EoF
