@@ -6,8 +6,9 @@ Se busca determinar la relación entre la contaminación atmosférica de MP2.5 g
 los contagios y fatalidades del COVID-19
 
 El proyecto se subdivide en las siguientes secciones:
-* Carga de datos necesarios
-* Análisis exploratorio datos recopilados
+* Carga de datos necesarios [`Scripts/Load Data`]
+* Resume datos a nivel comunal [`Scripts/Aggregate Data`]
+* Análisis exploratorio datos recopilados [`Scripts/Analisis Exploratorios`]
 * Análisis de la relación entre COVID-19 y MP2.5 mediante series de tiempo y estudios transversales
 
 **Nota:** Si se desea explorar los scripts por separado se recomienda ejecutar el siguiente código para cargar todas las librerías necesarias: *source("Scripts/00-CargaLibrerias.R", encoding = "UTF-8")*
