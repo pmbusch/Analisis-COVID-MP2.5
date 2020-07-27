@@ -79,10 +79,37 @@ df_meteo <- df_meteo %>%
     T ~ "s/i"),
     unidad="celsius")
 
-# Guardar
-cat('sep=; \n',file = "Data/Data Modelo/Datos_Meteorologia.csv")
-write.table(df_meteo,"Data/Data Modelo/Datos_Meteorologia.csv",
-            sep=';',row.names = F, append = T)
+## Agregar a nivel comunal
+## NOTAS:
+# Debo mejorar la agregacion al incluir otros contaminantes y ver bien 
+# promedio de estaciones con distinta disponibilidad de datos
+df <- df_meteo %>% 
+  mutate(year=year(date)) %>% 
+  filter(year %in% c(2016,2017,2018,2019) &
+           tipo %in% c("tmed", "hr")) %>% 
+  cutData(type="season", hemisphere = "southern") %>% 
+  filter(season %in% c("winter (JJA)","summer (DJF)")) %>% # solo verano e invierno
+  group_by(comuna, estacion, tipo, season) %>% 
+  summarise(valor=mean(valor, na.rm=T)) %>% 
+  ungroup() %>% group_by(comuna, tipo, season) %>% 
+  summarise(valor=mean(valor, na.rm=T)) %>% ungroup() %>% 
+  mutate(season=season %>% str_remove_all(" \\(JJA\\)| \\(DJF\\)"),
+         tipo=paste(tipo, season, sep="_"),
+         season=NULL) %>% 
+  spread(tipo,valor)
+
+# Agregar codigos comunales
+df <- df %>% 
+  mutate(nombre_comuna=comuna %>% 
+           str_replace_all("Viña del Mar","Vina del Mar")) %>%
+  left_join(codigos_territoriales %>% select(codigo_comuna, nombre_comuna),
+            by=c("nombre_comuna")) %>% 
+  select(-comuna, -nombre_comuna)
+
+
+# Guardar como objeto de R
+saveRDS(df_meteo, "Data/Data Modelo/Datos_Meteorologia_raw.rsd")
+saveRDS(df, "Data/Data Modelo/Datos_Meteorologia.rsd")
 
 # Limpio WS
 rm(estaciones, tipo_meteo, url, year_start, year_end,

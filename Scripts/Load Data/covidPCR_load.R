@@ -17,10 +17,10 @@ df_pcr <- df_pcr %>% na.omit() # limpio NA
 # Sumo los totales
 df_pcr <- df_pcr %>% 
   group_by(region, codigo_region, poblacion) %>% 
-  summarise(pcr=sum(numero, na.rm=T)) %>% ungroup()
+  summarise(pcr_region=sum(numero, na.rm=T)) %>% ungroup()
 
 # total pcr
-df_pcr$pcr %>% sum()
+df_pcr$pcr_region %>% sum()
 df_pcr$poblacion %>% sum()
 
 rm(url)

@@ -115,6 +115,6 @@ df_casen <- left_join(df_ingreso,
   left_join(df_prevision)
 
 
-# rm(df_codigoSalud, df_codigoEducacion, df_ingreso, df_prevision, df_educacion)
+rm(df_codigoSalud, df_codigoEducacion, df_ingreso, df_prevision, df_educacion)
 
 ## EoF

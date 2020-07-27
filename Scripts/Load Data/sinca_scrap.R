@@ -115,18 +115,44 @@ for (d in 1:nrow(df_descarga)){
 ## Feat Data ----------------
 
 # Factores
-df <- df %>% mutate(tipo_dato=tipo_dato %>% as.factor(),
-                    site=site %>% as.factor(),
+df <- df %>% mutate(site=site %>% as.factor(),
                     region=region %>% as.factor(),
                     provincia=provincia %>% as.factor(),
                     comuna=comuna %>% as.factor(),
                     pollutant=pollutant %>% as.factor())
 
-# Guardar
-cat('sep=; \n',file = "Data/Data Modelo/Datos_Concentraciones.csv")
-write.table(df,'Data/Data Modelo/Datos_Concentraciones.csv',sep=';',row.names = F, append = T)
 
-df_conc <- df
+## Agregar a nivel comunal
+## NOTAS:
+# Debo mejorar la agregacion al incluir otros contaminantes y ver bien 
+# promedio de estaciones con distinta disponibilidad de datos
+
+
+source("Scripts/00-Funciones.R", encoding = "UTF-8")
+
+df_conc <- df %>% 
+  filter(year %in% c(2016,2017,2018,2019)) %>% 
+  group_by(comuna, pollutant, unidad, site) %>% 
+  summarise(valor=weighted.mean(valor, count, na.rm=T)) %>% 
+  ungroup() %>% group_by(comuna, pollutant, unidad) %>% 
+  summarise(valor=mean(valor, na.rm=T)) %>% ungroup() %>% 
+  filter(pollutant=="mp2.5") # solo MP2.5 por el momento
+
+# Agregar codigos comunales
+df_conc <- df_conc %>% 
+  mutate(nombre_comuna=f_remover_acentos(comuna) %>% 
+           str_replace_all("Aysen","Aisen") %>% 
+           str_replace_all("Coyhaique","Coihaique")) %>% 
+  left_join(codigos_territoriales,by=c("nombre_comuna")) %>% 
+  rename(mp25=valor) %>% 
+  select(codigo_comuna, mp25)
+
+
+# Guardar como objeto de R
+saveRDS(df, "Data/Data Modelo/Datos_Concentraciones_raw.rsd")
+saveRDS(df_conc, "Data/Data Modelo/Datos_Concentraciones.rsd")
+
+
 rm(df, df_descarga, df_estaciones, contaminantes, d, fecha_fin, fecha_inicio, 
    url, f_scrap_sinca)
 
