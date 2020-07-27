@@ -3,7 +3,7 @@
 ## PBH Julio 2020
 
 # Carga datos brutos --------
-source("Scripts/Load Data/casen_load.R", encoding = "UTF-8")
+source("Scripts/Load_Data/casen_load.R", encoding = "UTF-8")
 
 ## Educacion -----------
 ## Agrupo para crear variable: Menor a eduacion media completa 

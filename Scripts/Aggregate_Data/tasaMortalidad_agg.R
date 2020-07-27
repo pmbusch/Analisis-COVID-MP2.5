@@ -3,7 +3,7 @@
 ## PBH Julio 2020
 
 # Carga datos brutos --------
-source("Scripts/Load Data/tasaMortalidad_load.R", encoding = "UTF-8")
+source("Scripts/Load_Data/tasaMortalidad_load.R", encoding = "UTF-8")
 
 
 ## Calculo agregado de muertes ---------

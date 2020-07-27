@@ -3,8 +3,8 @@
 ## PBH Julio 2020
 
 # Carga datos brutos --------
-# source("Scripts/Load Data/sinca_scrap.R", encoding = "UTF-8") # Baja los datos
-df <- read_rds("Data/Data Modelo/Datos_Concentraciones_raw.rsd")
+# source("Scripts/Load_Data/sinca_scrap.R", encoding = "UTF-8") # Baja los datos
+df <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
 
 ## Agregar a nivel comunal -----------
 ## NOTAS:
@@ -30,7 +30,7 @@ df_conc <- df_conc %>%
   select(codigo_comuna, mp25)
 
 # Guarda datos ----------
-saveRDS(df_conc, "Data/Data Modelo/Datos_Concentraciones.rsd")
+saveRDS(df_conc, "Data/Data_Modelo/Datos_Concentraciones.rsd")
 
 rm(df)
 ## EoF

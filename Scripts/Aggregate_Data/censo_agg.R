@@ -3,7 +3,7 @@
 ## PBH Julio 2020
 
 # Carga datos brutos --------
-source("Scripts/Load Data/censo_load.R", encoding = "UTF-8")
+source("Scripts/Load_Data/censo_load.R", encoding = "UTF-8")
 
 ## Agrupo Todo ---------------
 df_censo <- df_puebloOrig %>% 

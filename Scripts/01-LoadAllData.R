@@ -7,23 +7,23 @@ source("Scripts/00-CargaLibrerias.R", encoding = "UTF-8")
 
 ## Scripts para cargar datos
 #carga datos incluida en los scripts de agg
-source("Scripts/Aggregate Data/poblacion_agg.R", encoding = "UTF-8")
-source("Scripts/Aggregate Data/censo_agg.R", encoding = "UTF-8") 
-source("Scripts/Aggregate Data/casen_agg.R", encoding = "UTF-8") 
-source("Scripts/Aggregate Data/lena_agg.R", encoding = "UTF-8") 
-source("Scripts/Aggregate Data/tasaMortalidad_agg.R", encoding = "UTF-8") 
-source("Scripts/Aggregate Data/camas_agg.R", encoding = "UTF-8") 
+source("Scripts/Aggregate_Data/poblacion_agg.R", encoding = "UTF-8")
+source("Scripts/Aggregate_Data/censo_agg.R", encoding = "UTF-8") 
+source("Scripts/Aggregate_Data/casen_agg.R", encoding = "UTF-8") 
+source("Scripts/Aggregate_Data/lena_agg.R", encoding = "UTF-8") 
+source("Scripts/Aggregate_Data/tasaMortalidad_agg.R", encoding = "UTF-8") 
+source("Scripts/Aggregate_Data/camas_agg.R", encoding = "UTF-8") 
 
 ## Data ya cargada (o bajada)
-df_conc <- read_rds("Data/Data Modelo/Datos_Concentraciones.rsd")
-df_meteo <- read_rds("Data/Data Modelo/Datos_Meteorologia.rsd")
+df_conc <- read_rds("Data/Data_Modelo/Datos_Concentraciones.rsd")
+df_meteo <- read_rds("Data/Data_Modelo/Datos_Meteorologia.rsd")
 
 ## Data Covid -----------
 # No agrego datos aca, los obtengo directo a nivel de comuna
-source("Scripts/Load Data/covidMuertes_load.R", encoding = "UTF-8")
-source("Scripts/Load Data/covidCasos_load.R", encoding = "UTF-8")
-source("Scripts/Load Data/covidPCR_load.R", encoding = "UTF-8")
-source("Scripts/Load Data/covidCuarentena_load.R", encoding = "UTF-8")
+source("Scripts/Load_Data/covidMuertes_load.R", encoding = "UTF-8")
+source("Scripts/Load_Data/covidCasos_load.R", encoding = "UTF-8")
+source("Scripts/Load_Data/covidPCR_load.R", encoding = "UTF-8")
+source("Scripts/Load_Data/covidCuarentena_load.R", encoding = "UTF-8")
 
 
 ## Cargar nuevamente ------
@@ -85,7 +85,5 @@ write.table(df_comuna,"Data/Datos_Comuna.csv",
 cat('sep=; \n',file = "Data/Datos_Modelo.csv")
 write.table(df_modelo,"Data/Datos_Modelo.csv",
             sep=';',row.names = F, append = T)
-
-
 
 ## EoF

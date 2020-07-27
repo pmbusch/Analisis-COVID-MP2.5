@@ -3,7 +3,7 @@
 ## PBH Julio 2020
 
 # Carga datos brutos --------
-source("Scripts/Load Data/lena_load.R", encoding = "UTF-8")
+source("Scripts/Load_Data/lena_load.R", encoding = "UTF-8")
 
 
 ## Bajamos los datos regiones de consumo de leña al 2018 a nivel comunal mediante la poblacion

@@ -4,6 +4,6 @@
 
 # Fuente datos:
 # CDT 2015. MEDICIÓN DEL CONSUMO NACIONAL DE LEÑA Y OTROS COMBUSTIBLES SÓLIDOS DERIVADOS DE LA MADERA”. Tabla 136
-df_lena <- read_excel("Data/Data Modelo/ConsumoLena_CDT.xlsx", sheet="Consumo")
+df_lena <- read_excel("Data/Data_Modelo/ConsumoLena_CDT.xlsx", sheet="Consumo")
 
 ## EoF

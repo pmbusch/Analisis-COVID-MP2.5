@@ -11,7 +11,7 @@ contaminantes <- c("mp2.5", "co", "no2")
 
 # Scripts necesarios ------------------
 source('Scripts/00-Funciones.R')
-source('Scripts/Load Data/sinca_funcion_scrap.R')
+source('Scripts/Load_Data/sinca_funcion_scrap.R')
 
 ## Carga Datos de las estaciones -------------
 # Tipo de las variables: c character, d double, D date
@@ -122,7 +122,7 @@ df <- df %>% mutate(site=site %>% as.factor(),
 
 
 # Guardar como objeto de R
-saveRDS(df, "Data/Data Modelo/Datos_Concentraciones_raw.rsd")
+saveRDS(df, "Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
 
 rm(df, df_descarga, df_estaciones, contaminantes, d, fecha_fin, fecha_inicio, 
    url, f_scrap_sinca)

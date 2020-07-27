@@ -3,7 +3,7 @@
 ## PBH Julio 2020
 
 ## Lectura CENSO -------------
-df_censo <- read_delim("Data/Data Modelo/Censo2017_16R_ManzanaEntidad_CSV/Censo2017_Manzanas.csv",
+df_censo <- read_delim("Data/Data_Modelo/Censo2017_16R_ManzanaEntidad_CSV/Censo2017_Manzanas.csv",
                        delim = ";", na = c("NA","*"),
                        col_types = "cccccccccddddddddddddddddddddddddddddddddddddddddddddddcccc",
                        locale = locale(encoding = "windows-1252"))

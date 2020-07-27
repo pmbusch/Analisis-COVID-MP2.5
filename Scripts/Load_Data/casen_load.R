@@ -7,7 +7,7 @@ library(spatstat) #weighted median
 
 # Ejecutar solo para descargar datos
 # casen::descargar_casen_github(anios=2017, carpeta = "Data/Data Modelo/Casen")
-df_casen <- read_rds("Data/Data Modelo/Casen/2017.rds")
+df_casen <- read_rds("Data/Data_Modelo/Casen/2017.rds")
 df_casen %>% names()
 
 ## Para homologar codigos comunales, debo agregar un 0 a las regiones (ej: 01)
@@ -35,7 +35,7 @@ df_ingreso <- df_casen %>%
 
 ## EDUCACION ------------
 # e6a: Cuál fue el nivel educacional más alto alcanzado o el nivel educacional actual
-df_codigoEducacion <- read_excel("Data/Data Modelo/Casen/Codigos_CASEN.xlsx", sheet = "e6a")
+df_codigoEducacion <- read_excel("Data/Data_Modelo/Casen/Codigos_CASEN.xlsx", sheet = "e6a")
 df_educacion <- df_casen %>% 
   group_by(comuna,e6a) %>% 
   summarise(hab=sum(expc,na.rm=T)) %>% 
@@ -48,7 +48,7 @@ df_educacion <- df_casen %>%
 
 ## SALUD PREVISION -------
 # s12: A qué sistema previsional de salud pertenece usted
-df_codigoSalud <- read_excel("Data/Data Modelo/Casen/Codigos_CASEN.xlsx", sheet = "s12")
+df_codigoSalud <- read_excel("Data/Data_Modelo/Casen/Codigos_CASEN.xlsx", sheet = "s12")
 df_prevision <- df_casen %>% 
   group_by(comuna,s12) %>% 
   summarise(hab=sum(expc,na.rm=T)) %>% 

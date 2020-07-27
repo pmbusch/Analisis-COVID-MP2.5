@@ -3,7 +3,7 @@
 ## PBH Julio 2020
 
 # Carga datos brutos --------
-source("Scripts/Load Data/mapa_load.R", encoding = "UTF-8")
+source("Scripts/Load_Data/mapa_load.R", encoding = "UTF-8")
 
 ## Dividir en grupos etarios -----------
 df_poblacion$edad %>% unique()

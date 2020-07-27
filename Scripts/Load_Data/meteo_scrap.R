@@ -80,7 +80,7 @@ df_meteo <- df_meteo %>%
     unidad="celsius")
 
 # Guardar como objeto de R
-saveRDS(df_meteo, "Data/Data Modelo/Datos_Meteorologia_raw.rsd")
+saveRDS(df_meteo, "Data/Data_Modelo/Datos_Meteorologia_raw.rsd")
 
 # Limpio WS
 rm(estaciones, tipo_meteo, url, year_start, year_end,

@@ -3,8 +3,8 @@
 ## PBH Julio 2020
 
 # Carga datos brutos --------
-# source("Scripts/Load Data/meteo_scrap.R", encoding = "UTF-8") # Baja los datos
-df <-read_rds("Data/Data Modelo/Datos_Meteorologia_raw.rsd")
+# source("Scripts/Load_Data/meteo_scrap.R", encoding = "UTF-8") # Baja los datos
+df <-read_rds("Data/Data_Modelo/Datos_Meteorologia_raw.rsd")
 
 ## Agregar a nivel comunal ----------------
 ## NOTAS:
@@ -34,6 +34,6 @@ df <- df %>%
   select(-comuna, -nombre_comuna)
 
 
-saveRDS(df, "Data/Data Modelo/Datos_Meteorologia.rsd")
+saveRDS(df, "Data/Data_Modelo/Datos_Meteorologia.rsd")
 
 ## EoF
