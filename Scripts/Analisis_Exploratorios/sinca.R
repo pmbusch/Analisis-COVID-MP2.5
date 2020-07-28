@@ -54,23 +54,28 @@ df_map <- df_avg %>%
 
 ggplot(df_map) + 
   geom_sf(aes(fill = valor, geometry = geometry)) +
-  scale_fill_viridis_c(name = "Promedio 2016-2019 MP2.5 [ug/m3]", 
-                       option="B", direction=-1, na.value = "white") +
+  scale_fill_viridis_c(name = "Promedio 2016-2019 \n MP2.5 [ug/m3]", 
+                       option="B", direction=-1, na.value = "white",
+                       limits=c(0,50)) +
   labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
-  theme_minimal(base_size = 13)
+  theme_minimal(base_size = 8)
 
 ggsave("Figuras/MapaChileMP25.png", 
        last_plot(),dpi=600,
        width = 14.87, height = 9.30, units = "in")
 
 ## Mapa solo Santiago
-df_map %>% filter(codigo_provincia=="131") %>% 
+# Remueve tmb Lo Barnechea (codigo 13115)
+df_map %>% filter(codigo_provincia=="131" & codigo_comuna!="13115") %>% 
   ggplot() + 
   geom_sf(aes(fill = valor, geometry = geometry)) +
-  scale_fill_viridis_c(name = "Promedio 2016-2019 MP2.5 [ug/m3]", 
-                       option="B", direction=-1, na.value = "white") +
+  geom_sf_label(aes(label=nombre_comuna, geometry=geometry))+
+  scale_fill_viridis_c(name = "Promedio 2016-2019 \n MP2.5 [ug/m3]", 
+                       option="B", direction=-1, na.value = "white",
+                       limits=c(0,50)) +
   labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
-  theme_minimal(base_size = 13)
+  theme_minimal(base_size = 8)
+  # theme(legend.position = "none")
 
 ggsave("Figuras/MapaSantiagoMP25.png", 
        last_plot(),dpi=600,
@@ -80,10 +85,11 @@ ggsave("Figuras/MapaSantiagoMP25.png",
 df_map %>% filter(codigo_region %in% c("08","09","10","14","11")) %>% 
   ggplot() + 
   geom_sf(aes(fill = valor, geometry = geometry)) +
-  scale_fill_viridis_c(name = "Promedio 2016-2019 MP2.5 [ug/m3]", 
-                       option="B", direction=-1, na.value = "white") +
+  scale_fill_viridis_c(name = "Promedio 2016-2019 \n MP2.5 [ug/m3]", 
+                       option="B", direction=-1, na.value = "white",
+                       limits=c(0,50)) +
   labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
-  theme_minimal(base_size = 13)
+  theme_minimal(base_size = 8)
 
 ggsave("Figuras/MapaSurMP25.png", 
        last_plot(),dpi=600,
@@ -106,6 +112,5 @@ ggplot(df_estaciones)+
 ggsave("Figuras/MapaEstacionesAire.png", 
        last_plot(),dpi=600,
        width = 14.87, height = 9.30, units = "in")
-
 
 ## EoF

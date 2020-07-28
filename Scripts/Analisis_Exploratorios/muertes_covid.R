@@ -14,30 +14,49 @@ df_muertes %>% left_join(mapa_comuna) %>%
   ggplot() + 
   geom_sf(aes(fill = tasa_mortalidad, geometry = geometry)) +
   scale_fill_viridis_c(name = "Tasa Mortalidad Covid \n [muertes/100mil hab]", 
-                       option="B", direction=-1, na.value = "white") +
+                       option="B", direction=-1, na.value = "white", 
+                       limits=c(0,200)) +
   labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
-  theme_minimal(base_size = 13)
+  theme_minimal(base_size = 8)
 
 ggsave("Figuras/MapaChileCOVID.png", 
        last_plot(),dpi=600,
        width = 14.87, height = 9.30, units = "in")
 
 # Santiago
+# Remueve tmb Lo Barnechea (codigo 13115)
 df_muertes %>% left_join(mapa_comuna) %>% 
   left_join(codigos_territoriales) %>% 
-  filter(codigo_provincia=="131") %>% 
+  filter(codigo_provincia=="131" & codigo_comuna!="13115") %>% 
   ggplot() + 
   geom_sf(aes(fill = tasa_mortalidad, geometry = geometry)) +
   # geom_sf_label(aes(label=nombre_comuna, geometry=geometry))+
   scale_fill_viridis_c(name = "Tasa Mortalidad Covid \n [muertes/100mil hab]", 
-                       option="B", direction=-1, na.value = "white") +
+                       option="B", direction=-1, na.value = "white",
+                       limits=c(0,200)) +
   labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
-  theme_minimal(base_size = 13)
+  theme_minimal(base_size = 8)
+  # theme(legend.position = "none")
 
 ggsave("Figuras/MapaSantiagoCOVID.png", 
        last_plot(),dpi=600,
        width = 14.87, height = 9.30, units = "in")
 
+# Zona Sur
+df_muertes %>% left_join(mapa_comuna) %>% 
+  filter(codigo_region %in% c("08","09","10","14","11")) %>% 
+  ggplot() + 
+  geom_sf(aes(fill = tasa_mortalidad, geometry = geometry)) +
+  scale_fill_viridis_c(name = "Tasa Mortalidad Covid \n [muertes/100mil hab]", 
+                       option="B", direction=-1, na.value = "white", 
+                       limits=c(0,200)) +
+  labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
+  theme_minimal(base_size = 8)
+
+ggsave("Figuras/MapaSurCOVID.png", 
+       last_plot(),dpi=600,
+       width = 14.87, height = 9.30, units = "in")
+  
 
 ## Geo Facet Santiago ---------------
 url <- "https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output"
