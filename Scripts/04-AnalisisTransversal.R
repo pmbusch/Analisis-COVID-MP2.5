@@ -7,6 +7,17 @@
 ## Carga Datos a nivel de comuna-----
 # source("Scripts/01-LoadAllData", encoding = "UTF-8") 
 
+## Scatter correlacion -----------
+theme_set(theme_bw())
+
+ggplot(df_modelo, aes(mp25, tasa_mortalidad))+
+  geom_point()+
+  labs(x="Concentración MP2.5 2016-2019 [ug/m3]", 
+       y="Tasa Mortalidad COVID [muertes/100mil hab]")
+
+last_plot()+
+  geom_text_repel(aes(label=nombre_comuna))
+
 
 ## Modelo-----
 
