@@ -18,17 +18,18 @@ df_poblacion <- df_poblacion %>%
 df_edad <- df_poblacion %>% 
   group_by(codigo_comuna, grupo_edad) %>% 
   summarise(pob=sum(poblacion,na.rm=T)) %>% 
-  mutate(porc_edad=pob/sum(pob),
+  mutate(perc_edad=pob/sum(pob)*100,
          pob=NULL) %>% ungroup() %>% 
-  filter(grupo_edad!="0-14") %>% spread(grupo_edad,porc_edad)
+  filter(grupo_edad!="0-14") %>% spread(grupo_edad,perc_edad)
 
 ## Dividir por sexo
 df_sexo <- df_poblacion %>% 
   group_by(codigo_comuna, sexo) %>% 
   summarise(pob=sum(poblacion,na.rm=T)) %>% 
-  mutate(porc=pob/sum(pob),
+  mutate(porc=pob/sum(pob)*100,
          pob=NULL) %>% ungroup() %>% 
-  filter(sexo!="hombre") %>% spread(sexo,porc)
+  filter(sexo!="hombre") %>% spread(sexo,porc) %>%
+  rename(perc_mujer=mujer)
 
 
 ## Poblacion por comuna ----------

@@ -39,7 +39,7 @@ mapa_regiones <- mapa_regiones %>% mutate(
     codigo_region=="10" ~ "X",
     codigo_region=="11" ~ "XI",
     codigo_region=="12" ~ "XII",
-    codigo_region=="13" ~ "XIII",
+    codigo_region=="13" ~ "M",
     codigo_region=="14" ~ "XIV",
     codigo_region=="15" ~ "XV",
     codigo_region=="16" ~ "VIII",

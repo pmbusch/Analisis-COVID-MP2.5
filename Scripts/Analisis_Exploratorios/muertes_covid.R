@@ -47,12 +47,12 @@ df_muertes <- read_csv(paste(url,"producto38","CasosFallecidosPorComuna_std.csv"
 names(df_muertes) <- names(df_muertes) %>% str_to_lower() %>% str_replace_all(" ","_")
 df_muertes <- df_muertes %>% na.omit() # limpio NA
 
+library(geofacet)
 
 df_muertes_tiempo <- df_muertes %>% 
   mutate(code=as.numeric(codigo_comuna)) %>% 
   right_join(cl_santiago_prov_grid1, by=c("code"))
   
-library(geofacet)
 
 df_muertes_tiempo %>%  
   ggplot(aes(x=fecha, y=casos_fallecidos))+

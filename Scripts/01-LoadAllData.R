@@ -53,10 +53,11 @@ rm(df_poblacion, df_muertes, df_conc, df_camas, df_casos, df_cuarentena,
 df_comuna %>% skim()
 
 ## Parametros -----------
+# Superficie de m2 se pasa a km2
 df_comuna <- df_comuna %>% 
   mutate(tasa_camas=camas/poblacion*1e5,
          dias_cuarentena=(fecha_muertes-fecha_cuarentena) %>% as.numeric(units="days"),
-         densidad_pob=poblacion/superficie) %>% 
+         densidad_pob=poblacion/superficie*1e6) %>% 
   select(-fecha_cuarentena, -camas)
 
 # Sin NA

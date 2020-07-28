@@ -21,7 +21,7 @@ df_censo <- df_censo %>%
 df_rural <- df_censo %>% 
   group_by(COMUNA, AREA) %>% 
   summarise(poblacion=sum(PERSONAS,na.rm=T)) %>% 
-  mutate(perc_rural=poblacion/sum(poblacion)) %>%
+  mutate(perc_rural=poblacion/sum(poblacion)*100) %>%
   filter(AREA=="2") %>% # 2: Area rural
   ungroup() %>% 
   left_join(codigos_territoriales, by = c("COMUNA"="codigo_comuna")) %>% 
@@ -29,12 +29,12 @@ df_rural <- df_censo %>%
 
 
 ## Porcentaje Pueblo Originario ---------
-# PUEBLO: Total de personas que se consideran pertenecientes a un pueblo indígena u originario
+# PUEBLO: Total de personas que se consideran pertenecientes a un pueblo indigena u originario
 df_puebloOrig <- df_censo %>% 
   group_by(COMUNA) %>% 
   summarise(poblacion=sum(PERSONAS,na.rm=T),
             pueblo=sum(PUEBLO,na.rm=T),
-            perc_puebloOrig=pueblo/poblacion) %>% 
+            perc_puebloOrig=pueblo/poblacion*100) %>% 
   ungroup() %>% 
   left_join(codigos_territoriales, by = c("COMUNA"="codigo_comuna")) %>% 
   rename(codigo_comuna=COMUNA)
@@ -59,7 +59,7 @@ df_material <- df_censo %>%
   group_by(COMUNA) %>% 
   summarise(viv=sum(TOTAL_VIV,na.rm=T),
             mat=sum(MATIRREC,na.rm=T),
-            perc_material_irrecuperable=mat/viv) %>% 
+            perc_material_irrecuperable=mat/viv*100) %>% 
   ungroup() %>% 
   left_join(codigos_territoriales, by = c("COMUNA"="codigo_comuna")) %>% 
   rename(codigo_comuna=COMUNA)

@@ -13,7 +13,7 @@ df_educacion <- df_educacion %>%
   mutate(menor_media=if_else(e6a<8,1,0)) %>% 
   group_by(codigo_comuna,menor_media) %>% 
   summarise(hab=sum(hab,na.rm=T)) %>% 
-  mutate(perc=hab/sum(hab)) %>% 
+  mutate(perc=hab/sum(hab)*100) %>% 
   ungroup() %>% 
   filter(menor_media==1) %>% 
   select(codigo_comuna,perc) %>% 
@@ -33,7 +33,7 @@ df_prevision <- df_prevision %>%
   ungroup() %>% 
   filter(isapre==1) %>% 
   select(codigo_comuna,perc) %>% 
-  mutate(perc=1-perc) %>% 
+  mutate(perc=(1-perc)*100) %>% 
   rename(perc_isapre=perc)
 
 ## AGRUPAR TODO -------

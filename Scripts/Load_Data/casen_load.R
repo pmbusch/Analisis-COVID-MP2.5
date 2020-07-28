@@ -66,7 +66,7 @@ df_ocupacion <- df_casen %>%
   filter(!is.na(o1)) %>% 
   group_by(comuna,o1) %>% 
   summarise(hab=sum(expc,na.rm=T)) %>% 
-  mutate(perc=hab/sum(hab),
+  mutate(perc=hab/sum(hab)*100,
          o1=if_else(o1==1,"Si","No")) %>% 
   ungroup() %>% 
   left_join(codigos_territoriales, by = c("comuna"="codigo_comuna")) %>% 

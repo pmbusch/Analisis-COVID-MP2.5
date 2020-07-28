@@ -31,8 +31,8 @@ df_poblacionZona <- df_poblacionZona %>% group_by(zona, codigo_comuna) %>%
 
 
 df_lena <- left_join(df_poblacionZona, df_lena, by=c("zona")) %>%
-  mutate(consumo_lena_m3=consumo_lena_m3*porc_pob) %>%
-  rename(penetracion_lena=porcentaje_viviendas_lena) %>% 
+  mutate(consumo_lena_m3=consumo_lena_m3*porc_pob,
+         penetracion_lena=porcentaje_viviendas_lena*100) %>%
   select(codigo_comuna, consumo_lena_m3, penetracion_lena)
 
 ## Check: Total debe ser 11,962,058
