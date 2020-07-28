@@ -57,7 +57,8 @@ df_comuna %>% skim()
 df_comuna <- df_comuna %>% 
   mutate(tasa_camas=camas/poblacion*1e5,
          dias_cuarentena=(fecha_muertes-fecha_cuarentena) %>% as.numeric(units="days"),
-         densidad_pob=poblacion/superficie*1e6) %>% 
+         densidad_pob=poblacion/superficie*1e6,
+         perc_letalidad=casos_fallecidos/casos_confirmados*100) %>% 
   select(-fecha_cuarentena, -camas)
 
 # Sin NA
@@ -86,5 +87,7 @@ write.table(df_comuna,"Data/Datos_Comuna.csv",
 cat('sep=; \n',file = "Data/Datos_Modelo.csv")
 write.table(df_modelo,"Data/Datos_Modelo.csv",
             sep=';',row.names = F, append = T)
+
+# save.image(".RData")
 
 ## EoF
