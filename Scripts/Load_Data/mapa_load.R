@@ -4,7 +4,6 @@
 
 
 ## Carga Poblacion --------------
-
 # Usamos libreria de Chilemapas
 df_poblacion <- left_join(censo_2017_comunas, codigos_territoriales)
 df_poblacion %>% names()
@@ -46,5 +45,33 @@ mapa_regiones <- mapa_regiones %>% mutate(
     T ~ "otro") %>% factor(levels = levels_region),
   superficie=st_area(geometry) %>% as.numeric(),
   perimetro=st_length(geometry) %>% as.numeric())
+
+
+## Superficie censal por comuna ----
+# # En proceso 
+# df_pob <- censo_2017_zonas %>%
+#   left_join(mapa_zonas) %>%
+#   left_join(codigos_territoriales) %>% 
+#   mutate(superficie=st_area(geometry) %>% as.numeric(),
+#          perimetro=st_length(geometry) %>% as.numeric())
+# 
+# ## Mucha Poblacion sin NA
+# df_pob %>% group_by(nombre_region) %>%
+#   summarise(count=sum(poblacion)) %>% arrange(desc(count))
+# 
+# # Superficie de manzana censal por comuna
+# df_pob <- df_pob %>% group_by(codigo_comuna) %>% 
+#   summarise(superficie_censal=sum(superficie, na.rm=T)) %>% ungroup() %>% 
+#   left_join(mapa_comuna) %>% 
+#   mutate(perc_censal=superficie_censal/superficie*100)
+
+
+# mapa_zonas %>% 
+#   filter(codigo_region=="13") %>% 
+#   ggplot()+
+#   geom_sf(aes(geometry=geometry))
+# 
+# chilemapas::divisiones_electorales %>% view()
+# divisiones_salud %>% view()
 
 ## EoF
