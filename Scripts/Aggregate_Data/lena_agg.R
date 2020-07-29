@@ -24,6 +24,10 @@ df_poblacionZona <- left_join(censo_2017_comunas, codigos_territoriales) %>%
     codigo_region == "12" ~ "XII"))
 df_poblacionZona$zona %>% unique()
 
+
+df_poblacionRegion <- df_poblacionZona %>% group_by(codigo_region) %>% 
+  summarise(pob=sum(poblacion, na.rm=T)) %>% ungroup()
+  
 df_poblacionZona <- df_poblacionZona %>% group_by(zona, codigo_comuna) %>%
   summarise(pob=sum(poblacion,na.rm=T)) %>%
   mutate(porc_pob=pob/sum(pob)) %>%
@@ -32,8 +36,9 @@ df_poblacionZona <- df_poblacionZona %>% group_by(zona, codigo_comuna) %>%
 
 df_lena <- left_join(df_poblacionZona, df_lena, by=c("zona")) %>%
   mutate(consumo_lena_m3=consumo_lena_m3*porc_pob,
-         penetracion_lena=porcentaje_viviendas_lena*100) %>%
-  select(codigo_comuna, consumo_lena_m3, penetracion_lena)
+         penetracion_lena=porcentaje_viviendas_lena*100,
+         consumo_lena_pp=consumo_lena_m3/pob) %>%
+  select(codigo_comuna, consumo_lena_m3, penetracion_lena, consumo_lena_pp)
 
 ## Check: Total debe ser 11,962,058
 df_lena$consumo_lena_m3 %>% sum()
