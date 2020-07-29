@@ -53,7 +53,7 @@ df_map <- df_avg %>%
   right_join(mapa_comuna)
 
 ggplot(df_map) + 
-  geom_sf(aes(fill = valor, geometry = geometry)) +
+  geom_sf(aes(fill = valor, geometry = geometry), lwd=0.01) +
   scale_fill_viridis_c(name = "Promedio 2016-2019 \n MP2.5 [ug/m3]", 
                        option="B", direction=-1, na.value = "white",
                        limits=c(0,50)) +
@@ -68,7 +68,7 @@ ggsave("Figuras/MapaChileMP25.png",
 # Remueve tmb Lo Barnechea (codigo 13115)
 df_map %>% filter(codigo_provincia=="131" & codigo_comuna!="13115") %>% 
   ggplot() + 
-  geom_sf(aes(fill = valor, geometry = geometry)) +
+  geom_sf(aes(fill = valor, geometry = geometry), lwd=0.5) +
   geom_sf_label(aes(label=nombre_comuna, geometry=geometry))+
   scale_fill_viridis_c(name = "Promedio 2016-2019 \n MP2.5 [ug/m3]", 
                        option="B", direction=-1, na.value = "white",
@@ -84,7 +84,7 @@ ggsave("Figuras/MapaSantiagoMP25.png",
 ## Mapa Zona Sur
 df_map %>% filter(codigo_region %in% c("08","09","10","14","11")) %>% 
   ggplot() + 
-  geom_sf(aes(fill = valor, geometry = geometry)) +
+  geom_sf(aes(fill = valor, geometry = geometry), lwd=0.5) +
   scale_fill_viridis_c(name = "Promedio 2016-2019 \n MP2.5 [ug/m3]", 
                        option="B", direction=-1, na.value = "white",
                        limits=c(0,50)) +
@@ -103,7 +103,7 @@ df_estaciones <- df_conc %>%
   
 
 ggplot(df_estaciones)+
-  geom_sf(data=mapa_regiones,aes(geometry=geometry),fill="white")+
+  geom_sf(data=mapa_regiones,aes(geometry=geometry),fill="white", lwd=0.01)+
   geom_point(aes(longitud, latitud), shape=1, col="red")+
   # geom_text_repel(aes(longitud, latitud, label=site))+
   labs(title = "",x="", y="") + coord_sf(datum = NA, expand = T)+
