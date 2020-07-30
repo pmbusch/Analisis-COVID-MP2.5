@@ -5,33 +5,47 @@
 # Carga datos brutos --------
 # source("Scripts/Load_Data/meteo_scrap.R", encoding = "UTF-8") # Baja los datos
 df <-read_rds("Data/Data_Modelo/Datos_Meteorologia_raw.rsd")
+source("Scripts/00-Funciones.R", encoding = "UTF-8")
 
-## Agregar a nivel comunal ----------------
-## NOTAS:
-# Agregar mas comunas
-
+## Analisis Heating degree
+# theme_set(theme_bw())
+# df %>% filter(tipo=="heating_degree" & year(date)==2019) %>% 
+#   ggplot(aes(date, valor, col=nombre_estacion))+
+#   geom_smooth(aes(col=nombre_estacion),se=F)+
+#   theme(legend.position = "none")+
+#   facet_wrap(~region)
+  
+## Agregar a nivel comunal y promediar por años ----------------
+# Promedio simple: Que va primero: estacion o años??
 df <- df %>% 
   mutate(year=year(date)) %>% 
   filter(year %in% c(2016,2017,2018,2019) &
-           tipo %in% c("tmed", "hr")) %>% 
-  cutData(type="season", hemisphere = "southern") %>% 
-  filter(season %in% c("winter (JJA)","summer (DJF)")) %>% # solo verano e invierno
-  group_by(comuna, estacion, tipo, season) %>% 
-  summarise(valor=mean(valor, na.rm=T)) %>% 
-  ungroup() %>% group_by(comuna, tipo, season) %>% 
+           tipo %in% c("tmed", "hr","heating_degree")) %>%
+  mutate(season=getSeason(date)) %>% 
+  # filter(season %in% c("winter","summer")) %>% # solo verano e invierno
+  group_by(comuna, tipo, season) %>% 
   summarise(valor=mean(valor, na.rm=T)) %>% ungroup() %>% 
-  mutate(season=season %>% str_remove_all(" \\(JJA\\)| \\(DJF\\)"),
-         tipo=paste(tipo, season, sep="_"),
-         season=NULL) %>% 
-  spread(tipo,valor)
+  mutate(tipo=paste(tipo, season, sep="_"),
+         season=NULL)
+ 
+# Expandir datos
+df <- df %>% spread(tipo,valor)
 
-# Agregar codigos comunales
+
+# Agregar codigos comunales ---------
+df$comuna %>% unique() %>% length()
 df <- df %>% 
   mutate(nombre_comuna=comuna %>% 
-           str_replace_all("Viña del Mar","Vina del Mar")) %>%
+           str_replace_all("Viña del Mar","Vina del Mar") %>% 
+           str_replace_all("Purrangue","Purranque") %>% 
+           str_replace_all("San Bernando","San Bernardo") %>% 
+           str_replace_all("Cabo de Hornos \\(Ex-Navarino\\)","Cabo de Hornos") %>% 
+           str_replace_all("de Zapallar, V region","Zapallar") %>% 
+           str_replace_all("de Retiro, VII region","Retiro")) %>%
   left_join(codigos_territoriales %>% select(codigo_comuna, nombre_comuna),
             by=c("nombre_comuna")) %>% 
   select(-comuna, -nombre_comuna)
+  # select(comuna, nombre_comuna, codigo_comuna)
 
 
 saveRDS(df, "Data/Data_Modelo/Datos_Meteorologia.rsd")

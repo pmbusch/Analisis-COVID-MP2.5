@@ -10,7 +10,12 @@ year_start <- 2016
 year_end <- 2020
 
 #Lee informacion de estaciones
-estaciones = read_excel("Data/Estaciones_Frecuentes_MeteoChile.xlsx")
+# estaciones = read_excel("Data/Estaciones_Frecuentes_MeteoChile.xlsx")
+estaciones = read_delim("Data/Data_Original/Estaciones_Meteo.csv",
+                        delim = ";", skip = 1, na = c("NA"),
+                        col_types = "dccddddddcccc",
+                        locale = locale(encoding = "windows-1252"))
+
 
 #Variables auxiliares
 tipo_meteo <- c('temperaturaMediaAnual','temperaturaMinimaAnual',
@@ -26,9 +31,9 @@ for (year in year_start:year_end){
   cat(year, "\n")
   # Por estacion
   for (i in 1:nrow(estaciones)){
+    cat(i, " ")
     #Estación a scrapear
-    est <- estaciones[i,] %>% pull(Nacional)
-    
+    est <- estaciones[i,] %>% pull(codigo_nacional)
     # Por parametro
     for (tipo in tipo_meteo){
       tryCatch({
@@ -50,9 +55,14 @@ for (year in year_start:year_end){
         ## Datos de la estacion
         df <- df %>% mutate(tipo=tipo, 
                             estacion=est,
-                            comuna=estaciones[i,] %>% pull(Comuna),
-                            provincia=estaciones[i,] %>% pull(Provincia),
-                            region=estaciones[i,] %>% pull(Region))
+                            comuna=estaciones[i,] %>% pull(comuna),
+                            provincia=estaciones[i,] %>% pull(provincia),
+                            region=estaciones[i,] %>% pull(region),
+                            nombre_estacion=estaciones[i,] %>% pull(nombre),
+                            propietario=estaciones[i,] %>% pull(propietario),
+                            latitud=estaciones[i,] %>% pull(latitud),
+                            longitud=estaciones[i,] %>% pull(longitud),
+                            altura_msnm=estaciones[i,] %>% pull(altura_metros))
              
         ## Date
         df <- df %>% mutate(year=year,
@@ -76,14 +86,55 @@ df_meteo <- df_meteo %>%
     tipo=="temperaturaMinimaAnual" ~ "tmin",
     tipo=="temperaturaMaximaAnual" ~ "tmax",
     tipo=="humedadAnual" ~ "hr",
-    T ~ "s/i"),
-    unidad="celsius")
+    T ~ "s/i"))
 
-# Guardar como objeto de R
+
+## Features: Heating Degree -------
+# https://en.wikipedia.org/wiki/Heating_degree_day
+df <- df_meteo %>% 
+  filter(tipo %in% c("tmin","tmax")) %>%
+  spread(tipo, valor) %>% 
+  mutate(heating_degree=18-(tmax-tmin)/2,
+         heating_degree=if_else(heating_degree>0,heating_degree, 0),
+         tipo="heating_degree") %>% 
+  rename(valor=heating_degree) %>% 
+  select(-tmin,-tmax)
+df_meteo <- df_meteo %>% rbind(df)
+rm(df)
+
+# Guardar como objeto de R ------
 saveRDS(df_meteo, "Data/Data_Modelo/Datos_Meteorologia_raw.rsd")
 
 # Limpio WS
 rm(estaciones, tipo_meteo, url, year_start, year_end,
-   web, i, year, est, tipo, df)
+   web, i, year, est, tipo)
+
+## EoF
+
+## Ubicacion comunal de las estaciones -------
+# DEPREACIADO
+# 
+# library(sp)
+# df_sp <- SpatialPointsDataFrame(estaciones %>% select(longitud, latitud),
+#                                 data=estaciones,
+#                                 proj4string = CRS("+proj=longlat +ellps=GRS80 +no_defs"))
+# plot(df_sp)
+# 
+# comunas <- mapa_comunas$geometry %>% as_Spatial()
+# plot(comunas)
+# 
+# # indices
+# df <- over(df_sp, comunas)
+# comuna_aux <- mapa_comunas %>% rowid_to_column()
+# df_est <- cbind(estaciones, df) %>% rename(rowid=df) %>% 
+#   left_join(comuna_aux) %>% 
+#   left_join(codigos_territoriales)
+# df_est %>% names()
+# df_est %>% select(codigo_nacional, nombre, latitud, longitud,
+#                   region_meteo, nombre_comuna, nombre_region) %>% 
+#   view()
+# df_est %>% group_by(region_meteo, nombre_region) %>% 
+#   summarise(count=n()) %>% arrange(desc(count)) %>% view()
+# mapa_comunas[323,]
 
 ## EoF

@@ -23,7 +23,7 @@ n <- 1
 
 # Recorro cada estacion para obtener informacion
 for (codigo in estaciones$codigo_nacional){
-  cat(paste(codigo,n,"\n",sep=" "))
+  cat(codigo,n,"\n",sep=" ")
   n <- n+1
   web <- read_html(sprintf(url, codigo))
   
