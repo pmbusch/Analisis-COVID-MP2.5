@@ -44,6 +44,12 @@ df_lena <- left_join(df_poblacionZona, df_lena, by=c("zona")) %>%
 df_lena$consumo_lena_m3 %>% sum()
 
 # Limpio WS
-rm(df_poblacionZona)
+rm(df_poblacionZona, df_poblacionRegion)
 
+## Energia lena CDT ------------
+# Zonas termicas a region
+
+
+
+rm(df_energia_lena)
 ## EoF
