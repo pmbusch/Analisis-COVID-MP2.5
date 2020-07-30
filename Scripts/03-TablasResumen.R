@@ -13,7 +13,8 @@ df <- df_comuna %>%
          tasa_contagios, perc_letalidad,
          dias_primerContagio, dias_cuarentena, tasa_camas,
          ingresoAutonomo_media, ingresoAutonomo_mediana, perc_isapre, 
-         perc_menor_media, perc_ocupado, penetracion_lena, tasa_mortalidad_all) %>% 
+         perc_menor_media, perc_ocupado, penetracion_lena, tasa_mortalidad_all,
+         tmed_summer, tmed_winter, hr_summer, hr_winter) %>% 
   rename(
     `Tasa Mortalidad COVID [por 100mil]`=tasa_mortalidad,
     `MP2.5 [ug/m3]`=mp25,
@@ -36,7 +37,11 @@ df <- df_comuna %>%
     `% Educación menor a media`=perc_menor_media,
     `% Ocupado laboral`=perc_ocupado,
     `% Penetracion leña`=penetracion_lena,
-    `Tasa Mortalidad total [por 100mil]`=tasa_mortalidad_all
+    `Tasa Mortalidad total [por 100mil]`=tasa_mortalidad_all,
+    `Promedio Temperatura Verano [°C]`=tmed_summer, 
+    `Promedio Temperatura Invierno [°C]`=tmed_winter,
+    `Promedio Humedad relativa Verano [%]`=hr_summer,
+    `Promedio Humedad relativa Invierno [%]`=hr_winter,
   )
 
 # separo por la condicion de si tiene o no estacion
@@ -65,8 +70,8 @@ df_skim %>%
   autofit(add_w = 0.1, add_h = 0.3) %>%
   align(j=1, align = "left", part="all") %>% 
   align(j=2, align = "center", part="all") %>% 
-  footnote(j=2:4, value=as_paragraph(foot_note), part="header", inline=T) %>% 
-  print(preview="pptx")
+  footnote(j=2:4, value=as_paragraph(foot_note), part="header", inline=T)
+  # print(preview="pptx")
 
 rm(foot_note,df_skim, df_sep)
 
@@ -84,8 +89,8 @@ df_skim %>%
                 na_str="s/i") %>%
   bold(bold=T, part="header") %>% bold(j=1, bold=T) %>% 
   autofit(add_w = 0.1, add_h = 0.3) %>%
-  align(j=1, align = "left", part="all") %>% 
-  print(preview="pptx")
+  align(j=1, align = "left", part="all")
+  # print(preview="pptx")
 
 rm(df_skim, df)
   
