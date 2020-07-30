@@ -7,14 +7,6 @@
 df <-read_rds("Data/Data_Modelo/Datos_Meteorologia_raw.rsd")
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
 
-## Analisis Heating degree
-# theme_set(theme_bw())
-# df %>% filter(tipo=="heating_degree" & year(date)==2019) %>% 
-#   ggplot(aes(date, valor, col=nombre_estacion))+
-#   geom_smooth(aes(col=nombre_estacion),se=F)+
-#   theme(legend.position = "none")+
-#   facet_wrap(~region)
-  
 ## Agregar a nivel comunal y promediar por años ----------------
 # Promedio simple: Que va primero: estacion o años??
 df <- df %>% 
