@@ -45,6 +45,6 @@ El proyecto se subdivide en las siguientes secciones:
 	* Ocupado: *o1*
 	* Factor expansión: *expc*
 * Consumo de Leña (2018): 
-	* CDT 2015. "Medición del consumo nacional de leña y otros combustibles sólidos derivados de la madera”. Tabla 136.
+	* CDT (2015). "Medición del consumo nacional de leña y otros combustibles sólidos derivados de la madera”. Tabla 136.
 	* CDT, In-Data SpA. (2019). Usos de energía de los Hogares en Chile 2018. Santiago.
 		* Base de datos disponible en: https://www.energia.gob.cl/documentos/bbdd-estudio-caracterizacion-residencial-2018
