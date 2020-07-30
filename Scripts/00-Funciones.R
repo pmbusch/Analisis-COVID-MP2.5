@@ -38,3 +38,27 @@ cuartilHora <- function(x){
   else{retVal='Hora: 18-24'}
   return(retVal)
 }
+
+## Fuente: https://stackoverflow.com/questions/9500114/find-which-season-a-particular-date-belongs-to
+# https://www.estacionesdelano.com/chile/
+getSeason <- function(dat) {
+  stopifnot(class(dat) == "Date")
+  scalarCheck <- function(dat) {
+    m <- month(dat)      
+    d <- day(dat)        
+    if ((m == 9 & d >= 23) | (m == 10) | (m == 11) | (m == 12 & d < 21)) {
+      r <- 1
+      } else if ((m == 12 & d >= 21) | (m == 1) | (m == 2) | (m == 3 & d < 21)) {
+        r <- 2
+        } else if ((m == 3 & d >= 21) | (m == 4) | (m == 5) | (m == 6 & d < 21))
+          {
+          r <- 3
+          } else {
+            r <- 4
+            }
+    r
+    }
+    res <- sapply(dat, scalarCheck)
+    res <- ordered(res, labels=c("spring", "summer", "fall", "winter"))
+    invisible(res)
+}
