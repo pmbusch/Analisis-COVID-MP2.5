@@ -3,6 +3,7 @@
 ## PBH Julio 2020
 
 theme_set(theme_bw())
+file_name <- "Scripts/Analisis_Exploratorios/Figuras/SINCA/%s.png"
 
 # Carga datos brutos y Mapa --------
 df_conc <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
@@ -37,7 +38,7 @@ df_avg %>%
   theme(axis.line.y = element_blank(), axis.ticks.y = element_blank(),
         panel.grid.major.y = element_blank())
 
-ggsave("Figuras/MP25ChileRegion.png", 
+ggsave(sprintf(file_name,"MP25ChileRegion"),
        last_plot(),dpi=600,
        width = 14.87, height = 9.30, units = "in")
 
@@ -60,7 +61,7 @@ ggplot(df_map) +
   labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
   theme_minimal(base_size = 8)
 
-ggsave("Figuras/MapaChileMP25.png", 
+ggsave(sprintf(file_name,"MapaChileMP25"),
        last_plot(),dpi=600,
        width = 14.87, height = 9.30, units = "in")
 
@@ -77,7 +78,7 @@ df_map %>% filter(codigo_provincia=="131" & codigo_comuna!="13115") %>%
   theme_minimal(base_size = 8)
   # theme(legend.position = "none")
 
-ggsave("Figuras/MapaSantiagoMP25.png", 
+ggsave(sprintf(file_name,"MapaSantiagoMP25"),
        last_plot(),dpi=600,
        width = 14.87, height = 9.30, units = "in")
 
@@ -91,7 +92,7 @@ df_map %>% filter(codigo_region %in% c("08","09","10","14","11")) %>%
   labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
   theme_minimal(base_size = 8)
 
-ggsave("Figuras/MapaSurMP25.png", 
+ggsave(sprintf(file_name,"MapaSurMP25"),
        last_plot(),dpi=600,
        width = 14.87, height = 9.30, units = "in")
 
@@ -109,7 +110,7 @@ ggplot(df_estaciones)+
   labs(title = "",x="", y="") + coord_sf(datum = NA, expand = T)+
   theme_minimal(base_size = 13)
 
-ggsave("Figuras/MapaEstacionesAire.png", 
+ggsave(sprintf(file_name,"MapaEstacionesAire"),
        last_plot(),dpi=600,
        width = 14.87, height = 9.30, units = "in")
 

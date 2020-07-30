@@ -3,6 +3,7 @@
 ## PBH Julio 2020
 
 theme_set(theme_bw())
+file_name <- "Scripts/Analisis_Exploratorios/Figuras/COVID/%s.png"
 
 # Carga datos brutos --------
 source("Scripts/Load_Data/covidMuertes_load.R", encoding = "UTF-8")
@@ -18,7 +19,7 @@ df_muertes %>% left_join(mapa_comuna) %>%
   labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
   theme_minimal(base_size = 8)
 
-ggsave("Figuras/MapaChileCOVID.png", 
+ggsave(sprintf(file_name,"MapaChileCOVID"),
        last_plot(),dpi=600,
        width = 14.87, height = 9.30, units = "in")
 
@@ -37,7 +38,7 @@ df_muertes %>% left_join(mapa_comuna) %>%
   theme_minimal(base_size = 8)
   # theme(legend.position = "none")
 
-ggsave("Figuras/MapaSantiagoCOVID.png", 
+ggsave(sprintf(file_name,"MapaSantiagoCOVID"),
        last_plot(),dpi=600,
        width = 14.87, height = 9.30, units = "in")
 
@@ -52,7 +53,7 @@ df_muertes %>% left_join(mapa_comuna) %>%
   labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
   theme_minimal(base_size = 8)
 
-ggsave("Figuras/MapaSurCOVID.png", 
+ggsave(sprintf(file_name,"MapaSurCOVID"),
        last_plot(),dpi=600,
        width = 14.87, height = 9.30, units = "in")
   
@@ -81,7 +82,7 @@ df_muertes_tiempo %>%
   labs(x="", y="")+
   ggtitle("Tasa mortalidad COVID [por 100mil]")+theme(plot.title = element_text(hjust = 0.5))
 
-ggsave("Figuras/MuertesSantiago.png", 
+ggsave(sprintf(file_name,"MuertesSantiago"),
        last_plot(),dpi=600,
        width = 14.87, height = 9.30, units = "in")
 

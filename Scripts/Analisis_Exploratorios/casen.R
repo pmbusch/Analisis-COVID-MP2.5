@@ -3,6 +3,8 @@
 ## PBH Julio 2020
 
 theme_set(theme_bw())
+file_name <- "Scripts/Analisis_Exploratorios/Figuras/casen/%s.png"
+
 # Carga datos brutos y Mapa --------
 source("Scripts/Load_Data/casen_load.R", encoding = "UTF-8") 
 source("Scripts/Aggregate_Data/poblacion_agg.R", encoding = "UTF-8")
@@ -19,7 +21,7 @@ df_ingreso %>%
   labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
   theme_minimal(base_size = 8)
 
-ggsave("Figuras/MapaChileIngresos.png", 
+ggsave(sprintf(file_name,"MapaChileIngresos"),
        last_plot(),dpi=600,
        width = 14.87, height = 9.30, units = "in")
 
@@ -38,7 +40,7 @@ df_ingreso %>%
   labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
   theme_minimal(base_size = 8)
 
-ggsave("Figuras/MapaSantiagoIngresos.png", 
+ggsave(sprintf(file_name,"MapaSantiagoIngresos"),
        last_plot(),dpi=600,
        width = 14.87, height = 9.30, units = "in")
 
