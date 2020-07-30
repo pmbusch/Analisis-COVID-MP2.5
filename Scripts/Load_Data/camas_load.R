@@ -5,7 +5,7 @@
 
 
 ## Camas Publicas -------------
-df_camas_pub <- read_excel("Data/Data_Modelo/Establecimientos_ChileDEIS_MINSAL(10-07-2020).xlsx",
+df_camas_pub <- read_excel("Data/Data_Original/Establecimientos_ChileDEIS_MINSAL(10-07-2020).xlsx",
                        sheet = "Dotación de Camas Públicas")
 
 # linea 2 tiene los colnames
@@ -24,7 +24,7 @@ df_camas_pub <- df_camas_pub %>% filter(!is.na(codigo_establecimiento)) %>%
 df_camas_pub$total %>% sum()
 
 ## Camas Privadas -------------
-df_camas_priv <- read_excel("Data/Data_Modelo/Establecimientos_ChileDEIS_MINSAL(10-07-2020).xlsx",
+df_camas_priv <- read_excel("Data/Data_Original/Establecimientos_ChileDEIS_MINSAL(10-07-2020).xlsx",
                            sheet = "Dotación de Camas Privadas")
 
 # linea 2 tiene los colnames
@@ -45,7 +45,7 @@ df_camas_priv$total %>% sum()
 
 ## Codigos Establecimientos -----------
 # Para determinar comuna del establecimiento
-df_establecimiento <- read_excel("Data/Data_Modelo/Establecimientos_ChileDEIS_MINSAL(10-07-2020).xlsx",
+df_establecimiento <- read_excel("Data/Data_Original/Establecimientos_ChileDEIS_MINSAL(10-07-2020).xlsx",
                             sheet = "Establecimientos Vigentes")
 
 # linea 1 tiene los colnames

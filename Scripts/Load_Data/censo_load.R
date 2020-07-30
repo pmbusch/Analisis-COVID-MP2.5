@@ -3,7 +3,7 @@
 ## PBH Julio 2020
 
 ## Lectura CENSO -------------
-df_censo <- read_delim("Data/Data_Modelo/Censo2017_16R_ManzanaEntidad_CSV/Censo2017_Manzanas.csv",
+df_censo <- read_delim("Data/Data_Original/Censo2017_16R_ManzanaEntidad_CSV/Censo2017_Manzanas.csv",
                        delim = ";", na = c("NA","*"),
                        col_types = "cccccccccddddddddddddddddddddddddddddddddddddddddddddddcccc",
                        locale = locale(encoding = "windows-1252"))
@@ -70,7 +70,7 @@ df_material$perc_material_irrecuperable %>% range()
 # P03B: Material en la cubierta del techo
 # P03C: Material de construcción del piso
 ## NO UTILIZADO
-# df_codigoMaterial <- read_excel("Data/Data Modelo/Censo2017_16R_ManzanaEntidad_CSV/Codigo_Material.xlsx")
+# df_codigoMaterial <- read_excel("Data/Data_Original/Censo2017_16R_ManzanaEntidad_CSV/Codigo_Material.xlsx")
 # df_material <- df_censo %>% 
 #   select(COMUNA,P03A_1, P03A_2, P03A_3, P03A_4, P03A_5, P03A_6, P03B_1, 
 #          P03B_2, P03B_3, P03B_4, P03B_5, P03B_6, P03B_7, P03C_1, P03C_2, 

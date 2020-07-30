@@ -15,7 +15,7 @@ source('Scripts/Load_Data/sinca_funcion_scrap.R')
 ## Carga Datos de las estaciones -------------
 # Tipo de las variables: c character, d double, D date
 cols_type <- "ccclccccdddccccDDccDccccclcccccc"
-df_estaciones <- read_delim("Data/DatosEstacioneSINCA.csv", 
+df_estaciones <- read_delim("Data/Data_Original/DatosEstacioneSINCA.csv", 
                             delim = ";", skip = 1, na = c("NA"),
                             col_types = cols_type,
                             locale = locale(encoding = "windows-1252"))

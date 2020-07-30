@@ -80,12 +80,12 @@ df_modelo <- df_modelo %>%
 
 
 ## Guardar datos
-cat('sep=; \n',file = "Data/Datos_Comuna.csv")
-write.table(df_comuna,"Data/Datos_Comuna.csv",
+cat('sep=; \n',file = "Data/Data_Modelo/Datos_Comuna.csv")
+write.table(df_comuna,"Data/Data_Modelo/Datos_Comuna.csv",
             sep=';',row.names = F, append = T)
 
-cat('sep=; \n',file = "Data/Datos_Modelo.csv")
-write.table(df_modelo,"Data/Datos_Modelo.csv",
+cat('sep=; \n',file = "Data/Data_Modelo/Datos_Modelo.csv")
+write.table(df_modelo,"Data/Data_Modelo/Datos_Modelo.csv",
             sep=';',row.names = F, append = T)
 
 # save.image(".RData")

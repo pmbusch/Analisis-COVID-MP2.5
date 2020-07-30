@@ -123,8 +123,8 @@ df_tabla %>% tail(17) %>%
 rm(df_tabla)
 comunas_mp <- df_modelo %>% select(codigo_comuna,nombre_comuna)
 
-cat('sep=; \n',file = "Data/Comunas_MP.csv")
-write.table(comunas_mp,"Data/Comunas_MP.csv",
+cat('sep=; \n',file = "Data/Data_Modelo/Comunas_MP.csv")
+write.table(comunas_mp,"Data/Data_Modelo/Comunas_MP.csv",
             sep=';',row.names = F, append = T)
 
 ## EoF
