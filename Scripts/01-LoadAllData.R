@@ -81,6 +81,7 @@ write.table(df_modelo,"Data/Data_Modelo/Datos_Modelo.csv",
             sep=';',row.names = F, append = T)
 
 saveRDS(df_modelo, "Data/Data_Modelo/Datos_Modelo.rsd")
+save.image(".RData")
 
 # # Sin NA
 # df_modelo <- df_modelo %>% filter(!is.na(mp25))

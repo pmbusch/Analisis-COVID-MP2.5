@@ -2,7 +2,6 @@
 ## Tablas Resumen Info
 ## PBH Julio 2020
 
-
 # Tablas Resumen general Promedio (sd) ---------------
 df_modelo %>% names()
 df <- df_modelo %>% 
@@ -11,7 +10,8 @@ df <- df_modelo %>%
          tasa_contagios, perc_letalidad,
          dias_primerContagio, dias_cuarentena, tasa_camas,
          ingresoAutonomo_media, ingresoAutonomo_mediana, perc_isapre, 
-         perc_menor_media, perc_ocupado, penetracion_lena, tasa_mortalidad_all,
+         perc_menor_media, perc_ocupado, penetracion_lena, cons_lena_calefactor_pp,
+         cons_lena_cocina_pp,tasa_mortalidad_all,
          tmed_summer, tmed_winter, hr_summer, hr_winter) %>% 
   rename(
     `Tasa Mortalidad COVID [por 100mil]`=tasa_mortalidad,
@@ -35,6 +35,8 @@ df <- df_modelo %>%
     `% Educación menor a media`=perc_menor_media,
     `% Ocupado laboral`=perc_ocupado,
     `% Penetracion leña`=penetracion_lena,
+    `Consumo leña calefactor [kWh per cápita]`=cons_lena_calefactor_pp,
+    `Consumo leña cocina [kWh per cápita]`=cons_lena_cocina_pp,
     `Tasa Mortalidad total [por 100mil]`=tasa_mortalidad_all,
     `Promedio Temperatura Verano [°C]`=tmed_summer, 
     `Promedio Temperatura Invierno [°C]`=tmed_winter,
