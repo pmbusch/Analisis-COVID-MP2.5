@@ -4,11 +4,11 @@
 
 theme_set(theme_bw())
 file_name <- "Scripts/Analisis_Exploratorios/Figuras/SINCA/%s.png"
+source("Scripts/Analisis_Exploratorios/f_figuras.R", encoding = "UTF-8")
+
 
 # Carga datos brutos y Mapa --------
 df_conc <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
-source("Scripts/Aggregate_Data/poblacion_agg.R", encoding = "UTF-8")
-source("Scripts/00-Funciones.R", encoding = "UTF-8")
 
 df_conc <- df_conc %>% mutate(region=factor(region, levels_region)) %>% 
   filter(pollutant=="mp2.5")
@@ -53,48 +53,19 @@ df_map <- df_avg %>%
   left_join(codigos_territoriales,by=c("nombre_comuna")) %>% 
   right_join(mapa_comuna)
 
-ggplot(df_map) + 
-  geom_sf(aes(fill = valor, geometry = geometry), lwd=0.01) +
-  scale_fill_viridis_c(name = "Promedio 2016-2019 \n MP2.5 [ug/m3]", 
-                       option="B", direction=-1, na.value = "white",
-                       limits=c(0,50)) +
-  labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
-  theme_minimal(base_size = 8)
-
-ggsave(sprintf(file_name,"MapaChileMP25"),
-       last_plot(),dpi=600,
-       width = 14.87, height = 9.30, units = "in")
-
-## Mapa solo Santiago
-# Remueve tmb Lo Barnechea (codigo 13115)
+# Chile
+fig_mapa(df_map, valor, lwd=0.01,
+         limites=c(0,50), titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]",
+         fileName=sprintf(file_name,"MapaChileMP25"))
+# Santiago (remuevo Lo Barnechea)
 df_map %>% filter(codigo_provincia=="131" & codigo_comuna!="13115") %>% 
-  ggplot() + 
-  geom_sf(aes(fill = valor, geometry = geometry), lwd=0.5) +
-  geom_sf_label(aes(label=nombre_comuna, geometry=geometry))+
-  scale_fill_viridis_c(name = "Promedio 2016-2019 \n MP2.5 [ug/m3]", 
-                       option="B", direction=-1, na.value = "white",
-                       limits=c(0,50)) +
-  labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
-  theme_minimal(base_size = 8)
-  # theme(legend.position = "none")
-
-ggsave(sprintf(file_name,"MapaSantiagoMP25"),
-       last_plot(),dpi=600,
-       width = 14.87, height = 9.30, units = "in")
-
-## Mapa Zona Sur
+  fig_mapa(valor,limites = c(0,50), titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]",
+           fileName = sprintf(file_name,"MapaSantiagoMP25"))
+# Sur
 df_map %>% filter(codigo_region %in% c("08","09","10","14","11")) %>% 
-  ggplot() + 
-  geom_sf(aes(fill = valor, geometry = geometry), lwd=0.5) +
-  scale_fill_viridis_c(name = "Promedio 2016-2019 \n MP2.5 [ug/m3]", 
-                       option="B", direction=-1, na.value = "white",
-                       limits=c(0,50)) +
-  labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
-  theme_minimal(base_size = 8)
+  fig_mapa(valor,limites = c(0,50), titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]",
+           fileName = sprintf(file_name,"MapaSurMP25"))
 
-ggsave(sprintf(file_name,"MapaSurMP25"),
-       last_plot(),dpi=600,
-       width = 14.87, height = 9.30, units = "in")
 
 ### Ubicacion Estaciones -----------
 df_estaciones <- df_conc %>% 

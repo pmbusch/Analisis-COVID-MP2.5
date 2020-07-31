@@ -2,13 +2,12 @@
 ## Meteorologia
 ## PBH Julio 2020
 
-
 theme_set(theme_bw())
 file_name <- "Scripts/Analisis_Exploratorios/Figuras/meteo/%s.png"
+source("Scripts/Analisis_Exploratorios/f_figuras.R", encoding = "UTF-8")
 
 # Carga datos brutos y Mapa --------
 df_meteo <- read_rds("Data/Data_Modelo/Datos_Meteorologia_raw.rsd")
-source("Scripts/Aggregate_Data/poblacion_agg.R", encoding = "UTF-8")
 
 
 # Agregar codigos comunales ---------
@@ -35,7 +34,6 @@ df_avg <- df_meteo %>%
 
 
 ## MAPAS ------------------
-# Chile
 df_map <- df_avg %>% 
   filter(tipo %in% c("tmed","tmin","tmax")) %>%
   # filter(tipo %in% c("heating_degree")) %>%
@@ -43,6 +41,11 @@ df_map <- df_avg %>%
   summarise(valor=mean(valor, na.rm=T)) %>% ungroup() %>% 
   right_join(mapa_comuna) %>% 
   filter(!is.na(tipo))
+
+# Chile
+df_map %>% fig_mapa(valor, lwd=0.01, limites= c(-5,35),
+                    titulo="Promedio 2016-2019 \n [°C]")
+
 
 ggplot(df_map) + 
   geom_sf(aes(fill = valor, geometry = geometry), lwd=0.01) +
