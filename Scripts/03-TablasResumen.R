@@ -4,10 +4,8 @@
 
 
 # Tablas Resumen general Promedio (sd) ---------------
-
-df_comuna %>% names()
-
-df <- df_comuna %>% 
+df_modelo %>% names()
+df <- df_modelo %>% 
   select(tasa_mortalidad, mp25, poblacion, `15-44`, `45-64`, `65+`,perc_mujer, 
          densidad_pob, perc_rural, perc_material_irrecuperable, 
          tasa_contagios, perc_letalidad,
@@ -59,8 +57,9 @@ df_skim <- df %>% skim() %>%
   select(skim_variable, indicador) %>% 
   left_join(df_sep)
 
-foot_note <- paste("n:",c(nrow(df_comuna),nrow(df_comuna)-nrow(df_modelo),
-                          nrow(df_modelo)),"comunas",sep=" ")
+n_mp25 <- df_modelo %>% filter(!is.na(mp25)) %>% nrow()
+foot_note <- paste("n:",c(nrow(df_modelo),nrow(df_modelo)-n_mp25,
+                          n_mp25),"comunas",sep=" ")
 
 df_skim %>% 
   rename(Variable=skim_variable, Total=indicador, 
@@ -73,14 +72,19 @@ df_skim %>%
   footnote(j=2:4, value=as_paragraph(foot_note), part="header", inline=T)
   # print(preview="pptx")
 
-rm(foot_note,df_skim, df_sep)
+rm(foot_note,df_skim, df_sep, n_mp25)
 
 ## Tablas Rango -------------
+# Incluyo coeficiente de variacion: ayuda a ver que variables tienen mayor variabilidad entre comunas
+# Nota: Solo es valido para variables con escala de partida en 0 (ratios). T° no aplica
+# https://en.wikipedia.org/wiki/Coefficient_of_variation
 df_skim <- df %>% filter(!is.na(`MP2.5 [ug/m3]`)) %>% skim() %>% 
-  select(skim_variable, numeric.mean, numeric.sd,
+  mutate(cv=numeric.sd/numeric.mean) %>% 
+  select(skim_variable, numeric.mean, numeric.sd, cv,
          numeric.p0, numeric.p50, numeric.p100) %>% 
   rename(Variable=skim_variable,
          Promedio=numeric.mean,Desv=numeric.sd,
+         `C.V.`=cv,
          Min=numeric.p0, Mediana=numeric.p50, Max=numeric.p100)
 
 df_skim %>% 
@@ -89,7 +93,9 @@ df_skim %>%
                 na_str="s/i") %>%
   bold(bold=T, part="header") %>% bold(j=1, bold=T) %>% 
   autofit(add_w = 0.1, add_h = 0.3) %>%
-  align(j=1, align = "left", part="all")
+  align(j=1, align = "left", part="all") %>% 
+  footnote(j=4, value=as_paragraph("Coeficiente Variación"), 
+           part="header", inline=T)
   # print(preview="pptx")
 
 rm(df_skim, df)
