@@ -48,8 +48,43 @@ rm(df_poblacionZona, df_poblacionRegion)
 
 ## Energia lena CDT ------------
 # Zonas termicas a region
+df_zonificacion <- read_excel("Data/Data_Original/Zonificacion_Termica.xlsx") %>% 
+  mutate(zt=as.numeric(zona_principal),
+         codigo_comuna=paste(if_else(str_length(codigo_comuna)==4,"0",""),
+                             codigo_comuna, sep=""))
+# Agrego datos de poblacion por zona
+df_zona <- df_zonificacion %>% 
+  left_join(censo_2017_comunas, by=c("codigo_comuna")) %>% 
+  group_by(zt) %>% 
+  summarise(poblacion=sum(poblacion,na.rm=T)) %>% ungroup()
 
+## Obtengo datos de interes
+# Por el momento: Leña, y Calefactores, Cocina_Horno
+df_energia_lena$uso %>% unique()
+df_energia_lena$energetico %>% unique()
+df <- df_energia_lena %>% 
+  filter(uso %in% c("calefactores","cocina + horno")&energetico %in% c("leña")) %>% 
+  mutate(uso=uso %>% str_remove_all(" |\\+"),
+         tipo=paste(uso,energetico,sep="_")) %>% 
+  group_by(zt, tipo) %>% 
+  summarise(consumo_kWh=sum(valor,na.rm=T)) %>% ungroup()
 
+df <- left_join(df, df_zona) %>% 
+  mutate(cons_energia_pp=consumo_kWh/poblacion)
 
-rm(df_energia_lena)
+df %>% group_by(tipo) %>% summarise(count=sum(poblacion,na.m=T))
+
+# Expando
+df <- df %>% select(zt, tipo, cons_energia_pp) %>% 
+  spread(tipo, cons_energia_pp) %>% 
+  rename(cons_lena_calefactor_pp=calefactores_leña,
+         cons_lena_cocina_pp=cocinahorno_leña)
+
+df_zonificacion <- df_zonificacion %>% select(zt, codigo_comuna) %>% 
+  left_join(df)
+
+# Junto a df lena
+df_lena <- left_join(df_lena, df_zonificacion %>% select(-zt))
+
+rm(df_energia_lena, df, df_zonificacion, df_zona)
 ## EoF
