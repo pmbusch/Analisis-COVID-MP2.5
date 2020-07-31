@@ -66,7 +66,6 @@ df_map %>% filter(codigo_region %in% c("08","09","10","14","11")) %>%
   fig_mapa(valor,limites = c(0,50), titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]",
            fileName = sprintf(file_name,"MapaSurMP25"))
 
-
 ### Ubicacion Estaciones -----------
 df_estaciones <- df_conc %>% 
   filter(pollutant=="mp2.5") %>% 

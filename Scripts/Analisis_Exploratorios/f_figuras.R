@@ -13,11 +13,12 @@ source("Scripts/00-Funciones.R", encoding = "UTF-8")
 # Funcion para graficar mediante colores una variable y guardarla
 # Utiliza como base un df unido a la variable mapa_comuna
 # Se puede filtar antes el df para graficar una zona geografica exclusiva
-# Recibe dataframe, valor a graficar, escala, titulo leyenda, guardar
-fig_mapa <- function(df, val, limites=NULL, titulo="", fileName=NULL, lwd=0.5){
-  p <- df %>% 
-    ggplot() + 
+# Recibe dataframe, valor a graficar, facets, escala, titulo leyenda, guardar
+fig_mapa <- function(df, val, facets=NULL, limites=NULL, 
+                     titulo="", fileName=NULL, lwd=0.5){
+  p <- ggplot(df) +
     geom_sf(aes(fill = {{val}}, geometry = geometry), lwd=lwd) +
+    facet_grid({{facets}})+
     scale_fill_viridis_c(name = titulo, 
                          option="B", direction=-1, na.value = "white",
                          limits=limites,
