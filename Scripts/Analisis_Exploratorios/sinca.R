@@ -38,9 +38,8 @@ df_avg %>%
   theme(axis.line.y = element_blank(), axis.ticks.y = element_blank(),
         panel.grid.major.y = element_blank())
 
-ggsave(sprintf(file_name,"MP25ChileRegion"),
-       last_plot(),dpi=600,
-       width = 14.87, height = 9.30, units = "in")
+f_savePlot(last_plot(), sprintf(file_name,"MP25ChileRegion"))
+
 
 ## Promedio 2016-2019: Mapa Comunas -----------
 # Agregar codigos comunales
@@ -59,8 +58,10 @@ fig_mapa(df_map, valor, lwd=0.01,
          fileName=sprintf(file_name,"MapaChileMP25"))
 # Santiago (remuevo Lo Barnechea)
 df_map %>% filter(codigo_provincia=="131" & codigo_comuna!="13115") %>% 
-  fig_mapa(valor,limites = c(0,50), titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]",
-           fileName = sprintf(file_name,"MapaSantiagoMP25"))
+  fig_mapa(valor,limites = c(0,50), titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]")+
+  geom_sf_label(aes(label=nombre_comuna, geometry=geometry))
+f_savePlot(last_plot(), sprintf(file_name,"MapaSantiagoMP25"))
+  
 # Sur
 df_map %>% filter(codigo_region %in% c("08","09","10","14","11")) %>% 
   fig_mapa(valor,limites = c(0,50), titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]",
@@ -72,7 +73,6 @@ df_estaciones <- df_conc %>%
   group_by(site, longitud, latitud) %>% 
   summarise(avg=mean(valor, na.rm=T)) %>% na.omit()
   
-
 ggplot(df_estaciones)+
   geom_sf(data=mapa_regiones,aes(geometry=geometry),fill="white", lwd=0.01)+
   geom_point(aes(longitud, latitud), shape=1, col="red")+
@@ -80,8 +80,6 @@ ggplot(df_estaciones)+
   labs(title = "",x="", y="") + coord_sf(datum = NA, expand = T)+
   theme_minimal(base_size = 13)
 
-ggsave(sprintf(file_name,"MapaEstacionesAire"),
-       last_plot(),dpi=600,
-       width = 14.87, height = 9.30, units = "in")
+f_savePlot(last_plot(), sprintf(file_name,"MapaEstacionesAire"))
 
 ## EoF
