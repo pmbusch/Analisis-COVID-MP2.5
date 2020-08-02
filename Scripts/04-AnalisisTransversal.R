@@ -79,6 +79,18 @@ p.mat <- cor.mtest(df_modelo %>%
                      na.omit())
 
 
+## Varianzas por variable
+df_modelo %>% 
+  select_if(is.numeric) %>% 
+  gather(var, valor) %>% 
+  ggplot(aes(valor))+
+  geom_density(fill="green",alpha=.5)+
+  facet_wrap(~var, scales = "free")
+
+ggsave("Densidades.png", last_plot(), dpi=900,
+       width = 22.3, height = 14, units = "in")
+
+
 
 ## Modelo-----
 
