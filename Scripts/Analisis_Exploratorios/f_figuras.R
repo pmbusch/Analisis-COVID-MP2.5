@@ -7,15 +7,6 @@ theme_set(theme_bw())
 source("Scripts/Aggregate_Data/poblacion_agg.R", encoding = "UTF-8")
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
 
-
-## Save Plot ----------
-f_savePlot <- function(p1, file_path){
-  cat("Saving: ",file_path)
-  ggsave(file_path, {{p1}},dpi=600,
-         width = 14.87, height = 9.30, units = "in")
-}
-
-
 ## MAPAS ## ---------
 # Funcion para graficar mediante colores una variable y guardarla
 # Utiliza como base un df unido a la variable mapa_comuna
@@ -64,10 +55,10 @@ fig_barrasRegion <- function(df, val, fill_col=NULL, limites=NULL,
           panel.grid.major.y = element_blank())
 }
 
-df_prueba %>% mutate(highlight=if_else(valor>20,"yes","no")) %>%
-  fig_barrasRegion(valor, fill_col = highlight)
-
-fig_barrasRegion(df_prueba, valor)
+# df_prueba %>% mutate(highlight=if_else(valor>20,"yes","no")) %>%
+#   fig_barrasRegion(valor, fill_col = highlight)
+# 
+# fig_barrasRegion(df_prueba, valor)
 
 # df_prueba <- df_avg %>% 
 #   group_by(comuna) %>% 

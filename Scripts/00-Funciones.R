@@ -62,3 +62,11 @@ getSeason <- function(dat) {
     res <- ordered(res, labels=c("spring", "summer", "fall", "winter"))
     invisible(res)
 }
+
+
+## Save Plot ----------
+f_savePlot <- function(p1, file_path){
+  cat("Saving: ",file_path)
+  ggsave(file_path, {{p1}},dpi=600,
+         width = 14.87, height = 9.30, units = "in")
+}
