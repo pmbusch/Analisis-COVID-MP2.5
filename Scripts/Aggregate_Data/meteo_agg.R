@@ -13,32 +13,14 @@ df <- df %>%
   mutate(year=year(date)) %>% 
   filter(year %in% c(2016,2017,2018,2019) &
            tipo %in% c("tmed", "hr","heating_degree")) %>%
-  mutate(season=getSeason(date)) %>% 
   # filter(season %in% c("winter","summer")) %>% # solo verano e invierno
-  group_by(comuna, tipo, season) %>% 
+  group_by(codigo_comuna, tipo, season) %>% 
   summarise(valor=mean(valor, na.rm=T)) %>% ungroup() %>% 
   mutate(tipo=paste(tipo, season, sep="_"),
          season=NULL)
  
 # Expandir datos
 df <- df %>% spread(tipo,valor)
-
-
-# Agregar codigos comunales ---------
-df$comuna %>% unique() %>% length()
-df <- df %>% 
-  mutate(nombre_comuna=comuna %>% 
-           str_replace_all("Viña del Mar","Vina del Mar") %>% 
-           str_replace_all("Purrangue","Purranque") %>% 
-           str_replace_all("San Bernando","San Bernardo") %>% 
-           str_replace_all("Cabo de Hornos \\(Ex-Navarino\\)","Cabo de Hornos") %>% 
-           str_replace_all("de Zapallar, V region","Zapallar") %>% 
-           str_replace_all("de Retiro, VII region","Retiro")) %>%
-  left_join(codigos_territoriales %>% select(codigo_comuna, nombre_comuna),
-            by=c("nombre_comuna")) %>% 
-  select(-comuna, -nombre_comuna)
-  # select(comuna, nombre_comuna, codigo_comuna)
-
 
 saveRDS(df, "Data/Data_Modelo/Datos_Meteorologia.rsd")
 

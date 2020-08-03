@@ -9,20 +9,6 @@ source("Scripts/Analisis_Exploratorios/f_figuras.R", encoding = "UTF-8")
 # Carga datos brutos y Mapa --------
 df_meteo <- read_rds("Data/Data_Modelo/Datos_Meteorologia_raw.rsd")
 
-
-# Agregar codigos comunales ---------
-df_meteo <- df_meteo %>% 
-  mutate(nombre_comuna=comuna %>% 
-           str_replace_all("Viña del Mar","Vina del Mar") %>% 
-           str_replace_all("Purrangue","Purranque") %>% 
-           str_replace_all("San Bernando","San Bernardo") %>% 
-           str_replace_all("Cabo de Hornos \\(Ex-Navarino\\)","Cabo de Hornos") %>% 
-           str_replace_all("de Zapallar, V region","Zapallar") %>% 
-           str_replace_all("de Retiro, VII region","Retiro")) %>%
-  left_join(codigos_territoriales %>% select(codigo_comuna, nombre_comuna),
-            by=c("nombre_comuna"))
-
-
 # Promedio 2016-2019
 df_avg <- df_meteo %>% 
   mutate(year=year(date)) %>% 
@@ -47,8 +33,6 @@ df_map <- df_avg %>%
   right_join(mapa_comuna) %>% 
   gather(tipo, valor, tmed, tmin, tmax)
   
-  
-
 # Chile
 df_map %>% fig_mapa(valor, lwd=0.01, limites= c(-5,35),
                     titulo="Promedio 2016-2019 \n [°C]",
@@ -75,5 +59,41 @@ df_meteo %>% filter(tipo=="heating_degree" & year(date)==2019) %>%
   theme(legend.position = "none")+
   facet_wrap(~region)
 
+# Mapas por Season
+df_avg <- df_meteo %>% 
+  mutate(year=year(date)) %>% 
+  filter(year>2016) %>% 
+  group_by(estacion,region,codigo_comuna, year,tipo, season) %>% 
+  summarise(valor=mean(valor,na.rm=T)) %>% 
+  group_by(estacion, region, codigo_comuna, tipo, season) %>% 
+  summarise(valor=mean(valor, na.rm=T)) %>% ungroup()
+
+df_map <- df_avg %>% 
+  filter(tipo %in% c("heating_degree")) %>%
+  group_by(codigo_comuna, season) %>% 
+  summarise(valor=mean(valor, na.rm=T)) %>% ungroup() %>% 
+  spread(season,valor) %>% 
+  right_join(mapa_comuna) %>% 
+  gather(season, valor,spring, summer, fall, winter)
+
+# Chile
+df_map %>% fig_mapa(valor, lwd=0.01,limites = c(0,20),
+                    facets = ~season,
+                    titulo="Heating Degree 2016-2019 \n [°C]",
+                    fileName = sprintf(file_name,"MapaChileHeatDeg"))
+
+# Santiago
+df_map %>% filter(codigo_provincia=="131" & codigo_comuna!="13115") %>% 
+  fig_mapa(valor, lwd=0.01,limites=c(0, 20),
+           facets = ~season,
+           titulo="Heating Degree 2016-2019 \n [°C]",
+           fileName = sprintf(file_name,"MapaSantiagoHeatDeg"))
+
+# Zona Sur
+df_map %>% filter(codigo_region %in% c("08","09","10","14","11")) %>% 
+  fig_mapa(valor, lwd=0.01,limites=c(0, 20),
+           facets = ~season,
+           titulo="Heating Degree 2016-2019 \n [°C]",
+           fileName = sprintf(file_name,"MapaSurHeatDeg"))
 
 ## EoF
