@@ -10,6 +10,23 @@ theme_set(theme_bw())
 file_name <- "Figuras/%s.png"
 
 
+## Indicadores relevantes ------------
+
+# Poblacion en comunas con datos MP2.5
+total_pob <- df_modelo$poblacion %>% sum()
+pob_mp25 <- df_modelo %>% filter(!is.na(mp25)) %>% pull(poblacion) %>% sum()
+cat(round(pob_mp25/total_pob*100,1),
+    "% de poblacion en comunas con monitoreo de MP2.5")
+
+
+# Poblacion en comunas con muertes ---------
+total_comunas <- nrow(df_modelo)
+comunas_muerte <- df_modelo %>% filter(casos_fallecidos>0) %>% nrow()
+cat(round(comunas_muerte/total_comunas*100,1),
+    "% de comunas con muertes COVID")
+
+rm(total_pob, pob_mp25, total_comunas, comunas_muerte)
+
 ## Scatter correlacion -----------
 ggplot(df_modelo, aes(mp25, tasa_mortalidad, size=poblacion))+
   geom_point(col="red",alpha=.5)+
