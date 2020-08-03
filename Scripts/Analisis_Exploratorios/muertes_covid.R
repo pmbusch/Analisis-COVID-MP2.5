@@ -59,4 +59,35 @@ ggsave(sprintf(file_name,"MuertesSantiago"),
        last_plot(),dpi=600,
        width = 14.87, height = 9.30, units = "in")
 
+## DEIS ----------
+
+source("Scripts/Load_Data/mapa_load.R", encoding = "UTF-8")
+df_deis <- df_deis %>% select(-region) %>% left_join(codigos_territoriales) %>% 
+  left_join(mapa_regiones %>% select(-geometry))
+
+## SANKEY Diagram
+library(ggforce)
+data <- df_deis %>% group_by(sexo, grupo_edad, tipo,region) %>% 
+  summarise(value=n()) %>% arrange(desc(value))
+
+## Function para preparar datos para la funcion
+data <- gather_set_data(data, 1:4)
+data %>% names()
+# Orden
+data$x <- factor(data$x, levels = c("tipo", "sexo", "grupo_edad","region"))
+
+ggplot(data, aes(x, id = id, split = y, value = value)) +
+  geom_parallel_sets(aes(fill = tipo), alpha = 0.3, axis.width = 0.1) +
+  geom_parallel_sets_axes(axis.width = 0.1, fill = "grey80", color = "grey80") +
+  geom_parallel_sets_labels(color = 'black', size = 10/.pt, angle = 90) +
+  scale_x_discrete(name = NULL, expand = c(0, 0.2))+
+  scale_y_continuous(breaks = NULL, expand = c(0, 0))+
+  theme(axis.line = element_blank(), axis.ticks = element_blank(), 
+        legend.position = "none", plot.margin = margin(14, 1.5, 2, 1.5))
+
+source("Scripts/00-Funciones.R", encoding = "UTF-8")
+f_savePlot(last_plot(), "Figuras/SankeyMuertesCovid.png")
+
+
+
 ## EoF

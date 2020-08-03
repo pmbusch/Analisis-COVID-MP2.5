@@ -41,4 +41,57 @@ df_muertes <- df_muertes %>%
          dias_primerMuerte)
 
 rm(url, df_muerteZero)
+
+### Muertes DEIS -------------
+# Descargar datos
+library(rvest)
+# # No logro encontrar el archivo mas reciente
+# web <- read_html("https://deis.minsal.cl/#datosabiertos") %>% html_text()
+# str_extract_all(web, ".rar")
+# # No se descarga bien
+# link <- "http://deis.minsal.cl/wp-content/uploads/2020/08/DEFUNCIONES_FUENTE_DEIS_2016_2020_30072020.rar"
+# dest_file <- "Data/Data_Original/DEIS.rar"
+# download.file(link, destfile = dest_file)
+# 
+# 
+# # NO LOGRO EXTRAER CORRECTAMENTE
+# # extraer
+# unzip("Data/Data_Original/DEFUNCIONES_FUENTE_DEIS_2016_2020_23072020.rar")
+
+# lectura
+df_deis <- read_delim("Data/Data_Original/DEFUNCIONES_FUENTE_DEIS_2016_2020_23072020/DEFUNCIONES_FUENTE_DEIS_2016_2020_23072020.csv",
+                 delim = "|",col_names = F,
+                 col_types = "dDccccccccc",
+                 locale = locale(encoding = "windows-1252"))
+names(df_deis) <- c("year","date","sexo","edad","codigo_comuna","comuna","region",
+               "causa_cie10","causa","cap_cie10","capitulo")
+
+# Filtro COVID
+df_deis %>% group_by(capitulo) %>% summarise(count=n()) %>% arrange(desc(count))
+df_deis <- df_deis %>% filter(capitulo=="COVID-19") %>% 
+  mutate(tipo=str_extract(causa, "Confirmado|Sospechoso") %>% str_to_lower())
+
+# Cruzar con comunas
+df_deis <- df_deis %>% filter(codigo_comuna!="99999") %>% 
+  mutate(codigo_comuna=paste(
+  if_else(str_length(codigo_comuna)==4,"0",""),codigo_comuna,sep=""))
+
+# Factores
+df_deis <- df_deis %>% mutate(sexo=factor(sexo),
+                    edad=factor(edad),
+                    causa_cie10=factor(causa_cie10),
+                    cap_cie10=factor(cap_cie10),
+                    tipo=factor(tipo))
+nrow(df_deis) # muertes
+# df_deis %>% skim()
+
+df_deis$edad %>% unique()
+df_deis <- df_deis %>% mutate(grupo_edad=case_when(
+  edad %in% c("< 1","1 a 4","5 a 9","10 a 14") ~ "0-14",
+  edad %in% c("15 a 19","20 a 24","25 a 29","30 a 34","35 a 39","40 a 44") ~ "15-44",
+  edad %in% c("45 a 49","50 a 54","55 a 59","60 a 64") ~ "45-64",
+  T ~ "65+"))
+
+# rm(df_deis)
+
 ## EoF
