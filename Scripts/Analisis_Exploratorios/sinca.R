@@ -16,11 +16,11 @@ df_conc <- df_conc %>% mutate(region=factor(region, levels_region)) %>%
 ## Promedio 2016-2019: Norte a Sur -----------
 df_avg <- df_conc %>% 
   filter(year>2016) %>% 
-  group_by(site,region,comuna, year) %>% 
+  group_by(site,region,codigo_comuna, year) %>% 
   summarise(valor=mean(valor,na.rm=T),
             disponibilidad=n()/365) %>% 
   filter(disponibilidad>0.8) %>% ungroup() %>% 
-  group_by(site, region, comuna) %>% 
+  group_by(site, region, codigo_comuna) %>% 
   summarise(valor=mean(valor, na.rm=T)) %>% ungroup()
 
 df_avg %>% 
@@ -44,12 +44,9 @@ f_savePlot(last_plot(), sprintf(file_name,"MP25ChileRegion"))
 ## Promedio 2016-2019: Mapa Comunas -----------
 # Agregar codigos comunales
 df_map <- df_avg %>% 
-  group_by(comuna) %>% 
-  summarise(valor=mean(valor, na.rm=T)) %>% ungroup() %>% 
-  mutate(nombre_comuna=f_remover_acentos(comuna) %>% 
-           str_replace_all("Aysen","Aisen") %>% 
-           str_replace_all("Coyhaique","Coihaique")) %>% 
-  left_join(codigos_territoriales,by=c("nombre_comuna")) %>% 
+  group_by(codigo_comuna) %>%
+  summarise(valor=mean(valor, na.rm=T)) %>% ungroup() %>%
+  left_join(codigos_territoriales) %>% 
   right_join(mapa_comuna)
 
 # Chile

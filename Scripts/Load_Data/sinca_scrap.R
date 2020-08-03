@@ -120,6 +120,16 @@ df <- df %>% mutate(site=site %>% as.factor(),
                     pollutant=pollutant %>% as.factor())
 
 
+# Agregar codigos comunales ------
+source("Scripts/00-Funciones.R", encoding = "UTF-8")
+df <- df %>% 
+  mutate(nombre_comuna=f_remover_acentos(comuna) %>% 
+           str_replace_all("Aysen","Aisen") %>% 
+           str_replace_all("Coyhaique","Coihaique")) %>% 
+  left_join(codigos_territoriales,by=c("nombre_comuna"))
+
+
+
 # Guardar como objeto de R
 saveRDS(df, "Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
 
