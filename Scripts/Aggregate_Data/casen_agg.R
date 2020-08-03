@@ -24,17 +24,22 @@ df_educacion <- df_educacion %>%
 ## Agrupo para crear variable: Porcentaje isapre
 # lo hago distinto para incluir comunas sin nadie con isapre
 df_prevision$s12 %>% unique()
-df_prevision <- df_prevision %>% 
+df_prevision <-  df_prevision %>% 
   filter(s12!=99) %>% # filtro respuesta no sabe
-  mutate(isapre=if_else(s12!=7,1,0)) %>% 
-  group_by(codigo_comuna,isapre) %>% 
+  mutate(prev=case_when(
+    s12==1 ~ "perc_fonasa_A",
+    s12==2 ~ "perc_fonasa_B",
+    s12==3 ~ "perc_fonasa_C",
+    s12==4 ~ "perc_fonasa_D",
+    s12==6 ~ "perc_FFAA",
+    s12==7 ~ "perc_isapre",
+    T~"otro")) %>% 
+  group_by(codigo_comuna,prev) %>% 
   summarise(hab=sum(hab,na.rm=T)) %>% 
   mutate(perc=hab/sum(hab)) %>% 
-  ungroup() %>% 
-  filter(isapre==1) %>% 
-  select(codigo_comuna,perc) %>% 
-  mutate(perc=(1-perc)*100) %>% 
-  rename(perc_isapre=perc)
+  ungroup() %>% select(-hab) %>% 
+  spread(prev, perc, fill=0) %>% select(-otro)
+
 
 ## AGRUPAR TODO -------
 df_casen <- left_join(df_ingreso, 
