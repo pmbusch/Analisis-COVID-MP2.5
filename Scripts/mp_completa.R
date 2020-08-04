@@ -6,7 +6,7 @@
 # Nota: elegir un nombre mas creativo
 
 library(sf)
-library(raster)
+# library(raster)
 # Se calcula la distancia con coordeandas geograficas (latlong)
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
 file_name <- "Figuras/Completa_MP/%s.png"
@@ -33,7 +33,6 @@ f_savePlot(last_plot(), sprintf(file_name,"Centroides"))
 
 ## SOLO RM
 # comunas <- comunas %>% filter(codigo_provincia=="131" & codigo_comuna!="13115")
-
 
 ## Estaciones calidad Aire -------------
 df_conc <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
@@ -138,6 +137,62 @@ df_dist %>%
   labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
   theme_minimal(base_size = 13)
 f_savePlot(last_plot(), sprintf(file_name,"EstacionCercana"))
+
+
+## Distancia N primeros ---------------
+# Ordena por distancia para cada comuna, e incorpora un ranking
+df_dist <- df %>% arrange(codigo_comuna, dist) %>% 
+  group_by(nombre_comuna, codigo_comuna, centroide) %>% 
+  mutate(rank=rank(dist))
+
+# Filta N primeros
+df_dist <- df_dist %>% filter(rank<7)
+
+# ECDF distancia
+df_dist %>% 
+  mutate(distancia=dist/1e3) %>% 
+  ggplot(aes(distancia,y=..y..* unique(df_dist$codigo_comuna) %>% length()))+
+  stat_ecdf(aes(col=factor(rank)))+
+  # facet_wrap(~rank)+
+  scale_x_continuous(breaks=50*0:4, limits=c(0,200))+
+  scale_color_viridis_d(name="N° Estaciones \n cercanas")+
+  labs(x="Distancia [km]", y= "N° Comunas")
+
+f_savePlot(last_plot(), sprintf(file_name,"ECDF_DistanciaEstacion_N"))
+
+## Promedio ponderado --------
+corte_km <- 50
+df %>% names()
+df_avg <- df %>% filter(dist<corte_km*1e3)
+df_avg <- df_avg %>% 
+  group_by(codigo_comuna, nombre_comuna) %>% 
+  summarise(avg=weighted.mean(avg, 1/(dist^2))) %>% ungroup() %>% 
+  right_join(mapa_comuna)
+
+## Mapas
+source("Scripts/Analisis_Exploratorios/f_figuras.R", encoding = "UTF-8")
+
+# Chile
+df_avg %>% 
+  fig_mapa(avg, limites = c(0,50), titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]",
+           fileName = sprintf(file_name,"MapaChile"))
+
+# Santiago
+df_avg %>% filter(codigo_provincia=="131" & codigo_comuna!="13115") %>%
+  fig_mapa(avg, limites = c(0,50), titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]",
+           fileName = sprintf(file_name,"MapaSantiago"))
+
+# SUr
+df_avg %>% filter(codigo_region %in% c("08","09","10","14","11")) %>% 
+  fig_mapa(avg, limites = c(0,50), titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]",
+           fileName = sprintf(file_name,"MapaSur"))
+
+
+# Poblacion en comunas con datos MP2.5
+total_pob <- df_poblacion$poblacion %>% sum()
+pob_mp25 <- df_avg %>% left_join(df_poblacion) %>% pull(poblacion) %>% sum(na.rm=T)
+cat(round(pob_mp25/total_pob*100,1),
+    "% de poblacion en comunas con monitoreo de MP2.5")
 
 
 ## Nearest stations -----
