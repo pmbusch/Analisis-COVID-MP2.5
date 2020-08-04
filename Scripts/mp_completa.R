@@ -6,10 +6,10 @@
 # Nota: elegir un nombre mas creativo
 
 library(sf)
-# library(raster)
-# Se calcula la distancia con coordeandas geograficas (latlong)
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
 file_name <- "Figuras/Completa_MP/%s.png"
+
+# Se calcula la distancia con coordeandas geograficas (latlong)
 
 
 ## Centroide comunas --------
@@ -137,6 +137,7 @@ df_dist %>%
   geom_sf(aes(geometry=ubi),col="red")+
   labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
   theme_minimal(base_size = 13)
+
 f_savePlot(last_plot(), sprintf(file_name,"EstacionCercana"))
 
 
@@ -164,6 +165,7 @@ f_savePlot(last_plot(), sprintf(file_name,"ECDF_DistanciaEstacion_N"))
 
 ## Promedio ponderado --------
 corte_km <- 50
+# corte_km <- Inf
 df %>% names()
 df_avg <- df %>% filter(dist<corte_km*1e3)
 df_avg <- df_avg %>% 
@@ -176,8 +178,14 @@ source("Scripts/Analisis_Exploratorios/f_figuras.R", encoding = "UTF-8")
 
 # Chile
 df_avg %>% 
-  fig_mapa(avg, limites = c(0,50), titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]",
+  fig_mapa(avg, limites = c(0,50), lwd=0.01,
+           titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]", 
            fileName = sprintf(file_name,"MapaChile"))
+
+## Chile Facet
+fig_mapaChile_facet(df_avg, avg, limites=c(0,50),
+                    titulo = "Promedio 2016-2019 \n MP2.5 [ug/m3]",
+                    fileName = sprintf(file_name,"MapaChileFacet"))
 
 # Santiago
 df_avg %>% filter(codigo_provincia=="131" & codigo_comuna!="13115") %>%
