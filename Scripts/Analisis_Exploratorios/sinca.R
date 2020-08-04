@@ -40,6 +40,15 @@ df_avg %>%
 
 f_savePlot(last_plot(), sprintf(file_name,"MP25ChileRegion"))
 
+## Scatter Norte Sur
+df_com <- df_avg %>% 
+  group_by(region,codigo_comuna) %>%
+  summarise(valor=mean(valor, na.rm=T)) %>% ungroup() %>%
+  left_join(codigos_territoriales) %>% 
+  left_join(mapa_comuna)
+
+fig_scatterComuna(df_com, valor, limites = c(0,50),
+                  titulo="Promedio 2016-2019 MP2.5 [ug/m3]")
 
 ## Promedio 2016-2019: Mapa Comunas -----------
 # Agregar codigos comunales
@@ -53,6 +62,12 @@ df_map <- df_avg %>%
 fig_mapa(df_map, valor, lwd=0.01,
          limites=c(0,50), titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]",
          fileName=sprintf(file_name,"MapaChileMP25"))
+
+# Chile Facet
+fig_mapaChile_facet(df_map, valor, limites=c(0,50),
+                    titulo = "Promedio 2016-2019 \n MP2.5 [ug/m3]",
+                    fileName = sprintf(file_name,"MapaChileMP25Facet"))
+
 # Santiago (remuevo Lo Barnechea)
 df_map %>% filter(codigo_provincia=="131" & codigo_comuna!="13115") %>% 
   fig_mapa(valor,limites = c(0,50), titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]")+

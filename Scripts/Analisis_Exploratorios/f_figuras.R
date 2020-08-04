@@ -78,6 +78,29 @@ fig_mapaChile_facet <- function(df, val, limites=NULL,
   p
 }
 
+## SCATTER COMUNA -----------
+# Funcion para graficar en puntos valores de comuna
+# Se ordena segun geografia de las regiones y latitud de las comunas
+# Df debe estar con join a codigos territoriales y mapa comuna
+# Recibe dataframe, valor a graficar, facets, escala, titulo leyenda, guardar
+fig_scatterComuna <- function(df, val, col_aes=NULL, limites=NULL,
+                              titulo=""){
+  df %>% 
+    mutate(cent_lat=map_dbl(geometry, ~st_centroid(.x)[[2]])) %>% 
+    ggplot(aes(x=reorder(codigo_comuna, cent_lat), y={{val}}, col={{col_aes}}))+
+    geom_point()+
+    facet_grid(region~., scales = "free", space="free")+
+    labs(x="Comunas",y=titulo)+
+    scale_y_continuous(limits = limites,
+                       labels=function(x) format(x,big.mark = " ", decimal.mark = ".", scientific = F))+
+    scale_color_viridis_d()+
+    coord_flip()+
+    theme(axis.text.y=element_blank(),
+          axis.ticks.y=element_blank(),
+          panel.grid.major.y = element_blank())
+}
+
+
 
 ## BARRAS REGION-COMUNA --------
 # Funcion para graficar en barras algun valor promedio
