@@ -16,10 +16,30 @@ mapa_comuna <- mapa_comunas %>%
   mutate(superficie=st_area(geometry) %>% as.numeric(),
          perimetro=st_length(geometry) %>% as.numeric())
 
-
 # Levels regiones
 levels_region <- c("XV","I","II","III","IV","V","M","VI","VII","VIII",
                    "IX","XIV","X","XI","XII")
+
+mapa_comuna <- mapa_comuna %>% mutate(
+  region=case_when(
+    codigo_region=="01" ~ "I",
+    codigo_region=="02" ~ "II",
+    codigo_region=="03" ~ "III",
+    codigo_region=="04" ~ "IV",
+    codigo_region=="05" ~ "V",
+    codigo_region=="06" ~ "VI",
+    codigo_region=="07" ~ "VII",
+    codigo_region=="08" ~ "VIII",
+    codigo_region=="09" ~ "IX",
+    codigo_region=="10" ~ "X",
+    codigo_region=="11" ~ "XI",
+    codigo_region=="12" ~ "XII",
+    codigo_region=="13" ~ "M",
+    codigo_region=="14" ~ "XIV",
+    codigo_region=="15" ~ "XV",
+    codigo_region=="16" ~ "VIII",
+    T ~ "otro") %>% factor(levels = levels_region))
+
 
 mapa_regiones <- generar_regiones(mapa_comunas %>% filter(codigo_comuna!="05201" &
                                                        codigo_comuna!="05104"))
