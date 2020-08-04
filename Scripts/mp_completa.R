@@ -117,7 +117,8 @@ df_dist %>%
   ggplot(aes(distancia,y=..y..*nrow(df_dist)))+
   stat_ecdf()+
   scale_x_continuous(breaks=50*0:7, limits = c(0,350))+
-  labs(x="Distancia [km]", y= "N° Comunas")
+  labs(x="Distancia [km]", y= "N° Comunas")+
+  theme_bw(18)
   
 f_savePlot(last_plot(), sprintf(file_name,"ECDF_DistanciaEstacion"))
 
@@ -156,7 +157,8 @@ df_dist %>%
   # facet_wrap(~rank)+
   scale_x_continuous(breaks=50*0:4, limits=c(0,200))+
   scale_color_viridis_d(name="N° Estaciones \n cercanas")+
-  labs(x="Distancia [km]", y= "N° Comunas")
+  labs(x="Distancia [km]", y= "N° Comunas")+
+  theme_bw(18)
 
 f_savePlot(last_plot(), sprintf(file_name,"ECDF_DistanciaEstacion_N"))
 

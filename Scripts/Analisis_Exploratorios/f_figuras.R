@@ -22,7 +22,7 @@ fig_mapa <- function(df, val, facets=NULL, limites=NULL,
                          limits=limites,
                          labels=function(x) format(x,big.mark = " ", decimal.mark = ".", scientific = F)) +
     labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
-    theme_minimal(base_size = 8)
+    theme_minimal(base_size = 15)
   # Guardo
   if (!is.null(fileName)){
     f_savePlot(p,fileName)
