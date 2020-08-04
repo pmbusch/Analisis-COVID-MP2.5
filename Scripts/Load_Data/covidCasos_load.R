@@ -30,6 +30,18 @@ df_casos <- df_casos %>% filter(fecha==fecha_casos)
 df_casos$casos_confirmados %>% sum()
 df_casos$poblacion %>% sum()
 
+# Poblacion -----
+## Utilizo poblacion de Chilemapas (censo 2017)
+pob <- censo_2017_comunas %>% group_by(codigo_comuna) %>% 
+  summarise(poblacion=sum(poblacion, na.rm=T)) %>% ungroup()
+
+df_casos <- df_casos %>% select(-poblacion) %>% 
+  left_join(pob)
+df_casos$poblacion %>% sum()
+rm(pob)
+
+
+
 ## Parametros --------
 df_casos <- df_casos %>% 
   mutate(tasa_contagios=casos_confirmados/poblacion*1e5) %>% 

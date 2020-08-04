@@ -31,6 +31,16 @@ df_muertes <- df_muertes %>% filter(fecha==fecha_muertes)
 df_muertes$casos_fallecidos %>% sum()
 df_muertes$poblacion %>% sum()
 
+# Poblacion -----
+## Utilizo poblacion de Chilemapas (censo 2017)
+pob <- censo_2017_comunas %>% group_by(codigo_comuna) %>% 
+  summarise(poblacion=sum(poblacion, na.rm=T)) %>% ungroup()
+
+df_muertes <- df_muertes %>% select(-poblacion) %>% 
+  left_join(pob)
+df_muertes$poblacion %>% sum()
+rm(pob)
+
 ## Parametros --------
 df_muertes <- df_muertes %>% 
   mutate(tasa_mortalidad=casos_fallecidos/poblacion*1e5) %>% 
