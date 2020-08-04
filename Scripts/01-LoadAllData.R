@@ -48,7 +48,7 @@ df_modelo <- df_poblacion %>%
   left_join(df_tasaMortalidad, by=c("codigo_comuna"))
 
 rm(df_poblacion, df_muertes, df_conc, df_camas, df_casos, df_cuarentena,
-   df_meteo, df_casen, df_censo, df_pcr, df_lena, df_tasaMortalidad)
+   df_meteo, df_casen, df_censo, df_pcr, df_lena, df_tasaMortalidad, df_deis)
 
 df_modelo %>% skim()
 
@@ -82,8 +82,5 @@ write.table(df_modelo,"Data/Data_Modelo/Datos_Modelo.csv",
 
 saveRDS(df_modelo, "Data/Data_Modelo/Datos_Modelo.rsd")
 save.image(".RData")
-
-# # Sin NA
-# df_modelo <- df_modelo %>% filter(!is.na(mp25))
 
 ## EoF
