@@ -96,7 +96,7 @@ df_modelo %>%
                 cons_lena_cocina_pp,
                 tmed_summer, tmed_winter, hr_summer, hr_winter) %>%
   na.omit() %>% 
-  cor() %>% 
+  cor(method = "pearson") %>% 
   corrplot(method="circle", 
            # order="hclust",
            type = "upper",
