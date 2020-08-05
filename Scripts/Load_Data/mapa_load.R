@@ -10,6 +10,7 @@ df_poblacion %>% names()
 df_poblacion$poblacion %>% sum()
 
 ## MAPAS ---------
+## Comunas --------------
 # Saco del mapa a Isla de Pascua y Juan Fernandez
 mapa_comuna <- mapa_comunas %>% 
   filter(!(codigo_comuna %in% c("05201","05104"))) %>% 
@@ -40,7 +41,15 @@ mapa_comuna <- mapa_comuna %>% mutate(
     codigo_region=="16" ~ "VIII",
     T ~ "otro") %>% factor(levels = levels_region))
 
+## Añado variable boolean para filtar mapa de RM customizado
+# Contiene todas las comunas en la Provincia de Santiago, menos Lo Barnechea
+# Contiene ademas las comunas de San Bernardo, Puente Alto, Padre Hurtado, calera de tango, 
+mapa_comuna <- mapa_comuna %>% 
+  mutate(mapa_rm=if_else((codigo_provincia=="131" & codigo_comuna!="13115")|
+                           codigo_comuna %in% c("13201","13401","13403","13604"),
+                         1,0))
 
+## Regiones ------------
 mapa_regiones <- generar_regiones(mapa_comunas %>% filter(codigo_comuna!="05201" &
                                                        codigo_comuna!="05104"))
 mapa_regiones$codigo_region %>% unique()
