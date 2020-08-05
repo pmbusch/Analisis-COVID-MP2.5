@@ -34,7 +34,7 @@ fig_mapa <- function(df, val, facets=NULL, limites=NULL,
 ## Figura con zoom a partes de Chile de mayor interes
 # Considera 4 zonas: Norte, Centro, Sur y Austral
 # Utiliza como base la funcion de fig_mapa
-fig_mapaChile_facet <- function(df, val, limites=NULL, 
+fig_mapaChile_facet <- function(df, val, facets=NULL, limites=NULL, 
                      titulo="", fileName=NULL){
   
   # Creo las zonas, en base a las regiones
@@ -46,21 +46,21 @@ fig_mapaChile_facet <- function(df, val, limites=NULL,
   
   # Creo los graficos, con coordenadas fijas para cada zona (mejora la estetica)
   p1 <- df %>% filter(zona_facet=="Norte") %>% 
-    fig_mapa({{val}}, limites = limites, lwd=0.01,titulo=titulo)+
+    fig_mapa({{val}}, facets={{facets}}, limites = limites, lwd=0.01,titulo=titulo)+
     labs(title="Norte",subtitle = "Arica a Coquimbo")+
     theme(legend.position = "none")+
     coord_sf(xlim = c(-72, -66.5), ylim = c(-32.5, -17.5),datum = NA,expand=F)
   p2 <- df %>% filter(zona_facet=="Centro") %>% 
-    fig_mapa({{val}}, limites = limites, lwd=0.01,titulo=titulo)+
+    fig_mapa({{val}}, facets={{facets}}, limites = limites, lwd=0.01,titulo=titulo)+
     labs(title="Centro",subtitle = "RM-V a Talca")+
     coord_sf(xlim = c(-73, -69.5), ylim = c(-37, -32),datum = NA, expand=F)
   p3 <- df %>% filter(zona_facet=="Sur") %>% 
-    fig_mapa({{val}}, limites = limites, lwd=0.01,titulo=titulo)+
+    fig_mapa({{val}}, facets={{facets}}, limites = limites, lwd=0.01,titulo=titulo)+
     labs(title="Sur",subtitle = "Biobio a Los Rios")+
     theme(legend.position = "none")+
     coord_sf(xlim = c(-74, -70.5), ylim = c(-41, -36),datum = NA,expand=F)
   p4 <- df %>% filter(zona_facet=="Austral") %>% 
-    fig_mapa({{val}}, limites = limites, lwd=0.01,titulo=titulo)+
+    fig_mapa({{val}}, facets={{facets}}, limites = limites, lwd=0.01,titulo=titulo)+
     labs(title="Austral",subtitle = "Pto Montt a Punta Arenas")+
     theme(legend.position = "none")+
     coord_sf(xlim = c(-76, -66), ylim = c(-56, -40),datum = NA,expand=F)
@@ -68,8 +68,6 @@ fig_mapaChile_facet <- function(df, val, limites=NULL,
   # Nota: alineacion de la leyenda fue dificil, solucion heuristica actual es buena
   p <- (p1|p2)/(p3|p4)+plot_layout(guide="auto")&
     theme(plot.subtitle = element_text(size=8))
-  
-  
   
   # Guardo
   if (!is.null(fileName)){
