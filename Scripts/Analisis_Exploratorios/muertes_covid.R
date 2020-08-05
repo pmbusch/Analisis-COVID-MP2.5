@@ -11,22 +11,32 @@ source("Scripts/Load_Data/covidMuertes_load.R", encoding = "UTF-8")
 
 
 ## Mapas -------
+df_muertes$tasa_mortalidad %>% range() # rango para los graficos
 # Chile
 df_muertes %>% left_join(mapa_comuna) %>% 
-  fig_mapa(tasa_mortalidad, lwd=0.01,limites=c(0,200), 
+  fig_mapa(tasa_mortalidad, lwd=0.01,limites=c(0,250), 
            titulo="Tasa Mortalidad Covid \n [muertes/100mil hab]",
            fileName = sprintf(file_name,"MapaChileCOVID"))
-# Santiago: Remueve Lo Barnechea (codigo 13115)
+# Chile Facet
+df_muertes %>% left_join(mapa_comuna) %>% 
+  fig_mapaChile_facet(tasa_mortalidad,limites=c(0,250),
+                      titulo="Tasa Mortalidad Covid \n [muertes/100mil hab]")
+f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaChileCOVIDFacet"))
+
+
+# Santiago
 df_muertes %>% left_join(mapa_comuna) %>% 
   left_join(codigos_territoriales) %>% 
-  filter(codigo_provincia=="131" & codigo_comuna!="13115") %>% 
-  fig_mapa(tasa_mortalidad, limites = c(0,200),
+  filter(mapa_rm==1) %>% 
+  fig_mapa(tasa_mortalidad, limites = c(0,250),
            titulo= "Tasa Mortalidad Covid \n [muertes/100mil hab]",
            fileName = sprintf(file_name,"MapaSantiagoCOVID"))
+
+
 # Zona Sur
 df_muertes %>% left_join(mapa_comuna) %>% 
   filter(codigo_region %in% c("08","09","10","14","11")) %>% 
-  fig_mapa(tasa_mortalidad, limites = c(0,200),
+  fig_mapa(tasa_mortalidad, limites = c(0,250),
            titulo= "Tasa Mortalidad Covid \n [muertes/100mil hab]",
            fileName = sprintf(file_name,"MapaSurCOVID"))
   
@@ -77,9 +87,9 @@ data %>% names()
 data$x <- factor(data$x, levels = c("tipo", "sexo", "grupo_edad","region"))
 
 ggplot(data, aes(x, id = id, split = y, value = value)) +
-  geom_parallel_sets(aes(fill = tipo), alpha = 0.3, axis.width = 0.1) +
-  geom_parallel_sets_axes(axis.width = 0.1, fill = "grey80", color = "grey80") +
-  geom_parallel_sets_labels(color = 'black', size = 10/.pt, angle = 90) +
+  geom_parallel_sets(aes(fill = tipo), alpha = 0.3, axis.width = 0.1, sep=0.01) +
+  geom_parallel_sets_axes(axis.width = 0.1, fill = "grey80", color = "grey80",sep=0.01) +
+  geom_parallel_sets_labels(color = 'black', size = 10/.pt, angle = 90,sep=0.01) +
   scale_x_discrete(name = NULL, expand = c(0, 0.2))+
   scale_y_continuous(breaks = NULL, expand = c(0, 0))+
   theme(axis.line = element_blank(), axis.ticks = element_blank(), 
@@ -87,7 +97,5 @@ ggplot(data, aes(x, id = id, split = y, value = value)) +
 
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
 f_savePlot(last_plot(), "Figuras/SankeyMuertesCovid.png")
-
-
 
 ## EoF

@@ -68,8 +68,9 @@ fig_mapaChile_facet(df_map, valor, limites=c(0,50),
                     titulo = "Promedio 2016-2019 \n MP2.5 [ug/m3]",
                     fileName = sprintf(file_name,"MapaChileMP25Facet"))
 
-# Santiago (remuevo Lo Barnechea)
-df_map %>% filter(codigo_provincia=="131" & codigo_comuna!="13115") %>% 
+# Santiago
+df_map %>% 
+  filter(mapa_rm==1) %>% 
   fig_mapa(valor,limites = c(0,50), titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]")+
   geom_sf_label(aes(label=nombre_comuna, geometry=geometry))
 f_savePlot(last_plot(), sprintf(file_name,"MapaSantiagoMP25"))

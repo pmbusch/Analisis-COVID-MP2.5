@@ -39,7 +39,8 @@ df_map %>% fig_mapa(valor, lwd=0.01, limites= c(-5,35),
                     facets=~tipo,
                     fileName = sprintf(file_name,"MapaChileTemp"))
 # Santiago
-df_map %>% filter(codigo_provincia=="131" & codigo_comuna!="13115") %>% 
+df_map %>%
+  filter(mapa_rm==1) %>% 
   fig_mapa(valor, lwd=0.01, limites= c(-5,35),
                     titulo="Promedio 2016-2019 \n [°C]",
                     facets=~tipo,
@@ -83,7 +84,8 @@ df_map %>% fig_mapa(valor, lwd=0.01,limites = c(0,20),
                     fileName = sprintf(file_name,"MapaChileHeatDeg"))
 
 # Santiago
-df_map %>% filter(codigo_provincia=="131" & codigo_comuna!="13115") %>% 
+df_map %>%
+  filter(mapa_rm==1) %>% 
   fig_mapa(valor, lwd=0.01,limites=c(0, 20),
            facets = ~season,
            titulo="Heating Degree 2016-2019 \n [°C]",

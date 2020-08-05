@@ -29,7 +29,7 @@ f_savePlot(last_plot(), sprintf(file_name,"MapaChileIngresosFacet"))
 # Santiago
 df_ingreso %>% 
   right_join(mapa_comuna) %>% 
-  filter(codigo_provincia=="131" & codigo_comuna!="13115") %>% 
+  filter(mapa_rm==1) %>% 
   fig_mapa(ingresoAutonomo_mediana, lwd=0.01, limites=c(0,1.2*1e6),
            titulo="Mediana Ingreso autonomo [CLP]",
            fileName = sprintf(file_name,"MapaSantiagoIngresos"))
