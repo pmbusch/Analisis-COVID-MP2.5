@@ -10,8 +10,7 @@ El proyecto se subdivide en las siguientes secciones:
 * Análisis exploratorio datos recopilados [`Analisis Exploratorios`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/Analisis_Exploratorios)
 * Resume datos a nivel comunal [`Aggregate Data`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/Aggregate_Data)
 * Análisis de la relación entre COVID-19 y MP2.5:
-	* Estudios Transversales [`Analisis Transversal`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/04-AnalisisTransversal.R)
-	* Series de Tiempo
+	* Estudio Transversal [`Análisis Transversal`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/05-AnalisisTransversal.R)
 
 **Nota:** Si se desea explorar los scripts por separado se recomienda ejecutar el siguiente código para cargar todas las librerías necesarias: *source("Scripts/00-CargaLibrerias.R", encoding = "UTF-8")*
 
