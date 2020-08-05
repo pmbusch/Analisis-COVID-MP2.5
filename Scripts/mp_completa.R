@@ -2,14 +2,13 @@
 ## Analisis para completar datos de MP2.5
 ## Calcula la distancia entre centroides de comunas y estaciones de monitoreo
 ## Calcula promedio ponderado inverso a la distancia cuadratica
+# Se calcula la distancia con coordeandas geograficas (latlong)
 ## PBH Julio 2020
 # Nota: elegir un nombre mas creativo
 
 library(sf)
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
 file_name <- "Figuras/Completa_MP/%s.png"
-
-# Se calcula la distancia con coordeandas geograficas (latlong)
 
 
 ## Centroide comunas --------
@@ -21,7 +20,8 @@ comunas <- mapa_comuna %>%
          cent_lat=map_dbl(geometry, ~st_centroid(.x)[[2]]))
 
 ## Mapa RM: Poligonos + centroide
-comunas %>% filter(codigo_provincia=="131" & codigo_comuna!="13115") %>% 
+comunas %>% 
+  filter(mapa_rm==1) %>% 
   ggplot()+
   geom_sf(aes(geometry=geometry), fill="white")+
   geom_sf_label(aes(geometry=geometry, label=nombre_comuna))+
@@ -45,9 +45,6 @@ estaciones <- df_conc %>%
   na.omit() %>% 
   left_join(codigos_territoriales)
 
-# SOLO RM
-# estaciones <- estaciones %>% filter(codigo_provincia=="131" & codigo_comuna!="13115")
-
 # Convertir a sf
 estaciones <- st_as_sf(estaciones, 
                           coords = c("longitud","latitud"),
@@ -56,15 +53,18 @@ estaciones <- st_as_sf(estaciones,
                           # crs=9155)
 
 ## Mapa con estaciones
-comunas %>% filter(codigo_provincia=="131" & codigo_comuna!="13115") %>% 
+estaciones <- estaciones %>% 
+  left_join(mapa_comuna %>% select(codigo_comuna, mapa_rm))
+comunas %>% 
+  filter(mapa_rm==1) %>% 
   ggplot()+
   geom_sf(aes(geometry=geometry), fill="white")+
   # geom_sf_label(aes(geometry=geometry, label=nombre_comuna))+
   geom_point(aes(cent_lon, cent_lat), col="green")+
   geom_sf_label(aes(geometry=geometry, label=nombre_comuna),col="red",
-                data=estaciones %>% filter(codigo_provincia=="131" & codigo_comuna!="13115"))+
+                data=estaciones %>% filter(mapa_rm==1))+
   geom_sf(aes(geometry=geometry), col="red", size=3,shape=1,
-          data=estaciones %>% filter(codigo_provincia=="131" & codigo_comuna!="13115"))+
+          data=estaciones %>% filter(mapa_rm==1))+
   labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
   theme_minimal(base_size = 13)
 f_savePlot(last_plot(), sprintf(file_name,"Estaciones"))
@@ -122,19 +122,48 @@ df_dist %>%
   
 f_savePlot(last_plot(), sprintf(file_name,"ECDF_DistanciaEstacion"))
 
+# Graficar lineas distancia---------
+
+# Junto datos de comuna con estaciones. Solo para RM. 
+# Saco Lo Barnechea e incluyo Puente Alto
+df_aux <- df_dist %>% 
+  left_join(mapa_comuna %>% select(codigo_comuna,mapa_rm)) %>% 
+  filter(mapa_rm==1)
+
+estaciones_aux <- estaciones %>% 
+  filter(mapa_rm==1) %>% 
+  select(site,longitud, latitud) %>% rename(ubi=geometry)
+
+df_aux <- df_aux %>% ungroup() %>% 
+  left_join(estaciones_aux, by=c("minSite"="site")) %>% 
+  left_join(comunas %>% select(codigo_comuna,cent_lon, cent_lat))
+ 
+## DF con los puntos de las lineas, para dp con geom_path graficar
+# Junto codigo_comuna (grupo) con las coordenadas de centroide y estacion
+puntos_comunas <- df_aux %>% na.omit() %>% 
+  select(codigo_comuna, cent_lon, cent_lat) %>% rename(longitud=cent_lon,
+                                                       latitud=cent_lat)
+puntos_estaciones <- df_aux %>% na.omit() %>% select(codigo_comuna, longitud, latitud)
+
+lineas <- rbind(puntos_comunas, puntos_estaciones)
+rm(df_aux, estaciones_aux, puntos_comunas, puntos_estaciones)
+
 # Mapa Estacion mas cercana de cama comuna RM
+estaciones_mapa <- estaciones %>% rename(ubi=geometry) %>% 
+  filter(mapa_rm==1) %>%  
+  dplyr::select(-codigo_provincia,-codigo_comuna)
+# Nota: Hay una estacion llamada La Florida en Talca que genera repeticion
 df_dist %>% 
   left_join(mapa_comuna) %>% 
-  left_join(estaciones %>% rename(ubi=geometry) %>% 
-              dplyr::select(-codigo_provincia), 
-            by=c("minSite"="site", "codigo_comuna")) %>% 
-  filter(codigo_provincia=="131" & codigo_comuna!="13115") %>% 
+  filter(mapa_rm==1) %>% 
+  left_join(estaciones_mapa,by=c("minSite"="site")) %>% 
   ggplot()+
   geom_sf(aes(geometry=geometry), fill="white")+
-  geom_sf_label(aes(geometry=centroide, label=minSite),col="green")+
+  # geom_sf_label(aes(geometry=centroide, label=codigo_comuna),col="green")+
   geom_sf(aes(geometry=centroide), col="green")+
-  geom_sf_label(aes(geometry=ubi,label=minSite),col="red")+
+  # geom_sf_label(aes(geometry=ubi,label=minSite),col="red")+
   geom_sf(aes(geometry=ubi),col="red")+
+  geom_path(data=lineas, aes(x=longitud, y=latitud, group=codigo_comuna),col="red")+
   labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
   theme_minimal(base_size = 13)
 
@@ -188,7 +217,8 @@ fig_mapaChile_facet(df_avg, avg, limites=c(0,50),
                     fileName = sprintf(file_name,"MapaChileFacet"))
 
 # Santiago
-df_avg %>% filter(codigo_provincia=="131" & codigo_comuna!="13115") %>%
+df_avg %>% 
+  filter(mapa_rm==1) %>% 
   fig_mapa(avg, limites = c(0,50), titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]",
            fileName = sprintf(file_name,"MapaSantiago"))
 
@@ -204,6 +234,9 @@ pob_mp25 <- df_avg %>% left_join(df_poblacion) %>% pull(poblacion) %>% sum(na.rm
 cat(round(pob_mp25/total_pob*100,1),
     "% de poblacion en comunas con monitoreo de MP2.5")
 
+## Guardo Datos de MP2.5 expandidos a nivel comunal
+df_avg %>% rename(mp25=avg) %>% select(codigo_comuna,mp25) %>% 
+  saveRDS("Data/Data_Modelo/Datos_Concentraciones_50km.rsd")
 
 ## Nearest stations -----
 # Otro metodo para estimar la distancia menor
