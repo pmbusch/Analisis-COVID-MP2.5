@@ -36,7 +36,7 @@ df_prevision <-  df_prevision %>%
     T~"otro")) %>% 
   group_by(codigo_comuna,prev) %>% 
   summarise(hab=sum(hab,na.rm=T)) %>% 
-  mutate(perc=hab/sum(hab)) %>% 
+  mutate(perc=hab/sum(hab)*100) %>% 
   ungroup() %>% select(-hab) %>% 
   spread(prev, perc, fill=0) %>% select(-otro)
 
