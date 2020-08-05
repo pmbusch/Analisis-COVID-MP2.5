@@ -33,7 +33,7 @@ ggplot(df_modelo, aes(mp25, tasa_mortalidad, size=poblacion))+
   scale_size(labels=function(x) format(x,big.mark = " ", digits=0, scientific = F))+
   labs(x="Concentración MP2.5 2016-2019 [ug/m3]", 
        y="Tasa Mortalidad COVID [muertes/100mil hab]")+
-  theme_bw(13)
+  theme_bw(16)
 f_savePlot(last_plot(),
            sprintf(file_name, "Muertes_vs_MP25"))
 
@@ -89,8 +89,9 @@ df_modelo %>%
   dplyr::select(tasa_mortalidad, mp25, `65+`,perc_mujer, 
                 densidad_pob, perc_rural, 
                 tasa_contagios,
-                dias_primerContagio, dias_cuarentena, tasa_camas,
-                ingresoAutonomo_media, perc_isapre, 
+                dias_primerContagio,dias_primerMuerte, dias_cuarentena, tasa_camas,
+                ingresoAutonomo_media, perc_isapre, perc_fonasa_A,
+                perc_fonasa_B, perc_fonasa_C, perc_fonasa_D,
                 perc_menor_media, perc_ocupado, penetracion_lena, cons_lena_calefactor_pp,
                 cons_lena_cocina_pp,
                 tmed_summer, tmed_winter, hr_summer, hr_winter) %>%
@@ -98,6 +99,7 @@ df_modelo %>%
   cor() %>% 
   corrplot(method="circle", 
            # order="hclust",
+           type = "upper",
            # sig.level = 0.05, p.mat=p.mat,
            diag=F, tl.cex = 0.7)
 dev.off()

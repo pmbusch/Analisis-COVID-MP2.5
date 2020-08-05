@@ -5,11 +5,12 @@
 # Tablas Resumen general Promedio (sd) ---------------
 df_modelo %>% names()
 df <- df_modelo %>% 
+  mutate(perc_fonasa=perc_fonasa_A+perc_fonasa_B+perc_fonasa_C+perc_fonasa_D) %>% 
   select(tasa_mortalidad, mp25, poblacion, `15-44`, `45-64`, `65+`,perc_mujer, 
          densidad_pob, perc_rural, perc_material_irrecuperable, 
          tasa_contagios, perc_letalidad,
-         dias_primerContagio, dias_cuarentena, tasa_camas,
-         ingresoAutonomo_media, ingresoAutonomo_mediana, perc_isapre, 
+         dias_primerContagio, dias_primerMuerte, dias_cuarentena, tasa_camas,
+         ingresoAutonomo_media, perc_isapre, perc_fonasa,
          perc_menor_media, perc_ocupado, penetracion_lena, cons_lena_calefactor_pp,
          cons_lena_cocina_pp,tasa_mortalidad_all,
          tmed_summer, tmed_winter, hr_summer, hr_winter) %>% 
@@ -27,11 +28,12 @@ df <- df_modelo %>%
     `Tasa Contagios COVID [por 100mil]`=tasa_contagios,
     `% Letalidad COVID`=perc_letalidad,
     `Dias desde primer contagio`=dias_primerContagio,
+    `Dias desde primera muerte`=dias_primerMuerte,
     `Dias desde cuarentena`=dias_cuarentena,
     `Camas hospitalarias [por 100mil]`=tasa_camas,
     `Media Ingreso autonomo [CLP]`=ingresoAutonomo_media,
-    `Mediana Ingreso autonomo [CLP]`=ingresoAutonomo_mediana,
     `% Isapre`=perc_isapre,
+    `% Fonasa`=perc_fonasa,
     `% Educación menor a media`=perc_menor_media,
     `% Ocupado laboral`=perc_ocupado,
     `% Penetracion leña`=penetracion_lena,
@@ -67,7 +69,7 @@ df_skim %>%
   rename(Variable=skim_variable, Total=indicador, 
          `Sin MP2.5`=no, `Con MP2.5`=si) %>% 
   flextable() %>% 
-  bold(bold=T, part="header") %>% 
+  bold(bold=T, part="header") %>% bold(j=1, bold=T) %>% 
   autofit(add_w = 0.1, add_h = 0.3) %>%
   align(j=1, align = "left", part="all") %>% 
   align(j=2, align = "center", part="all") %>% 
