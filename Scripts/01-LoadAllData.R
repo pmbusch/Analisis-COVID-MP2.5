@@ -84,4 +84,11 @@ write.table(df_modelo,"Data/Data_Modelo/Datos_Modelo.csv",
 saveRDS(df_modelo, "Data/Data_Modelo/Datos_Modelo.rsd")
 save.image(".RData")
 
+## Guardar datos aplanados_modelo (std: standard test data format)
+cat('sep=; \n',file = "Data/Data_Modelo/Datos_Modelo_std.csv")
+df_modelo %>% gather(variable, valor, -codigo_comuna,-codigo_provincia,-codigo_region,
+                     -nombre_comuna,-nombre_provincia,-nombre_region,-region) %>% 
+  write.table("Data/Data_Modelo/Datos_Modelo_std.csv",
+            sep=';',row.names = F, append = T)
+
 ## EoF
