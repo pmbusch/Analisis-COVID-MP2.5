@@ -192,14 +192,14 @@ df_dist %>%
 
 f_savePlot(last_plot(), sprintf(file_name,"ECDF_DistanciaEstacion_N"))
 
-## Promedio ponderado --------
+## Promedio ponderado por inverso de la distancia--------
 corte_km <- 50
 # corte_km <- Inf
 df %>% names()
 df_avg <- df %>% filter(dist<corte_km*1e3)
 df_avg <- df_avg %>% 
   group_by(codigo_comuna, nombre_comuna) %>% 
-  summarise(avg=weighted.mean(avg, 1/(dist^2))) %>% ungroup() %>% 
+  summarise(avg=weighted.mean(avg, 1/(dist))) %>% ungroup() %>% 
   right_join(mapa_comuna)
 
 ## Mapas
