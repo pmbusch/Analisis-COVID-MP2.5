@@ -91,16 +91,28 @@ df_meteo <- df_meteo %>%
 
 ## Features: Heating Degree -------
 # https://en.wikipedia.org/wiki/Heating_degree_day
-df <- df_meteo %>% 
+# 18 grados
+df_hd18 <- df_meteo %>% 
   filter(tipo %in% c("tmin","tmax")) %>%
   spread(tipo, valor) %>% 
   mutate(heating_degree=18-(tmax-tmin)/2,
          heating_degree=if_else(heating_degree>0,heating_degree, 0),
-         tipo="heating_degree") %>% 
+         tipo="heating_degree_18") %>% 
   rename(valor=heating_degree) %>% 
   select(-tmin,-tmax)
-df_meteo <- df_meteo %>% rbind(df)
-rm(df)
+
+# 15 grados
+df_hd15 <- df_meteo %>% 
+  filter(tipo %in% c("tmin","tmax")) %>%
+  spread(tipo, valor) %>% 
+  mutate(heating_degree=15-(tmax-tmin)/2,
+         heating_degree=if_else(heating_degree>0,heating_degree, 0),
+         tipo="heating_degree_15") %>% 
+  rename(valor=heating_degree) %>% 
+  select(-tmin,-tmax)
+
+df_meteo <- df_meteo %>% rbind(df_hd18) %>% rbind(df_hd15)
+rm(df_hd18,df_hd15)
 
 # Season ---------
 df_meteo <- df_meteo %>% filter(!is.na(date)) %>% 
