@@ -6,7 +6,7 @@ library(casen)
 library(spatstat) #weighted median
 
 # Ejecutar solo para descargar datos
-# casen::descargar_casen_github(anios=2017, carpeta = "Data/Data Modelo/Casen")
+# casen::descargar_casen_github(anos=2017, carpeta = "Data/Data Modelo/Casen")
 df_casen <- read_rds("Data/Data_Original/Casen/2017.rds")
 df_casen %>% names()
 

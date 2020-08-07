@@ -199,7 +199,9 @@ f_savePlot(last_plot(), sprintf(file_name,"ECDF_DistanciaEstacion_N"))
 ## Exporta matriz distancia-comuna
 df_dist <- df %>% arrange(codigo_comuna, dist) %>% 
   group_by(nombre_comuna, codigo_comuna, centroide) %>% 
-  mutate(rank=rank(dist))
+  mutate(rank=rank(dist)) %>% 
+  left_join(codigos_territoriales)
+
 f_saveCsv(df_dist, "Data/Data_Modelo/distanciaComunaEstacion.csv")
 rm(df_dist)
 

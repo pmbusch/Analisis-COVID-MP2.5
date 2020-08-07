@@ -7,7 +7,7 @@
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
 theme_set(theme_bw())
 
-file_name <- "Figuras/%s.png"
+file_name <- "Figuras/Analisis_general/%s.png"
 
 
 ## Indicadores relevantes ------------
@@ -113,7 +113,7 @@ df_modelo %>%
   geom_density(fill="green",alpha=.5)+
   facet_wrap(~var, scales = "free")
 
-ggsave("Figuras/Densidades.png", last_plot(), dpi=900,
+ggsave(sprintf(file_name,"Densidades"), last_plot(), dpi=900,
        width = 22.3, height = 14, units = "in")
 
 df_modelo %>% 
@@ -123,7 +123,7 @@ df_modelo %>%
   stat_ecdf()+
   facet_wrap(~var, scales = "free")
 
-ggsave("Figuras/Ecdf.png", last_plot(), dpi=900,
+ggsave(sprintf(file_name,"Ecdf"), last_plot(), dpi=900,
        width = 22.3, height = 14, units = "in")
 
 ## Distribuciones por region --------
@@ -137,7 +137,7 @@ df_region %>%
   ggplot(aes(valor))+
   geom_density(fill="green",alpha=.5)+
   facet_wrap(~var, scales = "free")
-ggsave("Figuras/DensidadesRegion.png", last_plot(), dpi=900,
+ggsave(sprintf(file_name,"DensidadesRegion"), last_plot(), dpi=900,
        width = 22.3, height = 14, units = "in")
 
 # ECDF
@@ -145,7 +145,7 @@ df_region %>%
   ggplot(aes(valor))+
   stat_ecdf()+
   facet_wrap(~var, scales = "free")
-ggsave("Figuras/EcdfRegion.png", last_plot(), dpi=900,
+ggsave(sprintf(file_name,"EcdfRegion"), last_plot(), dpi=900,
        width = 22.3, height = 14, units = "in")
 
 

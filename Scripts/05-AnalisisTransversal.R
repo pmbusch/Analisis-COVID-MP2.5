@@ -5,6 +5,8 @@
 ## Fuente: Bates, D., Mächler, M., Bolker, B., & Walker, S. (2014). Fitting linear mixed-effects models using lme4. arXiv preprint arXiv:1406.5823.
 ## PBH Julio 2020
 
+file_name <- "Figuras/Analisis_transversal/%s.png"
+
 library(MASS)
 library(lme4)
 library(glmmTMB)
@@ -90,8 +92,8 @@ est_mrr %>%
   flextable() %>% 
   bold(bold=T, part="header") %>% bold(j=1, bold=T) %>% 
   autofit(add_w = 0.1, add_h = 0.3) %>%
-  align(j=1, align = "left", part="all") %>% 
-  print(preview="pptx")
+  align(j=1, align = "left", part="all")
+  # print(preview="pptx")
 
 
 ## Varianza random effects -----
@@ -118,6 +120,12 @@ lattice::qqmath(mod,id=0.05) ## quantile-quantile
 ## Prediction ------
 # type=responde https://stackoverflow.com/questions/47486589/what-is-the-difference-between-type-response-terms-and-link-in-predict-f
 # type=link entrega el logaritmo natural de la tasa de mortalidad (variable dependiente)
+
+
+df %>% filter(!is.na(mp25)) %>% mutate(y=predict(mod,type="response")) %>% 
+  dplyr::select(nombre_comuna,tasa_mortalidad,y,mp25,densidad_pob,
+                perc_ocupado,penetracion_lena) %>% view()
+
 
 # comparacion prediccion
 df %>% filter(!is.na(mp25)) %>% 
@@ -149,7 +157,7 @@ df_map <- df %>%  filter(!is.na(mp25)) %>%
 df_map %>% 
   fig_mapaChile_facet(tasa, facets = ~tipo, limites=c(0,500),
                       titulo="Tasa Mortalidad COVID [muertes/100mil hab]")
-f_savePlot(last_plot(), "Figuras/ModeloChile.png")
+f_savePlot(last_plot(), sprintf(file_name,"ModeloChile"))
 rm(df_map)
 
 ## Comparacion con Poisson
