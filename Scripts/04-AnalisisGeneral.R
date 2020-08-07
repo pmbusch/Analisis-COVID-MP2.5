@@ -116,4 +116,37 @@ df_modelo %>%
 ggsave("Figuras/Densidades.png", last_plot(), dpi=900,
        width = 22.3, height = 14, units = "in")
 
+df_modelo %>% 
+  select_if(is.numeric) %>% 
+  gather(var, valor) %>% 
+  ggplot(aes(valor))+
+  stat_ecdf()+
+  facet_wrap(~var, scales = "free")
+
+ggsave("Figuras/Ecdf.png", last_plot(), dpi=900,
+       width = 22.3, height = 14, units = "in")
+
+## Distribuciones por region --------
+# Tomo promedio SIMPLE de las comunas dentro de la region
+df_region <- df_modelo %>% group_by(codigo_region) %>% select_if(is.numeric) %>% 
+  gather(var, valor,-codigo_region) %>% group_by(codigo_region, var) %>% 
+  summarise(valor=mean(valor,na.rm=T))
+
+# Densidad
+df_region %>% 
+  ggplot(aes(valor))+
+  geom_density(fill="green",alpha=.5)+
+  facet_wrap(~var, scales = "free")
+ggsave("Figuras/DensidadesRegion.png", last_plot(), dpi=900,
+       width = 22.3, height = 14, units = "in")
+
+# ECDF
+df_region %>% 
+  ggplot(aes(valor))+
+  stat_ecdf()+
+  facet_wrap(~var, scales = "free")
+ggsave("Figuras/EcdfRegion.png", last_plot(), dpi=900,
+       width = 22.3, height = 14, units = "in")
+
+
 ## EoF
