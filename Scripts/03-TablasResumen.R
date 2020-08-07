@@ -5,24 +5,27 @@
 # Tablas Resumen general Promedio (sd) ---------------
 df_modelo %>% names()
 df <- df_modelo %>% 
-  mutate(perc_fonasa=perc_fonasa_A+perc_fonasa_B+perc_fonasa_C+perc_fonasa_D) %>% 
-  select(tasa_mortalidad, mp25, poblacion, `15-44`, `45-64`, `65+`,perc_mujer, 
-         densidad_pob, perc_rural, perc_material_irrecuperable, 
-         tasa_contagios, perc_letalidad,
-         dias_primerContagio, dias_primerMuerte, dias_cuarentena, tasa_camas,
+  mutate(perc_fonasa=perc_fonasa_A+perc_fonasa_B+perc_fonasa_C+perc_fonasa_D,
+         poblacion=poblacion/1e3,
+         ingresoAutonomo_media=ingresoAutonomo_media/1e3) %>% 
+  select(tasa_mortalidad, mp25, 
+         poblacion,densidad_pob, `15-44`, `45-64`, `65+`,perc_mujer, 
+         perc_rural, perc_material_irrecuperable, 
+         tasa_contagios, perc_letalidad,dias_primerContagio, 
+         dias_primerMuerte, dias_cuarentena, tasa_camas,tasa_mortalidad_all,
          ingresoAutonomo_media, perc_isapre, perc_fonasa,
-         perc_menor_media, perc_ocupado, penetracion_lena, cons_lena_calefactor_pp,
-         cons_lena_cocina_pp,tasa_mortalidad_all,
+         perc_menor_media, perc_ocupado, 
+         cons_lena_calefactor_pp,cons_lena_cocina_pp,penetracion_lena,
          tmed_summer, tmed_winter, hr_summer, hr_winter) %>% 
   rename(
     `Tasa Mortalidad COVID [por 100mil]`=tasa_mortalidad,
     `MP2.5 [ug/m3]`=mp25,
-    Poblacion=poblacion,
+    `Poblacion [miles]`=poblacion,
+    `Densidad [hab/km2]`=densidad_pob,
     `% 15-44`=`15-44`,
     `% 45-64`=`45-64`,
     `% 65+`=`65+`,
     `% Mujer`=perc_mujer,
-    `Densidad [hab/km2]`=densidad_pob,
     `% Rural`=perc_rural,
     `% Vivienda con Material irrecuperable`=perc_material_irrecuperable,
     `Tasa Contagios COVID [por 100mil]`=tasa_contagios,
@@ -31,19 +34,19 @@ df <- df_modelo %>%
     `Dias desde primera muerte`=dias_primerMuerte,
     `Dias desde cuarentena`=dias_cuarentena,
     `Camas hospitalarias [por 100mil]`=tasa_camas,
-    `Media Ingreso autonomo [CLP]`=ingresoAutonomo_media,
+    `Tasa Mortalidad Total [por 100mil]`=tasa_mortalidad_all,
+    `Media Ingreso autonomo mensual [miles CLP]`=ingresoAutonomo_media,
     `% Isapre`=perc_isapre,
     `% Fonasa`=perc_fonasa,
     `% Educación menor a media`=perc_menor_media,
     `% Ocupado laboral`=perc_ocupado,
+    `Consumo anual leña calefactor [kWh per cápita]`=cons_lena_calefactor_pp,
+    `Consumo anual leña cocina [kWh per cápita]`=cons_lena_cocina_pp,
     `% Penetracion leña`=penetracion_lena,
-    `Consumo leña calefactor [kWh per cápita]`=cons_lena_calefactor_pp,
-    `Consumo leña cocina [kWh per cápita]`=cons_lena_cocina_pp,
-    `Tasa Mortalidad total [por 100mil]`=tasa_mortalidad_all,
-    `Promedio Temperatura Verano [°C]`=tmed_summer, 
-    `Promedio Temperatura Invierno [°C]`=tmed_winter,
-    `Promedio Humedad relativa Verano [%]`=hr_summer,
-    `Promedio Humedad relativa Invierno [%]`=hr_winter,
+    `Temperatura media Verano [°C]`=tmed_summer, 
+    `Temperatura media Invierno [°C]`=tmed_winter,
+    `Humedad relativa media Verano [%]`=hr_summer,
+    `Humedad relativa media Invierno [%]`=hr_winter,
   )
 
 # separo por la condicion de si tiene o no estacion
@@ -84,10 +87,10 @@ rm(foot_note,df_skim, df_sep, n_mp25)
 # https://en.wikipedia.org/wiki/Coefficient_of_variation
 df_skim <- df %>% filter(!is.na(`MP2.5 [ug/m3]`)) %>% skim() %>% 
   mutate(cv=numeric.sd/numeric.mean) %>% 
-  select(skim_variable, numeric.mean, numeric.sd, cv,
+  select(skim_variable, numeric.mean, cv,
          numeric.p0, numeric.p50, numeric.p100) %>% 
   rename(Variable=skim_variable,
-         Promedio=numeric.mean,Desv=numeric.sd,
+         Promedio=numeric.mean,
          `C.V.`=cv,
          Min=numeric.p0, Mediana=numeric.p50, Max=numeric.p100)
 
