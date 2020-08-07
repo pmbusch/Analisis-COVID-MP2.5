@@ -77,22 +77,32 @@ mapa_regiones <- mapa_regiones %>% mutate(
 
 
 ## Superficie censal por comuna ----
-# # En proceso 
-# df_pob <- censo_2017_zonas %>%
-#   left_join(mapa_zonas) %>%
-#   left_join(codigos_territoriales) %>% 
-#   mutate(superficie=st_area(geometry) %>% as.numeric(),
-#          perimetro=st_length(geometry) %>% as.numeric())
-# 
-# ## Mucha Poblacion sin NA
-# df_pob %>% group_by(nombre_region) %>%
-#   summarise(count=sum(poblacion)) %>% arrange(desc(count))
-# 
-# # Superficie de manzana censal por comuna
-# df_pob <- df_pob %>% group_by(codigo_comuna) %>% 
-#   summarise(superficie_censal=sum(superficie, na.rm=T)) %>% ungroup() %>% 
-#   left_join(mapa_comuna) %>% 
-#   mutate(perc_censal=superficie_censal/superficie*100)
+## Notas: existen zonas sin mapa, por lo que no tendria la superficie
+censo_2017_comunas$poblacion %>% sum()
+censo_2017_zonas$poblacion %>% sum()
+cat(sum(censo_2017_zonas$poblacion)/sum(censo_2017_comunas$poblacion)*100,
+    " % de poblacion identificada en zonas censales")
+
+# Superficie por zonas
+df_zona <- mapa_zonas %>%
+  left_join(codigos_territoriales) %>%
+  mutate(superficie=st_area(geometry) %>% as.numeric(),
+         perimetro=st_length(geometry) %>% as.numeric())
+
+# Superficie de manzana censal por comuna
+df_zona <- df_zona %>% group_by(codigo_comuna) %>%
+  summarise(superficie_censal=sum(superficie, na.rm=T)) %>% ungroup() %>%
+  right_join(mapa_comuna) %>%
+  mutate(perc_censal=superficie_censal/superficie*100)
+
+# Nota: algunos valores de superficie sobre 100 (ej:100.2), 
+# puede deberse a diferencias en la aproximacion
+
+# Add superficie zona censal to mapa comuna
+mapa_comuna <- mapa_comuna %>% 
+  left_join(df_zona %>% select(codigo_comuna,superficie_censal)) %>% 
+  mutate(superficie_censal=if_else(is.na(superficie_censal),
+                                   superficie,superficie_censal))
 
 
 # mapa_zonas %>% 
