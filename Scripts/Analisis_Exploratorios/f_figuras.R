@@ -18,10 +18,12 @@ fig_mapa <- function(df, val, facets=NULL, limites=NULL,
   p <- ggplot(df) +
     geom_sf(aes(fill = {{val}}, geometry = geometry), lwd=lwd) +
     facet_grid({{facets}})+
-    scale_fill_viridis_c(name = titulo, 
-                         option="plasma", direction=1, na.value = "white",
-                         limits=limites,
-                         labels=function(x) format(x,big.mark = " ", decimal.mark = ".", scientific = F)) +
+    # Escala colores: https://colorbrewer2.org/
+    scale_fill_distiller(
+      palette = "YlOrRd", type = 'seq', na.value = "white", direction = 1,
+      name = titulo,
+      limits = limites,
+      labels=function(x) format(x,big.mark = " ", decimal.mark = ".", scientific = F))+
     labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
     theme_minimal(base_size = 14)
   # Guardo
@@ -65,16 +67,29 @@ fig_mapaChile_facet <- function(df, val, facets=NULL, limites=NULL,
     theme(legend.position = "none")+
     coord_sf(xlim = c(-76, -66), ylim = c(-56, -40),datum = NA,expand=F)
   
+  p_region <- mapa_regiones %>% 
+    left_join(df %>% select(codigo_region, zona_facet) %>% unique()) %>% 
+    ggplot()+
+    geom_sf(aes(geometry=geometry, fill=zona_facet),alpha=.3)+
+    scale_fill_viridis_d(option = "inferno")+
+    coord_sf(xlim=c(-76,-66), ylim=c(-56, -17.5), datum = NA,expand=F)+
+    theme_minimal(base_size = 14)+
+    theme(legend.position = "none")
+  
   # Nota: alineacion de la leyenda fue dificil, solucion heuristica actual es buena
   p <- (p1|p2)/(p3|p4)+plot_layout(guide="auto")&
     theme(plot.subtitle = element_text(size=8))
   
+  # best solution so far to include mapa chile completo
+  p <- plot_spacer()|p_region|p
+  
   # Guardo
   if (!is.null(fileName)){
-    f_savePlot(p,fileName)
+    f_savePlot(p,fileName, dpi=300)
   }
   p
 }
+
 
 ## SCATTER COMUNA -----------
 # Funcion para graficar en puntos valores de comuna

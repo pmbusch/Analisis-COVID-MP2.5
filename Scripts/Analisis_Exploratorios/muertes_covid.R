@@ -21,7 +21,7 @@ df_muertes %>% left_join(mapa_comuna) %>%
 df_muertes %>% left_join(mapa_comuna) %>% 
   fig_mapaChile_facet(tasa_mortalidad,limites=c(0,250),
                       titulo="Tasa Mortalidad Covid \n [muertes/100mil hab]")
-f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaChileCOVIDFacet"))
+f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaChileCOVIDFacet"),dpi = 300)
 
 
 # Santiago
