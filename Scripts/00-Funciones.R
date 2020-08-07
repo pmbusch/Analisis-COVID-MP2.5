@@ -70,3 +70,12 @@ f_savePlot <- function(p1, file_path, dpi=600){
   ggsave(file_path, {{p1}},dpi=dpi,
          width = 14.87, height = 9.30, units = "in")
 }
+
+## Save CSV --------
+f_saveCsv <- function(datos, file_path){
+  cat("Saving: ",file_path)
+  cat('sep=; \n',file = file_path)
+  write.table(datos, file_path,
+              sep=';',row.names = F, append = T)
+}
+
