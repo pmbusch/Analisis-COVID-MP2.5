@@ -102,8 +102,10 @@ df <- df %>% left_join(estaciones %>% rowid_to_column() %>%
               dplyr::select(rowid, site, avg),
             by=c("estacion_index"="rowid"))
 
+rm(comunas, estacines, df_matrix)
 
-# Distancia minima de cada comuna
+
+# Distancia minima de cada comuna ----------
 df_dist <- df %>% 
   group_by(nombre_comuna, codigo_comuna, centroide) %>% 
   summarise(minDist=min(dist),
@@ -116,7 +118,8 @@ df_dist %>%
   mutate(distancia=minDist/1e3) %>% 
   ggplot(aes(distancia,y=..y..*nrow(df_dist)))+
   stat_ecdf()+
-  scale_x_continuous(breaks=50*0:7, limits = c(0,350))+
+  scale_x_continuous(breaks=50*0:7)+
+  coord_cartesian(xlim = c(0,200))+ # coord_cartesian does not filter the data
   labs(x="Distancia [km]", y= "N° Comunas")+
   theme_bw(18)
   
@@ -182,18 +185,26 @@ df_dist <- df_dist %>% filter(rank<7)
 # ECDF distancia
 df_dist %>% 
   mutate(distancia=dist/1e3) %>% 
-  ggplot(aes(distancia,y=..y..* unique(df_dist$codigo_comuna) %>% length()))+
-  stat_ecdf(aes(col=factor(rank)))+
+  ggplot(aes(distancia,y=..y..*unique(df_dist$codigo_comuna) %>% length()))+
+  stat_ecdf(aes(col=factor(rank), group=rank),size=1)+
   # facet_wrap(~rank)+
-  scale_x_continuous(breaks=50*0:4, limits=c(0,200))+
+  scale_x_continuous(breaks=10*0:5)+
+  coord_cartesian(xlim=c(0,50))+ # coord_cartesian does not filter the data
   scale_color_viridis_d(name="N° Estaciones \n cercanas")+
   labs(x="Distancia [km]", y= "N° Comunas")+
   theme_bw(18)
 
 f_savePlot(last_plot(), sprintf(file_name,"ECDF_DistanciaEstacion_N"))
 
+## Exporta matriz distancia-comuna
+df_dist <- df %>% arrange(codigo_comuna, dist) %>% 
+  group_by(nombre_comuna, codigo_comuna, centroide) %>% 
+  mutate(rank=rank(dist))
+f_saveCsv(df_dist, "Data/Data_Modelo/distanciaComunaEstacion.csv")
+rm(df_dist)
+
 ## Promedio ponderado por inverso de la distancia--------
-corte_km <- 50
+corte_km <- 20
 # corte_km <- Inf
 df %>% names()
 df_avg <- df %>% filter(dist<corte_km*1e3)
@@ -222,11 +233,6 @@ df_avg %>%
   fig_mapa(avg, limites = c(0,50), titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]",
            fileName = sprintf(file_name,"MapaSantiago"))
 
-# SUr
-df_avg %>% filter(codigo_region %in% c("08","09","10","14","11")) %>% 
-  fig_mapa(avg, limites = c(0,50), titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]",
-           fileName = sprintf(file_name,"MapaSur"))
-
 
 # Poblacion en comunas con datos MP2.5
 total_pob <- df_poblacion$poblacion %>% sum()
@@ -236,7 +242,8 @@ cat(round(pob_mp25/total_pob*100,1),
 
 ## Guardo Datos de MP2.5 expandidos a nivel comunal
 df_avg %>% rename(mp25=avg) %>% select(codigo_comuna,mp25) %>% 
-  saveRDS("Data/Data_Modelo/Datos_Concentraciones_50km.rsd")
+  saveRDS("Data/Data_Modelo/Datos_Concentraciones_20km.rsd")
+
 
 ## Nearest stations -----
 # Otro metodo para estimar la distancia menor

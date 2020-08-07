@@ -16,7 +16,7 @@ source("Scripts/Aggregate_Data/camas_agg.R", encoding = "UTF-8")
 
 ## Data ya cargada (o bajada)
 df_conc <- read_rds("Data/Data_Modelo/Datos_Concentraciones.rsd")
-# df_conc <- read_rds("Data/Data_Modelo/Datos_Concentraciones_50km.rsd")
+# df_conc <- read_rds("Data/Data_Modelo/Datos_Concentraciones_20km.rsd")
 df_meteo <- read_rds("Data/Data_Modelo/Datos_Meteorologia.rsd")
 
 ## Data Covid -----------
