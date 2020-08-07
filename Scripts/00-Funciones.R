@@ -65,8 +65,8 @@ getSeason <- function(dat) {
 
 
 ## Save Plot ----------
-f_savePlot <- function(p1, file_path){
+f_savePlot <- function(p1, file_path, dpi=600){
   cat("Saving: ",file_path)
-  ggsave(file_path, {{p1}},dpi=600,
+  ggsave(file_path, {{p1}},dpi=dpi,
          width = 14.87, height = 9.30, units = "in")
 }
