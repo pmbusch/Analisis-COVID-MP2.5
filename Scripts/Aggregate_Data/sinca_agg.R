@@ -12,7 +12,7 @@ df <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
 # promedio de estaciones con distinta disponibilidad de datos
 
 df_conc <- df %>% 
-  filter(year %in% c(2016,2017,2018,2019)) %>% 
+  filter(year >2009) %>% 
   group_by(codigo_comuna, pollutant, unidad, site) %>% 
   summarise(valor=mean(valor, na.rm=T)) %>% 
   ungroup() %>% group_by(codigo_comuna, pollutant, unidad) %>% 
@@ -28,4 +28,4 @@ df_conc <- df_conc %>%
 saveRDS(df_conc, "Data/Data_Modelo/Datos_Concentraciones.rsd")
 
 rm(df)
-s## EoF
+## EoF

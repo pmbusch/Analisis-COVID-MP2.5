@@ -13,6 +13,28 @@ df_conc <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
 df_conc <- df_conc %>% mutate(region=factor(region, levels_region)) %>% 
   filter(pollutant=="mp2.5")
 
+
+## Series de Tiempo -------
+# heatmap
+
+df_mes <- df_conc %>% 
+  group_by(year,month,site,latitud,codigo_comuna) %>% 
+  summarise(valor=mean(valor,na.rm=T)) %>% ungroup() %>% 
+  mutate(date=paste(year,month,1,sep="-") %>%  
+           strptime(format="%Y-%m-%d") %>% 
+           as_date()) %>% 
+  left_join(mapa_comuna)
+
+df_mes %>% 
+  ggplot(aes(x = date, y = reorder(site, latitud), fill = valor)) + 
+  geom_tile() + 
+  facet_grid(region~., scales = "free", space="free")+
+  scale_fill_viridis_c(option = "B", direction = -1, 
+                       name="Promedio Anual MP2.5 [ug/m3]") + 
+  scale_y_discrete(name = NULL)+
+  scale_x_date(name="", date_breaks = "2 years",date_labels = "%Y")
+  
+
 ## Promedio 2016-2019: Norte a Sur -----------
 df_avg <- df_conc %>% 
   filter(year>2016) %>% 

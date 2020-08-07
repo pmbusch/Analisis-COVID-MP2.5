@@ -3,8 +3,10 @@
 ## PBH Octubre 2018
 ## Ultima atualizacion: PBH Jul 2020
 
+options(dplyr.summarise.inform=FALSE)
+
 # Parametros ----------
-fecha_inicio <- "2016-01-01"
+fecha_inicio <- "2010-01-01"
 fecha_fin <- format(Sys.time(),'%Y-%m-%d')
 contaminantes <- c("mp2.5", "co", "no2")
 
