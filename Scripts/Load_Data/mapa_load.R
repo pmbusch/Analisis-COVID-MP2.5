@@ -12,7 +12,7 @@ df_poblacion$poblacion %>% sum()
 ## MAPAS ---------
 ## Comunas --------------
 # Saco del mapa a Isla de Pascua y Juan Fernandez
-mapa_comuna <- mapa_comunas %>% 
+mapa_comuna <- mapa_comunas %>% st_as_sf() %>% 
   filter(!(codigo_comuna %in% c("05201","05104"))) %>% 
   mutate(superficie=st_area(geometry) %>% as.numeric(),
          perimetro=st_length(geometry) %>% as.numeric())

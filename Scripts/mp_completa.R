@@ -31,8 +31,6 @@ comunas %>%
 
 f_savePlot(last_plot(), sprintf(file_name,"Centroides"))
 
-## SOLO RM
-# comunas <- comunas %>% filter(codigo_provincia=="131" & codigo_comuna!="13115")
 
 ## Estaciones calidad Aire -------------
 df_conc <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
@@ -45,6 +43,10 @@ estaciones <- df_conc %>%
   na.omit() %>% 
   left_join(codigos_territoriales)
 
+## Mapa con estaciones
+estaciones <- estaciones %>% 
+  left_join(mapa_comuna %>% select(codigo_comuna, mapa_rm))
+
 # Convertir a sf
 estaciones <- st_as_sf(estaciones, 
                           coords = c("longitud","latitud"),
@@ -52,9 +54,6 @@ estaciones <- st_as_sf(estaciones,
                           crs="+proj=longlat +ellps=GRS80 +no_defs")
                           # crs=9155)
 
-## Mapa con estaciones
-estaciones <- estaciones %>% 
-  left_join(mapa_comuna %>% select(codigo_comuna, mapa_rm))
 comunas %>% 
   filter(mapa_rm==1) %>% 
   ggplot()+
@@ -246,19 +245,53 @@ cat(round(pob_mp25/total_pob*100,1),
 df_avg %>% rename(mp25=avg) %>% select(codigo_comuna,mp25) %>% 
   saveRDS("Data/Data_Modelo/Datos_Concentraciones_20km.rsd")
 
+## Exportacion Mapa interactivo --------------
+library(mapview)
+library(leaflet)
+
+comunas_mapa <- st_as_sf(comunas, 
+                         coords = c("cent_lon","cent_lat"),
+                         remove = F, 
+                         crs="+proj=longlat +ellps=GRS80 +no_defs")
+
+m <- mapview(comunas_mapa, label=comunas_mapa$nombre_comuna, col.regions="blue",
+        layer.name = c("Centroides Comuna"))+
+  mapview(estaciones, label=estaciones$site, col.regions="red",
+        layer.name = c("Estaciones Monitoreo"))
+
+
+mapa_comuna_view <- mapa_comuna %>% 
+                              left_join(codigos_territoriales) %>% 
+                              select(codigo_comuna, nombre_comuna,
+                                     nombre_provincia, nombre_region)
+m_comunas <- mapview(mapa_comuna_view,
+          layer.name = c("Comunas"),label=mapa_comuna_view$nombre_comuna,
+          alpha.regions=0.1, col.regions="green")
+m_comunas+m
+
+
+# Save file as html
+mapshot(m+m_comunas, "Figuras/Completa_MP/EstacionesMonitoreo.html")
+
+rm(m, m_comunas, comunas_mapa,mapa_comuna_view)
 
 ## IDEM METEOROLOGIA ----------
 # Cargar objeto Comunas
 ## Estaciones Meteorologia -------------
 df_meteo <- read_rds("Data/Data_Modelo/Datos_Meteorologia_raw.rsd")
 
-df_meteo <- df_meteo %>% filter(year %in% 2016:2019 & pollutant=="mp2.5")
+df_meteo <- df_meteo %>% filter(year(date) %in% 2016:2019)
 
 estaciones <- df_meteo %>% 
   group_by(codigo_comuna,estacion,nombre_estacion, longitud, latitud) %>% 
   summarise(count=n()) %>% ungroup() %>% 
   select(-count) %>% na.omit() %>% 
   left_join(codigos_territoriales)
+
+
+## Mapa con estaciones
+estaciones <- estaciones %>% 
+  left_join(mapa_comuna %>% select(codigo_comuna, mapa_rm))
 
 # Convertir a sf
 estaciones <- st_as_sf(estaciones, 
@@ -267,9 +300,7 @@ estaciones <- st_as_sf(estaciones,
                        crs="+proj=longlat +ellps=GRS80 +no_defs")
 # crs=9155)
 
-## Mapa con estaciones
-estaciones <- estaciones %>% 
-  left_join(mapa_comuna %>% select(codigo_comuna, mapa_rm))
+
 comunas %>% 
   filter(mapa_rm==1) %>% 
   ggplot()+
@@ -409,6 +440,38 @@ df_dist %>%
   theme_bw(18)
 
 f_savePlot(last_plot(), sprintf(file_name,"ECDF_DistanciaEstacion_NMeteo"))
+
+
+## Exportacion Mapa interactivo --------------
+library(mapview)
+library(leaflet)
+
+comunas_mapa <- st_as_sf(comunas, 
+                         coords = c("cent_lon","cent_lat"),
+                         remove = F, 
+                         crs="+proj=longlat +ellps=GRS80 +no_defs")
+
+m <- mapview(comunas_mapa, label=comunas_mapa$nombre_comuna, col.regions="blue",
+             layer.name = c("Centroides Comuna"))+
+  mapview(estaciones, label=estaciones$estacion, col.regions="red",
+          layer.name = c("Estaciones Meteorologia"))
+
+
+mapa_comuna_view <- mapa_comuna %>% 
+  left_join(codigos_territoriales) %>% 
+  select(codigo_comuna, nombre_comuna,
+         nombre_provincia, nombre_region)
+m_comunas <- mapview(mapa_comuna_view,
+                     layer.name = c("Comunas"),label=mapa_comuna_view$nombre_comuna,
+                     alpha.regions=0.1, col.regions="green")
+m_comunas+m
+
+
+# Save file as html
+mapshot(m+m_comunas, "Figuras/Completa_MP/EstacionesMeteorologia.html")
+
+rm(m, m_comunas, comunas_mapa,mapa_comuna_view)
+
 
 ## Nearest stations -----
 # Otro metodo para estimar la distancia menor

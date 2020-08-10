@@ -4,6 +4,7 @@
 
 ## Scrap MeteoChile
 library(rvest)
+source("Scripts/00-Funciones.R", encoding = "UTF-8")
 
 #Establecer el año que se quiere scrapear
 year_start <- 2016
