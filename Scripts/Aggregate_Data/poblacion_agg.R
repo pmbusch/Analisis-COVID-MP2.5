@@ -50,6 +50,6 @@ rm(df_edad,df_sexo)
 df_poblacion <- df_poblacion %>% 
   left_join(mapa_regiones %>% select(codigo_region, region)) %>% 
   select(-geometry) %>% 
-  left_join(mapa_comuna %>% select(codigo_comuna, superficie, perimetro))
+  left_join(mapa_comuna %>% select(codigo_comuna, superficie, perimetro,superficie_censal))
   
 ## EoF

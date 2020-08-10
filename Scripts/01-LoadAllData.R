@@ -59,6 +59,7 @@ df_modelo <- df_modelo %>%
   mutate(tasa_camas=camas/poblacion*1e5,
          dias_cuarentena=(fecha_muertes-fecha_cuarentena) %>% as.numeric(units="days"),
          densidad_pob=poblacion/superficie*1e6,
+         densidad_pob_censal=poblacion/superficie_censal*1e6,
          perc_letalidad=casos_fallecidos/casos_confirmados*100) %>% 
   select(-fecha_cuarentena, -camas)
 
