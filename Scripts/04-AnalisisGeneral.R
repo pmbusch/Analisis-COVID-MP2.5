@@ -148,5 +148,40 @@ df_region %>%
 ggsave(sprintf(file_name,"EcdfRegion"), last_plot(), dpi=900,
        width = 22.3, height = 14, units = "in")
 
+## Mapa interactivo --------
+library(RColorBrewer)
+df_modelo %>% names()
+mapa <- left_join(mapa_comuna, df_modelo)
+
+# Mapa Tasa Mortalidad
+m <- mapview(mapa, label=mapa$nombre_comuna, zcol="tasa_mortalidad", 
+        col.regions=brewer.pal(9, "YlOrRd"))
+
+# Mapa Varios parametros
+# OVERKILL: pero parametro Burst no me funciona ni en los ejemplos
+m <- mapview(mapa, label=mapa$nombre_comuna, zcol="tasa_mortalidad", 
+                  col.regions=brewer.pal(9, "YlOrRd"))+
+  mapview(mapa, label=mapa$nombre_comuna, zcol="mp25", 
+          col.regions=brewer.pal(9, "YlOrRd"))+
+  mapview(mapa, label=mapa$nombre_comuna, zcol="densidad_pob", 
+          col.regions=brewer.pal(9, "YlOrRd"))+
+  mapview(mapa, label=mapa$nombre_comuna, zcol="ingresoAutonomo_media", 
+          col.regions=brewer.pal(9, "YlOrRd"))+
+  mapview(mapa, label=mapa$nombre_comuna, zcol="perc_menor_media", 
+          col.regions=brewer.pal(9, "YlOrRd"))+
+  mapview(mapa, label=mapa$nombre_comuna, zcol="perc_isapre", 
+          col.regions=brewer.pal(9, "YlOrRd"))+
+  mapview(mapa, label=mapa$nombre_comuna, zcol="tasa_camas", 
+          col.regions=brewer.pal(9, "YlOrRd"))+
+  mapview(mapa, label=mapa$nombre_comuna, zcol="dias_primerContagio", 
+          col.regions=brewer.pal(9, "YlOrRd"))+
+  mapview(mapa, label=mapa$nombre_comuna, zcol="dias_cuarentena", 
+          col.regions=brewer.pal(9, "YlOrRd"))
+
+
+# Save file as html
+mapshot(m, "Figuras/MapaParametrosComuna.html")
+rm(mapa, m)
+
 
 ## EoF
