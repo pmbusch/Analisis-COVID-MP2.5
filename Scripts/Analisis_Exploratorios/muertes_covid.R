@@ -9,6 +9,13 @@ source("Scripts/Analisis_Exploratorios/f_figuras.R", encoding = "UTF-8")
 # Carga datos brutos --------
 source("Scripts/Load_Data/covidMuertes_load.R", encoding = "UTF-8")
 
+# Poblacion en comunas con muertes ---------
+total_comunas <- nrow(df_muertes)
+comunas_muerte <- df_muertes %>% filter(casos_fallecidos>0) %>% nrow()
+cat(round(comunas_muerte/346*100,1),
+    "% de comunas con muertes COVID")
+
+rm(total_comunas, comunas_muerte)
 
 ## Mapas -------
 df_muertes$tasa_mortalidad %>% range() # rango para los graficos
@@ -29,17 +36,9 @@ df_muertes %>% left_join(mapa_comuna) %>%
   left_join(codigos_territoriales) %>% 
   filter(mapa_rm==1) %>% 
   fig_mapa(tasa_mortalidad, limites = c(0,250),
-           titulo= "Tasa Mortalidad Covid \n [muertes/100mil hab]",
-           fileName = sprintf(file_name,"MapaSantiagoCOVID"))
+           titulo= "Tasa Mortalidad Covid \n [muertes/100mil hab]")
+f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaSantiagoCOVID"), dpi=100)
 
-
-# Zona Sur
-df_muertes %>% left_join(mapa_comuna) %>% 
-  filter(codigo_region %in% c("08","09","10","14","11")) %>% 
-  fig_mapa(tasa_mortalidad, limites = c(0,250),
-           titulo= "Tasa Mortalidad Covid \n [muertes/100mil hab]",
-           fileName = sprintf(file_name,"MapaSurCOVID"))
-  
 
 ## Geo Facet Santiago ---------------
 url <- "https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output"
@@ -71,7 +70,6 @@ ggsave(sprintf(file_name,"MuertesSantiago"),
 
 ## DEIS ----------
 
-source("Scripts/Load_Data/mapa_load.R", encoding = "UTF-8")
 df_deis <- df_deis %>% select(-region) %>% left_join(codigos_territoriales) %>% 
   left_join(mapa_regiones %>% select(-geometry))
 
@@ -89,13 +87,15 @@ data$x <- factor(data$x, levels = c("tipo", "sexo", "grupo_edad","region"))
 ggplot(data, aes(x, id = id, split = y, value = value)) +
   geom_parallel_sets(aes(fill = tipo), alpha = 0.3, axis.width = 0.1, sep=0.01) +
   geom_parallel_sets_axes(axis.width = 0.1, fill = "grey80", color = "grey80",sep=0.01) +
-  geom_parallel_sets_labels(color = 'black', size = 10/.pt, angle = 90,sep=0.01) +
-  scale_x_discrete(name = NULL, expand = c(0, 0.2))+
+  geom_parallel_sets_labels(color = 'black', size = 14/.pt, angle = 90,sep=0.01) +
+  scale_x_discrete(name = NULL, expand = c(0, 0.2), 
+                   labels=c("Tipo","Sexo"," Grupo etario","Region"))+
   scale_y_continuous(breaks = NULL, expand = c(0, 0))+
-  theme(axis.line = element_blank(), axis.ticks = element_blank(), 
+  theme(axis.line = element_blank(), axis.ticks = element_blank(),
+        text = element_text(size=20),
         legend.position = "none", plot.margin = margin(14, 1.5, 2, 1.5))
 
-source("Scripts/00-Funciones.R", encoding = "UTF-8")
-f_savePlot(last_plot(), "Figuras/SankeyMuertesCovid.png")
+f_savePlot(last_plot(), 
+           sprintf(file_name,"SankeyMuertesCovid"), dpi=100)
 
 ## EoF

@@ -54,23 +54,25 @@ rm(url, df_muerteZero)
 
 ### Muertes DEIS -------------
 # Descargar datos
-library(rvest)
-# # No logro encontrar el archivo mas reciente
+# library(rvest)
+# # # No logro encontrar el archivo mas reciente
 # web <- read_html("https://deis.minsal.cl/#datosabiertos") %>% html_text()
 # str_extract_all(web, ".rar")
-# # No se descarga bien
-# link <- "http://deis.minsal.cl/wp-content/uploads/2020/08/DEFUNCIONES_FUENTE_DEIS_2016_2020_30072020.rar"
+# # No se descarga bien (debo hacerlo a mano)
+# link <- "http://deis.minsal.cl/wp-content/uploads/2020/08/DEFUNCIONES_FUENTE_DEIS_2016_2020_06082020.rar"
 # dest_file <- "Data/Data_Original/DEIS.rar"
-# download.file(link, destfile = dest_file)
+# download.file(link, destfile = dest_file,
+#               method = "libcurl", quiet = F)
 # 
 # 
 # # NO LOGRO EXTRAER CORRECTAMENTE
 # # extraer
-# unzip("Data/Data_Original/DEFUNCIONES_FUENTE_DEIS_2016_2020_23072020.rar")
+# unzip("Data/Data_Original/DEIS.rar", 
+#       exdir = "Data/Data_Original/DEIS")
 
 # lectura
-df_deis <- read_delim("Data/Data_Original/DEFUNCIONES_FUENTE_DEIS_2016_2020_23072020/DEFUNCIONES_FUENTE_DEIS_2016_2020_23072020.csv",
-                 delim = "|",col_names = F,
+df_deis <- read_delim("Data/Data_Original/DEIS/DEFUNCIONES_FUENTE_DEIS_2016_2020_06082020.csv",
+                 delim = ";",col_names = F,
                  col_types = "dDccccccccc",
                  locale = locale(encoding = "windows-1252"))
 names(df_deis) <- c("year","date","sexo","edad","codigo_comuna","comuna","region",
