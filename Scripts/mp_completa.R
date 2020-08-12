@@ -261,19 +261,46 @@ m <- mapview(comunas_mapa, label=comunas_mapa$nombre_comuna, col.regions="blue",
 
 
 mapa_comuna_view <- mapa_comuna %>% 
-                              left_join(codigos_territoriales) %>% 
-                              select(codigo_comuna, nombre_comuna,
-                                     nombre_provincia, nombre_region)
+                              left_join(codigos_territoriales)
 m_comunas <- mapview(mapa_comuna_view,
           layer.name = c("Comunas"),label=mapa_comuna_view$nombre_comuna,
           alpha.regions=0.1, col.regions="green")
-m_comunas+m
 
+area_poblada <- st_read('Data/Data_Original/Areas_Pobladas/Areas_Pobladas.shp',
+                        layer = "Areas_Pobladas")
+area_poblada %>% class()
+area_poblada$Entidad %>% unique()
+m_area_poblada <- mapview(area_poblada,label=area_poblada$comuna,
+                          layer.name = c("Area Poblada bcn"),
+                          alpha.regions=0.1, col.regions="yellow")
+# m_area_poblada
+
+
+zonas <- mapa_zonas %>% st_as_sf() %>% left_join(codigos_territoriales)
+zonas %>% class()
+m_zonas <- mapview(zonas, label=zonas$nombre_comuna,
+                   layer.name = c("Zonas Urbanas"),
+                   alpha.regions=0.1, col.regions="orange")
+m_zonas
+
+## Unir zonas censales a nivel de comuna
+library(rmapshaper)
+zonas %>% names()
+zonas_agg <- ms_dissolve(zonas, field = "codigo_comuna") %>%
+  left_join(codigos_territoriales)
+zonas_agg %>% class()
+m_zonas_agg <- mapview(zonas_agg, label=zonas_agg$nombre_comuna,
+                   layer.name = c("Zonas Urbanas Agregadas"),
+                   alpha.regions=0.1, col.regions="purple")
+m_zonas_agg
+
+m_all <- m+m_comunas+m_area_poblada+m_zonas+m_zonas_agg
 
 # Save file as html
-mapshot(m+m_comunas, "Figuras/Completa_MP/EstacionesMonitoreo.html")
+mapshot(m_all, "Figuras/Completa_MP/EstacionesMonitoreo.html")
 
-rm(m, m_comunas, comunas_mapa,mapa_comuna_view)
+rm(m, m_comunas, comunas_mapa,mapa_comuna_view, m_zonas, m_zonas_agg,
+   m_area_poblada,m_all)
 
 ## IDEM METEOROLOGIA ----------
 # Cargar objeto Comunas
@@ -464,11 +491,11 @@ mapa_comuna_view <- mapa_comuna %>%
 m_comunas <- mapview(mapa_comuna_view,
                      layer.name = c("Comunas"),label=mapa_comuna_view$nombre_comuna,
                      alpha.regions=0.1, col.regions="green")
-m_comunas+m
 
 
+m_all <- m+m_comunas+m_area_poblada+m_zonas+m_zonas_agg
 # Save file as html
-mapshot(m+m_comunas, "Figuras/Completa_MP/EstacionesMeteorologia.html")
+mapshot(m_all, "Figuras/Completa_MP/EstacionesMeteorologia.html")
 
 rm(m, m_comunas, comunas_mapa,mapa_comuna_view)
 
