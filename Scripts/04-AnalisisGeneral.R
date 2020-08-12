@@ -22,29 +22,91 @@ cat(round(pob_mp25/total_pob*100,1),
 # Poblacion en comunas con muertes ---------
 total_comunas <- nrow(df_modelo)
 comunas_muerte <- df_modelo %>% filter(casos_fallecidos>0) %>% nrow()
-cat(round(comunas_muerte/total_comunas*100,1),
+cat(round(comunas_muerte/346*100,1),
     "% de comunas con muertes COVID")
 
 rm(total_pob, pob_mp25, total_comunas, comunas_muerte)
 
 ## Scatter correlacion -----------
-ggplot(df_modelo, aes(mp25, tasa_mortalidad, size=poblacion))+
-  geom_point(col="red",alpha=.5)+
+df_modelo %>% 
+  mutate(rm=if_else(region=="M","RM","Resto Chile") %>% factor()) %>% 
+  ggplot(aes(mp25, tasa_mortalidad, size=poblacion, col=rm))+
+  geom_point(alpha=.5)+
   scale_size(labels=function(x) format(x,big.mark = " ", digits=0, scientific = F))+
   labs(x="Concentración MP2.5 2016-2019 [ug/m3]", 
-       y="Tasa Mortalidad COVID [muertes/100mil hab]")+
+       y="Tasa Mortalidad COVID [muertes/100mil hab]",
+       size="Poblacion",
+       color="")+
   theme_bw(16)
 f_savePlot(last_plot(),
-           sprintf(file_name, "Muertes_vs_MP25"))
+           sprintf(file_name, "Muertes_vs_MP25"), dpi=300)
 
 last_plot()+
   geom_text_repel(aes(label=nombre_comuna))
 f_savePlot(last_plot(),
-           sprintf(file_name, "Muertes_vs_MP25_name"))
+           sprintf(file_name, "Muertes_vs_MP25_name"), dpi=150)
 
 
 ## Matriz Correlacion ------------
 library(corrplot)
+
+## Con todas las variables posibles!
+df_modelo %>% na.omit() %>% 
+  select_if(is.numeric) %>%
+  # select(tasa_mortalidad, mp25, poblacion, `15-44`, `45-64`, `65+`,perc_mujer, 
+  #        densidad_pob, perc_rural, perc_material_irrecuperable, 
+  #        tasa_contagios, perc_letalidad) %>%
+  cor() %>% 
+  corrplot(method="color", order="hclust",
+           diag=F, tl.cex = 0.7)
+
+# Con variables de interes
+df_cor <- df_modelo %>% 
+  dplyr::select(tasa_mortalidad, mp25, `65+`,perc_mujer, 
+                densidad_pob, perc_rural, 
+                tasa_contagios,
+                dias_primerContagio,dias_primerMuerte, dias_cuarentena, tasa_camas,
+                ingresoAutonomo_media, perc_isapre, perc_fonasa_A,
+                perc_fonasa_B, perc_fonasa_C, perc_fonasa_D,
+                perc_menor_media, perc_ocupado, cons_lena_calefactor_pp,
+                cons_lena_cocina_pp, perc_lenaCocina, perc_lenaCalefaccion,
+                perc_lenaAgua,
+                tmed_summer, tmed_winter, hr_summer, hr_winter)
+
+# Pearson
+png(sprintf(file_name,"Correlaciones"), width = 14.87, height = 9.30, units = "in", res=200)
+df_cor %>% 
+  cor(method = "pearson", use="complete.obs") %>% 
+  corrplot(method="circle", 
+           # order="hclust",
+           type = "upper",
+           # sig.level = 0.05, p.mat=p.mat,
+           diag=F, tl.cex = 0.7)
+dev.off()
+
+# Cluster
+png(sprintf(file_name,"CorrelacionesCluster"), width = 14.87, height = 9.30, units = "in", res=600)
+df_cor %>% 
+  cor(method = "pearson", use="complete.obs") %>% 
+  corrplot(method="circle", 
+           order="hclust",
+           type = "upper",
+           # sig.level = 0.05, p.mat=p.mat,
+           diag=F, tl.cex = 0.7)
+dev.off()
+
+# Spearmean
+png(sprintf(file_name,"CorrelacionesSpearman"), width = 14.87, height = 9.30, units = "in", res=600)
+df_cor %>% 
+  cor(method = "spearman", use="complete.obs") %>% 
+  corrplot(method="circle", 
+           # order="hclust",
+           type = "upper",
+           # sig.level = 0.05, p.mat=p.mat,
+           diag=F, tl.cex = 0.7)
+dev.off()
+
+# Significativas
 
 ## Funcion significacia
 # http://www.sthda.com/english/wiki/visualize-correlation-matrix-using-correlogram#:~:text=Correlogram%20is%20a%20graph%20of,degree%20of%20association%20between%20variables.
@@ -63,47 +125,19 @@ cor.mtest <- function(mat, ...) {
   p.mat
 }
 # matrix of the p-value of the correlation
-p.mat <- cor.mtest(df_modelo %>% 
-                     dplyr::select(tasa_mortalidad, mp25, `65+`,perc_mujer, 
-                                   densidad_pob, perc_rural, 
-                                   tasa_contagios,
-                                   dias_primerContagio, dias_cuarentena, tasa_camas,
-                                   ingresoAutonomo_media, perc_isapre, 
-                                   perc_menor_media, perc_ocupado, penetracion_lena, cons_lena_calefactor_pp,
-                                   cons_lena_cocina_pp,
-                                   tmed_summer, tmed_winter, hr_summer, hr_winter) %>%
-                     na.omit())
+p.mat <- cor.mtest(df_cor, method="pearson", na.action=na.omit)
 
-
-df_modelo %>% na.omit() %>% 
-  select_if(is.numeric) %>%
-  # select(tasa_mortalidad, mp25, poblacion, `15-44`, `45-64`, `65+`,perc_mujer, 
-  #        densidad_pob, perc_rural, perc_material_irrecuperable, 
-  #        tasa_contagios, perc_letalidad) %>%
-  cor() %>% 
-  corrplot(method="color", order="hclust",
-           diag=F, tl.cex = 0.7)
-
-png("Figuras/Correlaciones.png", width = 14.87, height = 9.30, units = "in", res=600)
-df_modelo %>% 
-  dplyr::select(tasa_mortalidad, mp25, `65+`,perc_mujer, 
-                densidad_pob, perc_rural, 
-                tasa_contagios,
-                dias_primerContagio,dias_primerMuerte, dias_cuarentena, tasa_camas,
-                ingresoAutonomo_media, perc_isapre, perc_fonasa_A,
-                perc_fonasa_B, perc_fonasa_C, perc_fonasa_D,
-                perc_menor_media, perc_ocupado, penetracion_lena, cons_lena_calefactor_pp,
-                cons_lena_cocina_pp,
-                tmed_summer, tmed_winter, hr_summer, hr_winter) %>%
-  na.omit() %>% 
-  cor(method = "pearson") %>% 
+png(sprintf(file_name,"CorrelacionesSign"), width = 14.87, height = 9.30, units = "in", res=600)
+df_cor %>% 
+  cor(method = "pearson", use="complete.obs") %>% 
   corrplot(method="circle", 
            # order="hclust",
            type = "upper",
-           # sig.level = 0.05, p.mat=p.mat,
+           sig.level = 0.05, p.mat=p.mat,
            diag=F, tl.cex = 0.7)
 dev.off()
 
+rm(df_cor, p.mat, cor.mtest)
 
 ## Densidaddes  por variable ---------------
 df_modelo %>% 
