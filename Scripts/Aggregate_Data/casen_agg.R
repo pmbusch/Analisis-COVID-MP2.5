@@ -41,16 +41,27 @@ df_prevision <-  df_prevision %>%
   spread(prev, perc, fill=0) %>% select(-otro)
 
 
+## Leña 2015 ---------
+df_lena_casen <- df_lena_casen %>% 
+  mutate(perc_lenaCocina=lena_cocina/hab*100,
+         perc_lenaCalefaccion=lena_calefaccion/hab*100,
+         perc_lenaAgua=lena_agua/hab*100) %>% 
+  select(codigo_comuna, perc_lenaCocina, perc_lenaCalefaccion, perc_lenaAgua)
+
+
+
 ## AGRUPAR TODO -------
 df_casen <- left_join(df_ingreso, 
                       df_ocupacion %>% select(codigo_comuna, perc_ocupado)) %>% 
   left_join(df_educacion) %>% 
   left_join(df_prevision) %>% 
+  left_join(df_lena_casen) %>% 
   select(-nombre_comuna,-codigo_provincia,-nombre_provincia,
          -codigo_region,-nombre_region)
 
 
 rm(df_codigoSalud, df_codigoEducacion, df_ingreso, df_prevision, df_educacion,
-   df_ocupacion)
+   df_ocupacion, df_lena_casen)
+
 
 ## EoF

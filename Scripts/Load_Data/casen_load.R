@@ -6,7 +6,7 @@ library(casen)
 library(spatstat) #weighted median
 
 # Ejecutar solo para descargar datos
-# casen::descargar_casen_github(anos=2017, carpeta = "Data/Data Modelo/Casen")
+# casen::descargar_casen_github(anios=2015, carpeta = "Data/Data_Original/Casen")
 df_casen <- read_rds("Data/Data_Original/Casen/2017.rds")
 df_casen %>% names()
 
@@ -73,5 +73,50 @@ df_ocupacion <- df_casen %>%
   rename(codigo_comuna=comuna)
 # Dejo porcentaje ocupacion
 df_ocupacion <- df_ocupacion %>% filter(o1=="Si") %>% rename(perc_ocupado=perc)
+
+
+## LEÑA 2015 -----------
+# Obtenidos de la casen 2015
+df_casen2015 <- read_rds("Data/Data_Original/Casen/2015.rds")
+df_casen2015 %>% names()
+
+# Pasar a codigos subdere_2017
+
+# Dejo un la tupla validoHasta-Codigo_casen mas reciente
+codigos_casen_recientes <- codigos_casen %>% 
+  group_by(codigo_casen) %>% summarise(valido_hasta=max(valido_hasta, na.rm=T)) %>% 
+  ungroup() %>% 
+  left_join(codigos_casen, by=c("valido_hasta","codigo_casen")) %>% 
+  rename(comuna=codigo_casen, codigo_comuna=codigo_subdere_2017)
+
+df_casen2015 <- df_casen2015 %>% 
+  left_join(codigos_casen_recientes, by=c("comuna"))
+
+# Factor expansion
+df_casen2015$expc %>% sum(na.rm=T)
+df_casen2015$expr %>% sum(na.rm=T)
+
+# Existen varias comunas sin factor de expansion comunal, por defecto lo reemplazo por 1
+# df_casen2015 %>% filter(codigo_comuna=="01402") %>% select(codigo_comuna, expc) %>% view
+df_casen2015 <- df_casen2015 %>% 
+  mutate(expc=if_else(is.na(expc),1,expc))
+
+
+## Datos leña
+# v36a: Qué combustible o fuente de energía usa habitualmente para: Cocinar 
+# v36b: Idem Calefacción
+# v36c: Idem Sistema de Agua Caliente
+# Opción 3: Leña o derivados (pellets, astillas o briquetas)
+# Sum if si corresponde a la opcion de Leña
+df_lena_casen <- df_casen2015 %>% 
+  group_by(codigo_comuna) %>% 
+  summarise(hab=sum(expc, na.rm=T),
+            lena_cocina=sum(if_else(v36a==3,expc,0),na.rm=T),
+            lena_calefaccion=sum(if_else(v36b==3,expc,0),na.rm=T),
+            lena_agua=sum(if_else(v36c==3,expc,0),na.rm=T)) %>% 
+  ungroup() %>% 
+  left_join(codigos_territoriales, by = c("codigo_comuna"))
+
+rm(codigos_casen_recientes, df_casen2015)
 
 ## EoF
