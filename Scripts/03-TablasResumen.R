@@ -15,7 +15,8 @@ df <- df_modelo %>%
          dias_primerMuerte, dias_cuarentena, tasa_camas,tasa_mortalidad_all,
          ingresoAutonomo_media, perc_isapre, perc_fonasa,
          perc_menor_media, perc_ocupado, 
-         cons_lena_calefactor_pp,cons_lena_cocina_pp,penetracion_lena,
+         cons_lena_calefactor_pp,cons_lena_cocina_pp,perc_lenaCocina,
+         perc_lenaCalefaccion,perc_lenaAgua,
          tmed_summer, tmed_winter, hr_summer, hr_winter) %>% 
   rename(
     `Tasa Mortalidad COVID [por 100mil]`=tasa_mortalidad,
@@ -42,7 +43,9 @@ df <- df_modelo %>%
     `% Ocupado laboral`=perc_ocupado,
     `Consumo anual leña calefactor [kWh per cápita]`=cons_lena_calefactor_pp,
     `Consumo anual leña cocina [kWh per cápita]`=cons_lena_cocina_pp,
-    `% Penetracion leña`=penetracion_lena,
+    `% uso leña cocina`=perc_lenaCocina,
+    `% uso leña calefaccion`=perc_lenaCalefaccion,
+    `% uso leña agua caliente`=perc_lenaAgua,
     `Temperatura media Verano [°C]`=tmed_summer, 
     `Temperatura media Invierno [°C]`=tmed_winter,
     `Humedad relativa media Verano [%]`=hr_summer,
@@ -102,14 +105,15 @@ df_skim %>%
   autofit(add_w = 0.1, add_h = 0.3) %>%
   align(j=1, align = "left", part="all") %>% 
   footnote(j=4, value=as_paragraph("Coeficiente Variación"), 
-           part="header", inline=T)
-  # print(preview="pptx")
+           part="header", inline=T) %>% 
+  print(preview="pptx")
 
 rm(df_skim, df)
   
 
 ## Tablas Comuna con MP2.5 -------------
 df_tabla <- df_modelo %>% group_by(region, nombre_comuna) %>% 
+  filter(!is.na(mp25)) %>% 
   summarise(mp25=round(mp25,1)) %>% 
   rename(Region=region, Comuna=nombre_comuna, `MP2.5 [ug/m3]`=mp25) 
 
@@ -130,7 +134,7 @@ df_tabla %>% head(36) %>% tail(18) %>%
   align(j=3, align = "right", part="all") %>% 
   print(preview="pptx")
 
-df_tabla %>% tail(17) %>% 
+df_tabla %>% tail(15) %>% 
   flextable() %>% 
   bold(bold=T, part="header") %>% 
   autofit(add_w = 0.1, add_h = 0.3) %>%
@@ -141,8 +145,9 @@ df_tabla %>% tail(17) %>%
 rm(df_tabla)
 comunas_mp <- df_modelo %>% select(codigo_comuna,nombre_comuna)
 
-cat('sep=; \n',file = "Data/Data_Modelo/Comunas_MP.csv")
-write.table(comunas_mp,"Data/Data_Modelo/Comunas_MP.csv",
-            sep=';',row.names = F, append = T)
+# cat('sep=; \n',file = "Data/Data_Modelo/Comunas_MP.csv")
+# write.table(comunas_mp,"Data/Data_Modelo/Comunas_MP.csv",
+#             sep=';',row.names = F, append = T)
+# rm(comunas_mp)
 
 ## EoF
