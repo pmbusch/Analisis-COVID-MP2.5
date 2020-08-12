@@ -11,12 +11,17 @@ source("Scripts/Analisis_Exploratorios/f_figuras.R", encoding = "UTF-8")
 df_conc <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
 
 df_conc <- df_conc %>% mutate(region=factor(region, levels_region)) %>% 
-  filter(pollutant=="mp2.5")
+  filter(pollutant=="mp2.5" & year %in% 2010:2019)
+
+# Numero estaciones con datos
+df_conc$site %>% unique() %>% length()
+# Numero comunas con datos
+df_conc$codigo_comuna %>% unique() %>% length()
 
 
 ## Series de Tiempo -------
-# heatmap
 
+# Heatmap Estaciones
 df_mes <- df_conc %>% 
   group_by(year,month,site,latitud,codigo_comuna) %>% 
   summarise(valor=mean(valor,na.rm=T)) %>% ungroup() %>% 
@@ -29,19 +34,45 @@ df_mes %>%
   ggplot(aes(x = date, y = reorder(site, latitud), fill = valor)) + 
   geom_tile() + 
   facet_grid(region~., scales = "free", space="free")+
-  scale_fill_viridis_c(option = "B", direction = -1, 
-                       name="Promedio Anual MP2.5 [ug/m3]") + 
+  scale_fill_distiller(palette = "YlOrRd", type = 'seq', 
+                       na.value = "white", direction = 1,
+                       name="Promedio MP2.5 [ug/m3]",
+                       trans="sqrt") + 
   scale_y_discrete(name = NULL)+
-  scale_x_date(name="", date_breaks = "2 years",date_labels = "%Y")
-  
+  scale_x_date(name="", date_breaks = "2 years",date_labels = "%Y")+
+  coord_cartesian(expand=F)
+f_savePlot(last_plot(), 
+           sprintf(file_name,"HeatMap_Site",dpi=600))
 
-## Promedio 2016-2019: Norte a Sur -----------
+
+# Heatmap Comunas
+df_mes <- df_mes %>% left_join(codigos_territoriales) %>% 
+  group_by(date, nombre_comuna, region) %>% 
+  summarise(valor=mean(valor,na.rm=T)) %>% ungroup()
+
+df_mes %>% 
+  ggplot(aes(x = date, y = reorder(nombre_comuna, valor), fill = valor)) + 
+  geom_tile() + 
+  facet_grid(region~., scales = "free", space="free")+
+  scale_fill_distiller(palette = "YlOrRd", type = 'seq', 
+                       na.value = "white", direction = 1,
+                       name="Promedio MP2.5 [ug/m3]",
+                       trans="sqrt") + 
+  scale_y_discrete(name = NULL)+
+  scale_x_date(name="", date_breaks = "2 years",date_labels = "%Y")+
+  coord_cartesian(expand=F)
+f_savePlot(last_plot(), 
+           sprintf(file_name,"HeatMap_Comuna",dpi=300))
+
+rm(df_mes)
+
+## Barras promedio ordenadas Norte-Sur ---------
+# Estacion
 df_avg <- df_conc %>% 
-  filter(year>2016) %>% 
   group_by(site,region,codigo_comuna, year) %>% 
   summarise(valor=mean(valor,na.rm=T),
-            disponibilidad=n()/365) %>% 
-  filter(disponibilidad>0.8) %>% ungroup() %>% 
+            disponibilidad=n()/365) %>% ungroup() %>% 
+  filter(disponibilidad>0.8) %>%
   group_by(site, region, codigo_comuna) %>% 
   summarise(valor=mean(valor, na.rm=T)) %>% ungroup()
 
@@ -54,53 +85,73 @@ df_avg %>%
   coord_flip(clip="off")+
   scale_fill_manual(values = c("#B0B0B0D0", "#BD3828D0"), guide = "none")+
   scale_x_discrete(name = NULL)+
-  scale_y_continuous(name="Promedio 2016-2019 MP2.5 [ug/m3]",
+  scale_y_continuous(name="Promedio 2010-2019 MP2.5 [ug/m3]",
                      expand = c(0, 0),
                      labels=function(x) format(x,big.mark = " ", decimal.mark = ".", scientific = F))+
   theme(axis.line.y = element_blank(), axis.ticks.y = element_blank(),
         panel.grid.major.y = element_blank())
 
-f_savePlot(last_plot(), sprintf(file_name,"MP25ChileRegion"))
+f_savePlot(last_plot(), sprintf(file_name,"Barras_Site"), dpi=600)
 
-## Scatter Norte Sur
+# Comuna
+df_avg <- df_avg %>% 
+  group_by(codigo_comuna, region) %>% 
+  summarise(valor=mean(valor,na.rm=T)) %>% ungroup() %>% 
+  left_join(codigos_territoriales)
+
+# Numero comunas
+df_avg$codigo_comuna %>% unique() %>% length()
+
+  
+df_avg %>% 
+  mutate(highlight=if_else(valor>20,"yes","no")) %>%
+  ggplot(aes(x=reorder(nombre_comuna, valor), y=valor, fill=highlight)) +
+  geom_col()+
+  geom_hline(yintercept = 20, col="red", linetype = "dashed", size=1)+
+  facet_grid(region~., scales = "free", space="free")+
+  coord_flip(clip="off")+
+  scale_fill_manual(values = c("#B0B0B0D0", "#BD3828D0"), guide = "none")+
+  scale_x_discrete(name = NULL)+
+  scale_y_continuous(name="Promedio 2010-2019 MP2.5 [ug/m3]",
+                     expand = c(0, 0),
+                     labels=function(x) format(x,big.mark = " ", decimal.mark = ".", scientific = F))+
+  theme(axis.line.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major.y = element_blank())
+
+f_savePlot(last_plot(), sprintf(file_name,"Barras_Comuna"), dpi=150)
+
+
+## Scatter Norte Sur -----------
 df_com <- df_avg %>% 
-  group_by(region,codigo_comuna) %>%
-  summarise(valor=mean(valor, na.rm=T)) %>% ungroup() %>%
-  left_join(codigos_territoriales) %>% 
   left_join(mapa_comuna)
 
 fig_scatterComuna(df_com, valor, limites = c(0,50),
-                  titulo="Promedio 2016-2019 MP2.5 [ug/m3]")
+                  titulo="Promedio 2010-2019 MP2.5 [ug/m3]")
+
 
 ## Promedio 2016-2019: Mapa Comunas -----------
 # Agregar codigos comunales
 df_map <- df_avg %>% 
-  group_by(codigo_comuna) %>%
-  summarise(valor=mean(valor, na.rm=T)) %>% ungroup() %>%
-  left_join(codigos_territoriales) %>% 
   right_join(mapa_comuna)
 
 # Chile
 fig_mapa(df_map, valor, lwd=0.01,
-         limites=c(0,50), titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]",
+         limites=c(0,50), titulo="Promedio 2010-2019 \n MP2.5 [ug/m3]",
          fileName=sprintf(file_name,"MapaChileMP25"))
 
 # Chile Facet
 fig_mapaChile_facet(df_map, valor, limites=c(0,50),
-                    titulo = "Promedio 2016-2019 \n MP2.5 [ug/m3]",
-                    fileName = sprintf(file_name,"MapaChileMP25Facet"))
+                    titulo = "Promedio 2010-2019 \n MP2.5 [ug/m3]")
+f_savePlot(last_plot(),
+           file_path =sprintf(file_name,"MapaChileMP25Facet"),dpi=300)
 
 # Santiago
 df_map %>% 
   filter(mapa_rm==1) %>% 
-  fig_mapa(valor,limites = c(0,50), titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]")+
+  fig_mapa(valor,limites = c(0,50), titulo="Promedio 2010-2019 \n MP2.5 [ug/m3]")+
   geom_sf_label(aes(label=nombre_comuna, geometry=geometry))
 f_savePlot(last_plot(), sprintf(file_name,"MapaSantiagoMP25"))
   
-# Sur
-df_map %>% filter(codigo_region %in% c("08","09","10","14","11")) %>% 
-  fig_mapa(valor,limites = c(0,50), titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]",
-           fileName = sprintf(file_name,"MapaSurMP25"))
 
 ### Ubicacion Estaciones -----------
 df_estaciones <- df_conc %>% 
