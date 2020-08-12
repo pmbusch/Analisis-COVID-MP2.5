@@ -159,29 +159,33 @@ m <- mapview(mapa, label=mapa$nombre_comuna, zcol="tasa_mortalidad",
 
 # Mapa Varios parametros
 # OVERKILL: pero parametro Burst no me funciona ni en los ejemplos
-m <- mapview(mapa, label=mapa$nombre_comuna, zcol="tasa_mortalidad", 
-                  col.regions=brewer.pal(9, "YlOrRd"))+
-  mapview(mapa, label=mapa$nombre_comuna, zcol="mp25", 
-          col.regions=brewer.pal(9, "YlOrRd"))+
-  mapview(mapa, label=mapa$nombre_comuna, zcol="densidad_pob", 
-          col.regions=brewer.pal(9, "YlOrRd"))+
-  mapview(mapa, label=mapa$nombre_comuna, zcol="ingresoAutonomo_media", 
-          col.regions=brewer.pal(9, "YlOrRd"))+
-  mapview(mapa, label=mapa$nombre_comuna, zcol="perc_menor_media", 
-          col.regions=brewer.pal(9, "YlOrRd"))+
-  mapview(mapa, label=mapa$nombre_comuna, zcol="perc_isapre", 
-          col.regions=brewer.pal(9, "YlOrRd"))+
-  mapview(mapa, label=mapa$nombre_comuna, zcol="tasa_camas", 
-          col.regions=brewer.pal(9, "YlOrRd"))+
-  mapview(mapa, label=mapa$nombre_comuna, zcol="dias_primerContagio", 
-          col.regions=brewer.pal(9, "YlOrRd"))+
-  mapview(mapa, label=mapa$nombre_comuna, zcol="dias_cuarentena", 
-          col.regions=brewer.pal(9, "YlOrRd"))
+# Funcion permite modificar todos los mapas de manera simultanea
+# Genera un archivo muy grande 65MB, y demora 36 min en guardar!!!
+f_mapview <- function(datos, columna){
+  lab_data <- datos %>% pull(columna) %>% round(2)
+  mapview(datos, 
+          label=paste(datos$nombre_comuna,": ",lab_data,sep=""), 
+          zcol=columna, 
+          col.regions=brewer.pal(9, "YlOrRd"),
+          hide=T)
+}
+f_mapview(mapa, "tasa_mortalidad")
 
+m <- f_mapview(mapa,"tasa_mortalidad")+
+  f_mapview(mapa,"mp25")+
+  f_mapview(mapa,"densidad_pob")+
+  f_mapview(mapa,"densidad_pob_censal")+
+  f_mapview(mapa,"65+")+
+  f_mapview(mapa,"ingresoAutonomo_media")+
+  f_mapview(mapa,"perc_menor_media")+
+  f_mapview(mapa,"perc_isapre")+
+  f_mapview(mapa,"tasa_camas")+
+  f_mapview(mapa,"dias_primerContagio")+
+  f_mapview(mapa,"dias_cuarentena")
 
 # Save file as html
 mapshot(m, "Figuras/MapaParametrosComuna.html")
-rm(mapa, m)
+rm(mapa, m, f_mapview)
 
 
 ## EoF
