@@ -7,7 +7,7 @@ library(rvest)
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
 
 #Establecer el año que se quiere scrapear
-year_start <- 2016
+year_start <- 2010
 year_end <- 2020
 
 #Lee informacion de estaciones
