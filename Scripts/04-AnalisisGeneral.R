@@ -41,6 +41,9 @@ df_modelo %>%
 f_savePlot(last_plot(),
            sprintf(file_name, "Muertes_vs_MP25"), dpi=300)
 
+# Interactive plot
+# plotly::ggplotly(last_plot())
+
 last_plot()+
   geom_text_repel(aes(label=nombre_comuna))
 f_savePlot(last_plot(),
@@ -181,45 +184,5 @@ df_region %>%
   facet_wrap(~var, scales = "free")
 ggsave(sprintf(file_name,"EcdfRegion"), last_plot(), dpi=900,
        width = 22.3, height = 14, units = "in")
-
-## Mapa interactivo --------
-library(RColorBrewer)
-df_modelo %>% names()
-mapa <- left_join(mapa_comuna, df_modelo)
-
-# Mapa Tasa Mortalidad
-m <- mapview(mapa, label=mapa$nombre_comuna, zcol="tasa_mortalidad", 
-        col.regions=brewer.pal(9, "YlOrRd"))
-
-# Mapa Varios parametros
-# OVERKILL: pero parametro Burst no me funciona ni en los ejemplos
-# Funcion permite modificar todos los mapas de manera simultanea
-# Genera un archivo muy grande 65MB, y demora 36 min en guardar!!!
-f_mapview <- function(datos, columna){
-  lab_data <- datos %>% pull(columna) %>% round(2)
-  mapview(datos, 
-          label=paste(datos$nombre_comuna,": ",lab_data,sep=""), 
-          zcol=columna, 
-          col.regions=brewer.pal(9, "YlOrRd"),
-          hide=T)
-}
-f_mapview(mapa, "tasa_mortalidad")
-
-m <- f_mapview(mapa,"tasa_mortalidad")+
-  f_mapview(mapa,"mp25")+
-  f_mapview(mapa,"densidad_pob")+
-  f_mapview(mapa,"densidad_pob_censal")+
-  f_mapview(mapa,"65+")+
-  f_mapview(mapa,"ingresoAutonomo_media")+
-  f_mapview(mapa,"perc_menor_media")+
-  f_mapview(mapa,"perc_isapre")+
-  f_mapview(mapa,"tasa_camas")+
-  f_mapview(mapa,"dias_primerContagio")+
-  f_mapview(mapa,"dias_cuarentena")
-
-# Save file as html
-mapshot(m, "Figuras/MapaParametrosComuna.html")
-rm(mapa, m, f_mapview)
-
 
 ## EoF

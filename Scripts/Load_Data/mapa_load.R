@@ -104,13 +104,4 @@ mapa_comuna <- mapa_comuna %>%
   mutate(superficie_censal=if_else(is.na(superficie_censal),
                                    superficie,superficie_censal))
 
-
-# mapa_zonas %>% 
-#   filter(codigo_region=="13") %>% 
-#   ggplot()+
-#   geom_sf(aes(geometry=geometry))
-# 
-# chilemapas::divisiones_electorales %>% view()
-# divisiones_salud %>% view()
-
 ## EoF
