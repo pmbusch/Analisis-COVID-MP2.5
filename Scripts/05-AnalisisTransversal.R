@@ -12,49 +12,49 @@ library(lme4)
 library(glmmTMB)
 library(gamm4)
 
+df_modelo %>% na.omit() %>% nrow()
 ## Carga Datos a nivel de comuna-----
 # source("Scripts/01-LoadAllData", encoding = "UTF-8") 
 theme_set(theme_bw())
 
 ## MODELO INICIAL-----
 
+# dimension todas las variables
 ## Datos --------------
 # Original
-df <- df_modelo
+df_modelo %>% names()
+df <- df_modelo %>% 
+  dplyr::select(casos_fallecidos, mp25, densidad_pob_censal, ingresoAutonomo_media,
+                perc_ocupado, perc_menor_media, perc_isapre, tasa_camas,
+                perc_lenaCalefaccion, dias_cuarentena, dias_primerContagio,
+                perc_fonasa_D, perc_fonasa_A,
+                `65+`,region, poblacion)
 
 ## Modelo  -----------
 ## Poblacion va a off_set, dado que se estima la tasa
 # Buena explicacion: https://stats.stackexchange.com/questions/11182/when-to-use-an-offset-in-a-poisson-regression
-df %>% names()
-# dimension
-df %>% dplyr::select(casos_fallecidos, mp25, densidad_pob, ingresoAutonomo_media,
-              perc_ocupado, perc_menor_media, perc_isapre, tasa_camas,
-              penetracion_lena, dias_cuarentena, dias_primerContagio,
-              `65+`) %>% na.omit() %>% dim()
 
+# dimension
+df %>% na.omit() %>% dim()
 mod <- glmer.nb(casos_fallecidos ~ mp25 +
-                  scale(densidad_pob) + 
+                  scale(densidad_pob_censal) + 
                   scale(log(ingresoAutonomo_media)) + scale(perc_ocupado)+
                   scale(perc_menor_media) + scale(perc_isapre) +
-                  scale(tasa_camas)+scale(penetracion_lena)+
+                  scale(perc_fonasa_A)+scale(perc_fonasa_D)+
+                  scale(tasa_camas)+scale(perc_lenaCalefaccion)+
                   scale(dias_cuarentena)+scale(dias_primerContagio)+
                   scale(`65+`)+
                   # scale(hr_summer)+scale(hr_winter)+
                   (1|region)+
                   offset(log(poblacion)), 
-                data = df)
+                data = df,
+                na.action=na.omit)
 
 # Summary
 summary(mod)
-# Calculo MRR: Mortality rate ratios
-# Se interpreta como el aumento relativo en la tasa de mortalidad covid por 1 ug/m3
-exp(summary(mod)[10]$coefficients[2,1]) # exponencial coeficiente MP2.5
-# I.C. M2.5
-exp(summary(mod)[10]$coefficients[2,1] - 1.96*summary(mod)[10]$coefficients[2,2])
-exp(summary(mod)[10]$coefficients[2,1] + 1.96*summary(mod)[10]$coefficients[2,2])
-summary(mod)[10]$coefficients[2,4] # p-value MP2.5
 
-## MRR para cada variable
+## MRR para cada variable -------
+# Se interpreta como el aumento relativo en la tasa de mortalidad covid por 1 ug/m3
 # Dado que los confundentes estan estandarizados, su MRR se interepreta como 
 # variacion relativa al aumento en 1 desviacion estandar de la variable confundente
 # Fuente: https://stats.idre.ucla.edu/r/dae/negative-binomial-regression/
