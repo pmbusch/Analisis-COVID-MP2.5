@@ -50,7 +50,7 @@ f_savePlot(last_plot(),
            sprintf(file_name, "Muertes_vs_MP25_name"), dpi=150)
 
 
-## Matriz Correlacion ------------
+## CORRELACIONES ------------
 library(corrplot)
 
 ## Con todas las variables posibles!
@@ -74,13 +74,25 @@ df_cor <- df_modelo %>%
                 perc_menor_media, perc_ocupado, cons_lena_calefactor_pp,
                 cons_lena_cocina_pp, perc_lenaCocina, perc_lenaCalefaccion,
                 perc_lenaAgua,
-                tmed_summer, tmed_winter, hr_summer, hr_winter)
+                tmed_summer, tmed_winter, hr_summer, hr_winter,
+                heating_degree_15_summer,heating_degree_15_winter)
 
 # Pearson
 png(sprintf(file_name,"Correlaciones"), width = 14.87, height = 9.30, units = "in", res=200)
 df_cor %>% 
   cor(method = "pearson", use="complete.obs") %>% 
   corrplot(method="circle", 
+           # order="hclust",
+           type = "upper",
+           # sig.level = 0.05, p.mat=p.mat,
+           diag=F, tl.cex = 0.7)
+dev.off()
+
+# Number
+png(sprintf(file_name,"CorrelacionesNumber"), width = 14.87, height = 9.30, units = "in", res=200)
+df_cor %>% 
+  cor(method = "pearson", use="complete.obs") %>% 
+  corrplot(method="number", number.cex=0.5,
            # order="hclust",
            type = "upper",
            # sig.level = 0.05, p.mat=p.mat,

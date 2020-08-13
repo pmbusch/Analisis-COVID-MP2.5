@@ -17,7 +17,8 @@ df <- df_modelo %>%
          perc_menor_media, perc_ocupado, 
          cons_lena_calefactor_pp,cons_lena_cocina_pp,perc_lenaCocina,
          perc_lenaCalefaccion,perc_lenaAgua,
-         tmed_summer, tmed_winter, hr_summer, hr_winter) %>% 
+          hr_summer, hr_winter, tmed_summer, tmed_winter,
+         heating_degree_15_summer, heating_degree_15_winter) %>% 
   rename(
     `Tasa Mortalidad COVID [por 100mil]`=tasa_mortalidad,
     `MP2.5 [ug/m3]`=mp25,
@@ -46,11 +47,12 @@ df <- df_modelo %>%
     `% uso leña cocina`=perc_lenaCocina,
     `% uso leña calefaccion`=perc_lenaCalefaccion,
     `% uso leña agua caliente`=perc_lenaAgua,
-    `Temperatura media Verano [°C]`=tmed_summer, 
-    `Temperatura media Invierno [°C]`=tmed_winter,
     `Humedad relativa media Verano [%]`=hr_summer,
     `Humedad relativa media Invierno [%]`=hr_winter,
-  )
+    `Temperatura media Verano [°C]`=tmed_summer, 
+    `Temperatura media Invierno [°C]`=tmed_winter,
+    `Heating Degree 15°C Verano [°C]`=heating_degree_15_summer,
+    `Heating Degree 15°C Invierno [°C]`=heating_degree_15_winter)
 
 # separo por la condicion de si tiene o no estacion
 df_sep <- df %>% 
@@ -79,7 +81,7 @@ df_skim %>%
   autofit(add_w = 0.1, add_h = 0.3) %>%
   align(j=1, align = "left", part="all") %>% 
   align(j=2, align = "center", part="all") %>% 
-  footnote(j=2:4, value=as_paragraph(foot_note), part="header", inline=T)
+  footnote(j=2:4, value=as_paragraph(foot_note), part="header", inline=T) 
   # print(preview="pptx")
 
 rm(foot_note,df_skim, df_sep, n_mp25)
@@ -105,8 +107,8 @@ df_skim %>%
   autofit(add_w = 0.1, add_h = 0.3) %>%
   align(j=1, align = "left", part="all") %>% 
   footnote(j=4, value=as_paragraph("Coeficiente Variación"), 
-           part="header", inline=T) %>% 
-  print(preview="pptx")
+           part="header", inline=T) 
+  # print(preview="pptx")
 
 rm(df_skim, df)
   
