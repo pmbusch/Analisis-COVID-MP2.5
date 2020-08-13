@@ -13,7 +13,7 @@ file_name <- "Figuras/Completa_MP/%s.png"
 
 ## Centroide comunas --------
 source("Scripts/Aggregate_Data/poblacion_agg.R", encoding = "UTF-8")
-comunas <- mapa_comuna %>% 
+comunas <- mapa_comuna %>% as_tibble() %>% 
   left_join(codigos_territoriales) %>% 
   mutate(centroide=st_centroid(geometry),
          cent_lon=map_dbl(geometry, ~st_centroid(.x)[[1]]),
@@ -28,14 +28,12 @@ comunas %>%
   geom_point(aes(cent_lon, cent_lat), col="green")+
   labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
   theme_minimal(base_size = 13)
-
 f_savePlot(last_plot(), sprintf(file_name,"Centroides"))
 
 
 ## Estaciones calidad Aire -------------
 df_conc <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
-
-df_conc <- df_conc %>% filter(year %in% 2016:2019 & pollutant=="mp2.5")
+df_conc <- df_conc %>% filter(year %in% 2010:2019 & pollutant=="mp2.5")
 
 estaciones <- df_conc %>% 
   group_by(codigo_comuna,site, longitud, latitud) %>% 
@@ -45,7 +43,7 @@ estaciones <- df_conc %>%
 
 ## Mapa con estaciones
 estaciones <- estaciones %>% 
-  left_join(mapa_comuna %>% select(codigo_comuna, mapa_rm))
+  left_join(mapa_comuna %>% as_tibble() %>% select(codigo_comuna, mapa_rm))
 
 # Convertir a sf
 estaciones <- st_as_sf(estaciones, 
@@ -104,18 +102,26 @@ df <- df %>% left_join(estaciones %>% rowid_to_column() %>%
 rm(df_matrix)
 
 
-# Distancia minima de cada comuna ----------
-df_dist <- df %>% 
-  group_by(nombre_comuna, codigo_comuna, centroide) %>% 
-  summarise(minDist=min(dist),
-            minSite=site[which.min(dist)])
 
-# ECDF distancia
-df_dist$minDist %>% range()
+
+## Distancia N primeros ---------------
+# Ordena por distancia para cada comuna, e incorpora un ranking
+df_dist <- df %>% arrange(codigo_comuna, dist) %>% 
+  group_by(nombre_comuna, codigo_comuna) %>% 
+  mutate(rank=rank(dist)) %>% ungroup() %>% 
+  left_join(comunas %>% select(codigo_comuna, centroide, mapa_rm)) %>% 
+  left_join(codigos_territoriales)
+
+# Exporta Matriz Distancia Comuna-Estacion
+saveRDS(df_dist, "Data/Data_Modelo/distanciaComunaEstacionSINCA.rsd")
+
+# ECDF distancia minima
+df_dist %>% filter(rank==1) %>% pull(dist) %>% range()
 theme_set(theme_bw())
 df_dist %>% 
-  mutate(distancia=minDist/1e3) %>% 
-  ggplot(aes(distancia,y=..y..*nrow(df_dist)))+
+  filter(rank==1) %>% 
+  mutate(distancia=dist/1e3) %>% 
+  ggplot(aes(distancia,y=..y..*nrow(filter(df_dist,rank==1))))+
   stat_ecdf()+
   scale_x_continuous(breaks=50*0:7)+
   coord_cartesian(xlim = c(0,200))+ # coord_cartesian does not filter the data
@@ -124,11 +130,33 @@ df_dist %>%
   
 f_savePlot(last_plot(), sprintf(file_name,"ECDF_DistanciaEstacion"))
 
+
+# ECDF distancia n primeros
+n <- 6
+df_dist %>% 
+  filter(rank<=n) %>% 
+  mutate(distancia=dist/1e3) %>% 
+  ggplot(aes(distancia,
+             y=..y..*(df_dist %>% filter(rank<=n) %>% 
+                        pull(codigo_comuna) %>% unique() %>% 
+                        length())))+
+  stat_ecdf(aes(col=factor(rank), group=rank),size=1)+
+  # facet_wrap(~rank)+
+  scale_x_continuous(breaks=10*0:5)+
+  coord_cartesian(xlim=c(0,50))+ # coord_cartesian does not filter the data
+  scale_color_viridis_d(name="N° Estaciones \n cercanas")+
+  labs(x="Distancia [km]", y= "N° Comunas")+
+  theme_bw(18)
+f_savePlot(last_plot(), sprintf(file_name,"ECDF_DistanciaEstacion_N"))
+rm(n)
+
+
 # Graficar lineas distancia---------
 
 # Junto datos de comuna con estaciones. Solo para RM. 
 # Saco Lo Barnechea e incluyo Puente Alto
 df_aux <- df_dist %>% 
+  filter(rank==1) %>% 
   left_join(mapa_comuna %>% select(codigo_comuna,mapa_rm)) %>% 
   filter(mapa_rm==1)
 
@@ -137,7 +165,7 @@ estaciones_aux <- estaciones %>%
   select(site,longitud, latitud) %>% rename(ubi=geometry)
 
 df_aux <- df_aux %>% ungroup() %>% 
-  left_join(estaciones_aux, by=c("minSite"="site")) %>% 
+  left_join(estaciones_aux, by=c("site")) %>% 
   left_join(comunas %>% select(codigo_comuna,cent_lon, cent_lat))
  
 ## DF con los puntos de las lineas, para dp con geom_path graficar
@@ -156,14 +184,12 @@ estaciones_mapa <- estaciones %>% rename(ubi=geometry) %>%
   dplyr::select(-codigo_provincia,-codigo_comuna)
 # Nota: Hay una estacion llamada La Florida en Talca que genera repeticion
 df_dist %>% 
-  left_join(mapa_comuna) %>% 
-  filter(mapa_rm==1) %>% 
-  left_join(estaciones_mapa,by=c("minSite"="site")) %>% 
+  filter(mapa_rm==1 & rank==1) %>% 
+  left_join(estaciones_mapa,by=c("site")) %>% 
   ggplot()+
-  geom_sf(aes(geometry=geometry), fill="white")+
-  # geom_sf_label(aes(geometry=centroide, label=codigo_comuna),col="green")+
+  geom_sf(data=filter(mapa_comuna,mapa_rm==1),
+          aes(geometry=geometry), fill="white")+
   geom_sf(aes(geometry=centroide), col="green")+
-  # geom_sf_label(aes(geometry=ubi,label=minSite),col="red")+
   geom_sf(aes(geometry=ubi),col="red")+
   geom_path(data=lineas, aes(x=longitud, y=latitud, group=codigo_comuna),col="red")+
   labs(title = "",x="", y="") + coord_sf(datum = NA, expand = FALSE)+
@@ -171,38 +197,8 @@ df_dist %>%
 
 f_savePlot(last_plot(), sprintf(file_name,"EstacionCercana"))
 
+rm(lineas, estaciones_mapa)
 
-## Distancia N primeros ---------------
-# Ordena por distancia para cada comuna, e incorpora un ranking
-df_dist <- df %>% arrange(codigo_comuna, dist) %>% 
-  group_by(nombre_comuna, codigo_comuna, centroide) %>% 
-  mutate(rank=rank(dist))
-
-# Filta N primeros
-df_dist <- df_dist %>% filter(rank<7)
-
-# ECDF distancia
-df_dist %>% 
-  mutate(distancia=dist/1e3) %>% 
-  ggplot(aes(distancia,y=..y..*unique(df_dist$codigo_comuna) %>% length()))+
-  stat_ecdf(aes(col=factor(rank), group=rank),size=1)+
-  # facet_wrap(~rank)+
-  scale_x_continuous(breaks=10*0:5)+
-  coord_cartesian(xlim=c(0,50))+ # coord_cartesian does not filter the data
-  scale_color_viridis_d(name="N° Estaciones \n cercanas")+
-  labs(x="Distancia [km]", y= "N° Comunas")+
-  theme_bw(18)
-
-f_savePlot(last_plot(), sprintf(file_name,"ECDF_DistanciaEstacion_N"))
-
-## Exporta matriz distancia-comuna
-df_dist <- df %>% arrange(codigo_comuna, dist) %>% 
-  group_by(nombre_comuna, codigo_comuna, centroide) %>% 
-  mutate(rank=rank(dist)) %>% 
-  left_join(codigos_territoriales)
-
-f_saveCsv(df_dist, "Data/Data_Modelo/distanciaComunaEstacion.csv")
-rm(df_dist)
 
 ## Promedio ponderado por inverso de la distancia--------
 corte_km <- 20
@@ -225,15 +221,14 @@ df_avg %>%
 
 ## Chile Facet
 fig_mapaChile_facet(df_avg, avg, limites=c(0,50),
-                    titulo = "Promedio 2016-2019 \n MP2.5 [ug/m3]",
-                    fileName = sprintf(file_name,"MapaChileFacet"))
+                    titulo = "Promedio 2016-2019 \n MP2.5 [ug/m3]")
+f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaChileFacet"))
 
 # Santiago
 df_avg %>% 
   filter(mapa_rm==1) %>% 
   fig_mapa(avg, limites = c(0,50), titulo="Promedio 2016-2019 \n MP2.5 [ug/m3]",
            fileName = sprintf(file_name,"MapaSantiago"))
-
 
 # Poblacion en comunas con datos MP2.5
 total_pob <- df_poblacion$poblacion %>% sum()
@@ -246,11 +241,11 @@ df_avg %>% rename(mp25=avg) %>% select(codigo_comuna,mp25) %>%
   saveRDS("Data/Data_Modelo/Datos_Concentraciones_20km.rsd")
 
 ## IDEM METEOROLOGIA ----------
-# Cargar objeto Comunas
+# Cargar objeto Comunas unicamente
 ## Estaciones Meteorologia -------------
 df_meteo <- read_rds("Data/Data_Modelo/Datos_Meteorologia_raw.rsd")
 
-df_meteo <- df_meteo %>% filter(year(date) %in% 2016:2019)
+df_meteo <- df_meteo %>% filter(year(date) %in% 2010:2019)
 
 estaciones <- df_meteo %>% 
   group_by(codigo_comuna,estacion,nombre_estacion, longitud, latitud) %>% 
@@ -261,15 +256,13 @@ estaciones <- df_meteo %>%
 
 ## Mapa con estaciones
 estaciones <- estaciones %>% 
-  left_join(mapa_comuna %>% select(codigo_comuna, mapa_rm))
+  left_join(mapa_comuna %>% as_tibble() %>% select(codigo_comuna, mapa_rm))
 
 # Convertir a sf
 estaciones <- st_as_sf(estaciones, 
                        coords = c("longitud","latitud"),
                        remove = F, 
                        crs="+proj=longlat +ellps=GRS80 +no_defs")
-# crs=9155)
-
 
 comunas %>% 
   filter(mapa_rm==1) %>% 
@@ -321,18 +314,24 @@ df_meteo <- df_meteo %>% left_join(estaciones %>% rowid_to_column() %>%
 
 rm(df_matrix)
 
-# Distancia minima de cada comuna ----------
-df_dist <- df_meteo %>% 
-  group_by(nombre_comuna, codigo_comuna, centroide) %>% 
-  summarise(minDist=min(dist),
-            minSite=estacion[which.min(dist)])
+## Distancia N primeros ---------------
+# Ordena por distancia para cada comuna, e incorpora un ranking
+df_dist <- df_meteo %>% arrange(codigo_comuna, dist) %>% 
+  group_by(nombre_comuna, codigo_comuna) %>% 
+  mutate(rank=rank(dist, ties.method = "first")) %>% ungroup() %>% 
+  left_join(comunas %>% select(codigo_comuna, centroide, mapa_rm)) %>% 
+  left_join(codigos_territoriales)
+
+# Exporta Matriz Distancia Comuna-Estacion
+saveRDS(df_dist, "Data/Data_Modelo/distanciaComunaEstacionMeteo.rsd")
 
 # ECDF distancia
-df_dist$minDist %>% range()
+df_dist %>% filter(rank==1) %>% pull(dist) %>% range()
 theme_set(theme_bw())
 df_dist %>% 
-  mutate(distancia=minDist/1e3) %>% 
-  ggplot(aes(distancia,y=..y..*nrow(df_dist)))+
+  filter(rank==1) %>% 
+  mutate(distancia=dist/1e3) %>% 
+  ggplot(aes(distancia,y=..y..*nrow(filter(df_dist,rank==1))))+
   stat_ecdf()+
   scale_x_continuous(breaks=10*0:75)+
   coord_cartesian(xlim = c(0,50))+ # coord_cartesian does not filter the data
@@ -341,11 +340,29 @@ df_dist %>%
 
 f_savePlot(last_plot(), sprintf(file_name,"ECDF_DistanciaEstacionMeteo"))
 
+# ECDF distancia n primeros
+n <- 6
+df_dist %>% 
+  filter(rank<=n) %>% 
+  mutate(distancia=dist/1e3) %>% 
+  ggplot(aes(distancia,y=..y..*(df_dist %>% filter(rank<=n) %>% 
+                                  pull(codigo_comuna) %>% unique() %>% 
+                                  length())))+
+  stat_ecdf(aes(col=factor(rank), group=rank),size=1)+
+  scale_x_continuous(breaks=10*0:5)+
+  coord_cartesian(xlim=c(0,50))+ # coord_cartesian does not filter the data
+  scale_color_viridis_d(name="N° Estaciones \n cercanas")+
+  labs(x="Distancia [km]", y= "N° Comunas")+
+  theme_bw(18)
+f_savePlot(last_plot(), sprintf(file_name,"ECDF_DistanciaEstacion_NMeteo"))
+rm(n)
+
 # Graficar lineas distancia---------
 
 # Junto datos de comuna con estaciones. Solo para RM. 
 # Saco Lo Barnechea e incluyo Puente Alto
 df_aux <- df_dist %>% 
+  filter(rank==1) %>% 
   left_join(mapa_comuna %>% select(codigo_comuna,mapa_rm)) %>% 
   filter(mapa_rm==1)
 
@@ -354,7 +371,7 @@ estaciones_aux <- estaciones %>%
   select(estacion,longitud, latitud) %>% rename(ubi=geometry)
 
 df_aux <- df_aux %>% ungroup() %>% 
-  left_join(estaciones_aux, by=c("minSite"="estacion")) %>% 
+  left_join(estaciones_aux, by=c("estacion")) %>% 
   left_join(comunas %>% select(codigo_comuna,cent_lon, cent_lat))
 
 ## DF con los puntos de las lineas, para dp con geom_path graficar
@@ -373,11 +390,11 @@ estaciones_mapa <- estaciones %>% rename(ubi=geometry) %>%
   dplyr::select(-codigo_provincia,-codigo_comuna)
 # Nota: Hay una estacion llamada La Florida en Talca que genera repeticion
 df_dist %>% 
-  left_join(mapa_comuna) %>% 
-  filter(mapa_rm==1) %>% 
-  left_join(estaciones_mapa,by=c("minSite"="estacion")) %>% 
+  filter(mapa_rm==1 & rank==1) %>% 
+  left_join(estaciones_mapa,by=c("estacion")) %>% 
   ggplot()+
-  geom_sf(aes(geometry=geometry), fill="white")+
+  geom_sf(data=filter(mapa_comuna,mapa_rm==1),
+          aes(geometry=geometry), fill="white")+
   # geom_sf_label(aes(geometry=centroide, label=codigo_comuna),col="green")+
   geom_sf(aes(geometry=centroide), col="green")+
   # geom_sf_label(aes(geometry=ubi,label=minSite),col="red")+
@@ -387,29 +404,6 @@ df_dist %>%
   theme_minimal(base_size = 13)
 
 f_savePlot(last_plot(), sprintf(file_name,"EstacionCercanaMeteo"))
-
-
-## Distancia N primeros ---------------
-# Ordena por distancia para cada comuna, e incorpora un ranking
-df_dist <- df_meteo %>% arrange(codigo_comuna, dist) %>% 
-  group_by(nombre_comuna, codigo_comuna, centroide) %>% 
-  mutate(rank=rank(dist, ties.method = "first"))
-
-# Filta N primeros
-df_dist <- df_dist %>% filter(rank<7)
-
-# ECDF distancia
-df_dist %>% 
-  mutate(distancia=dist/1e3) %>% 
-  ggplot(aes(distancia,y=..y..*unique(df_dist$codigo_comuna) %>% length()))+
-  stat_ecdf(aes(col=factor(rank), group=rank),size=1)+
-  scale_x_continuous(breaks=10*0:5)+
-  coord_cartesian(xlim=c(0,50))+ # coord_cartesian does not filter the data
-  scale_color_viridis_d(name="N° Estaciones \n cercanas")+
-  labs(x="Distancia [km]", y= "N° Comunas")+
-  theme_bw(18)
-
-f_savePlot(last_plot(), sprintf(file_name,"ECDF_DistanciaEstacion_NMeteo"))
 
 
 ## Nearest stations -----
