@@ -98,4 +98,48 @@ df_map %>% filter(codigo_region %in% c("08","09","10","14","11")) %>%
            titulo="Heating Degree 2016-2019 \n [°C]",
            fileName = sprintf(file_name,"MapaSurHeatDeg"))
 
+
+## Datos Comunales ----------
+df_meteo <- read_rds("Data/Data_Modelo/Datos_Meteorologia.rsd") %>% 
+  gather(tipo,valor, -codigo_comuna) %>% 
+  left_join(mapa_comuna)
+
+## Mapas chequeos
+df_meteo$tipo %>% unique()
+
+# Heat degree 15
+df_meteo %>% 
+  filter(tipo %>% str_detect("heating_degree_15")) %>%
+  mutate(tipo=case_when(
+    str_detect(tipo,"fall") ~ "Fall",
+    str_detect(tipo,"winter") ~ "Winter",
+    str_detect(tipo,"spring") ~ "Spring",
+    str_detect(tipo,"summer") ~ "Summer") %>% 
+      factor(levels = c("Fall","Winter","Spring","Summer"))) %>% 
+  fig_mapa(valor, facets = ~tipo)
+
+
+df_meteo %>% 
+  filter(tipo %>% str_detect("heating_degree_15")) %>% 
+  mutate(tipo=case_when(
+    str_detect(tipo,"fall") ~ "Fall",
+    str_detect(tipo,"winter") ~ "Winter",
+    str_detect(tipo,"spring") ~ "Spring",
+    str_detect(tipo,"summer") ~ "Summer") %>% 
+      factor(levels = c("Fall","Winter","Spring","Summer"))) %>% 
+  fig_mapaChile_facet(valor, facets=~tipo, titulo="HD a 15°C")
+
+
+df_meteo %>% 
+  filter(tipo %>% str_detect("heating_degree_15")) %>% 
+  mutate(tipo=case_when(
+    str_detect(tipo,"fall") ~ "Fall",
+    str_detect(tipo,"winter") ~ "Winter",
+    str_detect(tipo,"spring") ~ "Spring",
+    str_detect(tipo,"summer") ~ "Summer") %>% 
+      factor(levels = c("Fall","Winter","Spring","Summer"))) %>% 
+  group_by(region,tipo) %>% summarise(valor=mean(valor)) %>%
+  spread(tipo,valor) %>% view()
+
+
 ## EoF
