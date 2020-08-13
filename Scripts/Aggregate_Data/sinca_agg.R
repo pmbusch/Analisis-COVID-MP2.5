@@ -21,7 +21,7 @@ df_conc <- df %>%
   summarise(valor=mean(valor, na.rm=T)) %>% ungroup()
 
 # Numero estaciones
-df_conc$site %>% unique() %>% length()
+df_conc %>% n_distinct("site")
   
 df_conc <- df_conc %>%   
   group_by(codigo_comuna, pollutant, unidad) %>% 
