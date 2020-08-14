@@ -79,3 +79,47 @@ f_saveCsv <- function(datos, file_path){
               sep=';',row.names = F, append = T)
 }
 
+## Rename Variables ----------
+# Funcion para incorporar un nombre mas representativo a la variable
+# Utilizada principalmente para resultados del modelo
+f_replaceVar <- function(variable_orig){
+  return(
+    case_when(
+      variable_orig== "Intercept" ~ "Intercepto",
+      variable_orig== "tasa_mortalidad" ~ "Tasa Mortalidad COVID [por 100mil]",
+     variable_orig== "mp25" ~ "MP2.5 [ug/m3]",
+     variable_orig== "densidad_pob" ~ "Densidad [hab/km2]",
+     variable_orig== "`15-44`" ~ "% 15-44",
+     variable_orig== "`45-64`" ~ "% 45-64",
+     variable_orig== "`65+`"~ "% 65+",
+     variable_orig== "perc_mujer"~ "% Mujer",
+     variable_orig== "perc_rural"~ "% Rural",
+     variable_orig== "perc_puebloOrig"~ "% Pueblo Originario",
+     variable_orig== "perc_material_irrecuperable"~ "% Vivienda con Material irrecuperable",
+     variable_orig== "dias_primerContagio" ~ "Dias desde primer contagio",
+     variable_orig== "dias_primerMuerte"~ "Dias desde primera muerte",
+     variable_orig== "dias_cuarentena"~ "Dias desde cuarentena",
+     variable_orig== "tasa_camas"~ "Camas hospitalarias [por 100mil]",
+     variable_orig== "ingresoTotal_media"~ "Media Ingreso total",
+     variable_orig== "perc_isapre"~ "% Isapre",
+     variable_orig== "perc_fonasa_A"~ "% Fonasa-A",
+     variable_orig== "perc_fonasa_B"~ "% Fonasa-B",
+     variable_orig== "perc_fonasa_C"~ "% Fonasa-C",
+     variable_orig== "perc_fonasa_D"~ "% Fonasa-D",
+     variable_orig== "perc_menor_media"~ "% Educación menor a media",
+     variable_orig== "perc_ocupado"~ "% Ocupado laboral",
+     variable_orig== "cons_lena_calefactor_pp"~ "Consumo anual leña calefactor",
+     variable_orig== "cons_lena_cocina_pp"~ "Consumo anual leña cocina",
+     variable_orig== "perc_lenaCocina"~ "% uso leña cocina",
+     variable_orig== "perc_lenaCalefaccion" ~ "% uso leña calefaccion",
+     variable_orig== "perc_lenaAgua"~ "% uso leña agua caliente",
+     variable_orig== "hr_summer" ~ "Humedad relativa media Verano [%]" ,
+     variable_orig== "hr_winter"~ "Humedad relativa media Invierno [%]",
+     variable_orig== "tmed_summer"~ "Temperatura media Verano [°C]",
+     variable_orig== "tmed_winter"~ "Temperatura media Invierno [°C]",
+     variable_orig== "heating_degree_15_summer"~ "Heating Degree 15°C Verano [°C]",
+     variable_orig== "heating_degree_15_winter"~ "Heating Degree 15°C Invierno [°C]",
+      T ~ variable_orig))
+}
+
+
