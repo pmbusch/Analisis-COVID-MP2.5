@@ -5,7 +5,7 @@
 ## Fuente: Bates, D., Mächler, M., Bolker, B., & Walker, S. (2014). Fitting linear mixed-effects models using lme4. arXiv preprint arXiv:1406.5823.
 ## PBH Julio 2020
 
-theme_set(theme_bw())
+theme_set(theme_bw(16)+theme(panel.grid.major = element_blank()))
 file_name <- "Figuras/Analisis_transversal/%s.png"
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
 
@@ -177,8 +177,8 @@ df %>%
                 mp25,densidad_pob, tasa_mortalidad) %>% view()
 
 # comparacion prediccion
-df %>% filter(!is.na(mp25)) %>% 
-ggplot(aes(x = mp25, y = casos_fallecidos/poblacion*1e5)) +
+df %>% 
+  ggplot(aes(x = mp25, y = casos_fallecidos/poblacion*1e5)) +
   geom_point(col="green",alpha=.5) +
   geom_line(aes(y = predict(mod,type="response")/poblacion*1e5),
             size=1, col="red", alpha=.5)+
@@ -187,18 +187,22 @@ ggplot(aes(x = mp25, y = casos_fallecidos/poblacion*1e5)) +
   theme_bw(16)
 
 
+
+
 df %>% 
   mutate(rm=if_else(region=="M","RM","Resto Chile") %>% factor()) %>% 
   ggplot(aes(x = casos_fallecidos/poblacion*1e5)) +
   geom_point(aes(y = predict(mod,type="response")/poblacion*1e5),
              col="red", 
+             size=2,
              alpha=.5)+
   geom_abline(intercept = 0, slope = 1, linetype = "dashed")+
   coord_cartesian(xlim=c(0,250),ylim=c(0,250), expand = T)+
   labs(x="Observada", 
        y="Predicción")+
   ggtitle("Tasa Mortalidad COVID [muertes/100mil hab]")+
-  theme_bw(16)
+  theme(panel.grid.minor = element_blank())
+
 
 f_savePlot(last_plot(), sprintf(file_name,"Obs_vs_Pred"), dpi=100)
 
