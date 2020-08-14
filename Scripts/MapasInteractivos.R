@@ -2,157 +2,26 @@
 ## Mapas interactivos de datos comunales y estaciones monitoreo
 ## PBH Agosto 2020
 
-
 ## Datos Comunales --------
 # Nota: Debo cargar loadAllData antes
 
-library(RColorBrewer)
-df_modelo %>% names()
-mapa <- left_join(mapa_comuna, df_modelo)
 
 # Debo instalar la version en desarrollo para que funcione bien burst
 # devtools::install_github("r-spatial/mapview@develop")
+library(RColorBrewer)
+
+df_modelo %>% names()
+mapa <- left_join(mapa_comuna, df_modelo)
 
 
-# Mapa Tasa Mortalidad
-m <- mapview(mapa, label=mapa$nombre_comuna, 
-             zcol=c("tasa_mortalidad"), 
-             col.regions=brewer.pal(9, "YlOrRd"))
-m
-
-
-mapa2 <- mapa %>% dplyr::select(geometry, nombre_comuna,
-                         tasa_mortalidad, densidad_pob_censal,
-                         perc_isapre, tasa_camas, perc_rural)
-
-m2 <- mapview(mapa2, label=mapa2$nombre_comuna, 
-             burst=T, hide=T,
-             col.regions=brewer.pal(9, "YlOrRd"))
-m2
-
-
-m3 <- mapview(mapa, label=mapa2$nombre_comuna, 
-              zcol=c("tasa_mortalidad","densidad_pob_censal",
-                     "perc_isapre", "tasa_camas", "perc_rural"),
-              hide=T,
-              col.regions=brewer.pal(9, "YlOrRd"))
-m3
-
-
-
-# Alternativa con leaflet ----
 library(leaflet)
 library(htmltools)
 library(scales)
 
-pal <- colorBin("YlOrRd", bins = 9, domain=mapa$tasa_mortalidad)
-labels <- sprintf(
-  "<strong>%s</strong><br/> Tasa Mortalidad: %s [por 100mil hab]",
-  mapa$nombre_comuna, comma(mapa$tasa_mortalidad,0.1)) %>% 
-  lapply(HTML)
-
-m1 <- leaflet(mapa) %>% 
-  addTiles() %>% 
-  addPolygons(
-    group = "Tasa Mortalidad",
-    # fill
-    fillColor   = ~pal(tasa_mortalidad),
-    fillOpacity = 0.7,
-    # line
-    dashArray   = "3",
-    weight      = 0.1,
-    color       = "white",
-    opacity     = 1,
-    # interaction
-    highlight = highlightOptions(
-      weight = 1,
-      color = "#666",
-      dashArray = "",
-      fillOpacity = 0.7,
-      bringToFront = TRUE),
-    label = labels,
-    labelOptions = labelOptions(
-      style = list("font-weight" = "normal", padding = "3px 8px"),
-      textsize = "15px",
-      direction = "auto")) %>%
-  addLegend(
-    group = "Tasa Mortalidad",
-    pal = pal, 
-    values = ~tasa_mortalidad, opacity = 0.7, 
-    title = HTML("Tasa Mortalidad [por 100mil hab]"),
-    position = "bottomright") %>% 
-  addLayersControl(
-    baseGroups = c("OSM (default)"),
-    overlayGroups = c("Tasa Mortalidad")) %>% 
-  hideGroup(c("Tasa Mortalidad"))
-m1
-
-
-
-# Mapa Varios parametros
-# OVERKILL: pero parametro Burst no me funciona ni en los ejemplos
-# Funcion permite modificar todos los mapas de manera simultanea
-# Genera un archivo muy grande 65MB, y demora 36 min en guardar!!!
-f_mapview <- function(datos, columna){
-  lab_data <- datos %>% pull(columna) %>% round(2)
-  mapview(datos, 
-          label=paste(datos$nombre_comuna,": ",lab_data,sep=""), 
-          zcol=columna,
-          layer.name=columna,
-          col.regions=brewer.pal(9, "YlOrRd"),
-          hide=T)
-}
-
-mapa_filtro <- mapa %>% 
-  dplyr::select(region, nombre_provincia, nombre_comuna, poblacion,
-         tasa_mortalidad, mp25, densidad_pob, densidad_pob_censal,`15-44`,`65+`,
-         perc_rural, perc_puebloOrig,
-         ingresoAutonomo_media, perc_menor_media, perc_isapre,perc_fonasa_A,
-         perc_fonasa_B,perc_fonasa_C,perc_fonasa_D,
-         perc_lenaCocina, perc_lenaCalefaccion,
-         tasa_contagios, tasa_camas, dias_primerContagio, dias_cuarentena, perc_letalidad,
-         tmed_summer,tmed_winter,hr_summer,hr_winter,heating_degree_15_summer,
-         heating_degree_15_winter)
-
-f_mapview(mapa_filtro, "tasa_mortalidad")
-
-m <- f_mapview(mapa_filtro,"tasa_mortalidad")+
-  f_mapview(mapa_filtro,"mp25")+
-  f_mapview(mapa_filtro,"poblacion")+
-  f_mapview(mapa_filtro,"tasa_contagios")+
-  f_mapview(mapa_filtro,"densidad_pob")+
-  f_mapview(mapa_filtro,"densidad_pob_censal")+
-  f_mapview(mapa_filtro,"15-44")+
-  f_mapview(mapa_filtro,"65+")+
-  f_mapview(mapa_filtro,"perc_rural")+
-  f_mapview(mapa_filtro,"perc_puebloOrig")+
-  f_mapview(mapa_filtro,"ingresoAutonomo_media")+
-  f_mapview(mapa_filtro,"perc_menor_media")+
-  f_mapview(mapa_filtro,"perc_isapre")+
-  f_mapview(mapa_filtro,"perc_fonasa_A")+
-  f_mapview(mapa_filtro,"perc_fonasa_D")+
-  f_mapview(mapa_filtro,"perc_lenaCocina")+
-  f_mapview(mapa_filtro,"perc_lenaCalefaccion")+
-  f_mapview(mapa_filtro,"tasa_camas")+
-  f_mapview(mapa_filtro,"dias_primerContagio")+
-  f_mapview(mapa_filtro,"dias_cuarentena")+
-  f_mapview(mapa_filtro,"perc_letalidad")+
-  f_mapview(mapa_filtro,"tmed_summer")+
-  f_mapview(mapa_filtro,"tmed_winter")+
-  f_mapview(mapa_filtro,"hr_summer")+
-  f_mapview(mapa_filtro,"hr_winter")+
-  f_mapview(mapa_filtro,"heating_degree_15_summer")+
-  f_mapview(mapa_filtro,"heating_degree_15_winter")
-  
-
-# Save file as html
-mapshot(m, "Figuras/MapaParametrosComuna.html", selfcontained=F)
-rm(mapa, m, f_mapview)
-
 
 ## OVERKILL 2: Leaflet
+# Funcion permite modificar todos los mapas de manera simultanea
 f_leafleft <- function(map, datos,var, columna, unidad){
-  
   pal <- colorBin("YlOrRd", bins = 9, domain=datos %>% pull(columna))
   labels <- sprintf(
     "<strong>%s</strong><br/> %s: %s [%s]",
@@ -191,14 +60,27 @@ f_leafleft <- function(map, datos,var, columna, unidad){
       position = "bottomleft")
 }
 
-leaflet(mapa_filtro) %>% 
-  addTiles() %>% 
-  f_leafleft(mapa_filtro,mapa_filtro$tasa_mortalidad,
-             "tasa_mortalidad", unidad = "por 100mil hab") %>% 
-  addLayersControl(
-    baseGroups = c("OSM (default)"),
-    overlayGroups = c("tasa_mortalidad")) %>% 
-  hideGroup(c("tasa_mortalidad"))
+
+mapa_filtro <- mapa %>% 
+  dplyr::select(region, nombre_provincia, nombre_comuna, poblacion,
+                tasa_mortalidad, mp25, densidad_pob, densidad_pob_censal,`15-44`,`65+`,
+                perc_rural, perc_puebloOrig,
+                ingresoAutonomo_media, perc_menor_media, perc_isapre,perc_fonasa_A,
+                perc_fonasa_B,perc_fonasa_C,perc_fonasa_D,
+                perc_lenaCocina, perc_lenaCalefaccion,
+                tasa_contagios, tasa_camas, dias_primerContagio, dias_cuarentena, perc_letalidad,
+                tmed_summer,tmed_winter,hr_summer,hr_winter,heating_degree_15_summer,
+                heating_degree_15_winter)
+
+# PRUEBA FUNCION
+# leaflet(mapa_filtro) %>% 
+#   addTiles() %>% 
+#   f_leafleft(mapa_filtro,mapa_filtro$tasa_mortalidad,
+#              "tasa_mortalidad", unidad = "por 100mil hab") %>% 
+#   addLayersControl(
+#     baseGroups = c("OSM (default)"),
+#     overlayGroups = c("tasa_mortalidad")) %>% 
+#   hideGroup(c("tasa_mortalidad"))
 
 
 m_leaf <- leaflet(mapa_filtro) %>% 
@@ -387,6 +269,138 @@ mapshot(m_all, "Figuras/Completa_MP/EstacionesMonitoreo.html")
 
 rm(m, m_comunas, comunas_mapa,m_zonas, m_zonas_agg,
    m_area_poblada,m_all, estaciones_sinca, estaciones_meteo)
+
+
+## PRUEBAS ------------
+# Mapa Tasa Mortalidad
+m <- mapview(mapa, label=mapa$nombre_comuna, 
+             zcol=c("tasa_mortalidad"), 
+             col.regions=brewer.pal(9, "YlOrRd"))
+m
+
+
+mapa2 <- mapa %>% dplyr::select(geometry, nombre_comuna,
+                                tasa_mortalidad, densidad_pob_censal,
+                                perc_isapre, tasa_camas, perc_rural)
+
+m2 <- mapview(mapa2, label=mapa2$nombre_comuna, 
+              burst=T, hide=T,
+              col.regions=brewer.pal(9, "YlOrRd"))
+m2
+
+
+m3 <- mapview(mapa, label=mapa2$nombre_comuna, 
+              zcol=c("tasa_mortalidad","densidad_pob_censal",
+                     "perc_isapre", "tasa_camas", "perc_rural"),
+              hide=T,
+              col.regions=brewer.pal(9, "YlOrRd"))
+m3
+
+# Alternativa con leaflet
+pal <- colorBin("YlOrRd", bins = 9, domain=mapa$tasa_mortalidad)
+labels <- sprintf(
+  "<strong>%s</strong><br/> Tasa Mortalidad: %s [por 100mil hab]",
+  mapa$nombre_comuna, comma(mapa$tasa_mortalidad,0.1)) %>% 
+  lapply(HTML)
+
+m1 <- leaflet(mapa) %>% 
+  addTiles() %>% 
+  addPolygons(
+    group = "Tasa Mortalidad",
+    # fill
+    fillColor   = ~pal(tasa_mortalidad),
+    fillOpacity = 0.7,
+    # line
+    dashArray   = "3",
+    weight      = 0.1,
+    color       = "white",
+    opacity     = 1,
+    # interaction
+    highlight = highlightOptions(
+      weight = 1,
+      color = "#666",
+      dashArray = "",
+      fillOpacity = 0.7,
+      bringToFront = TRUE),
+    label = labels,
+    labelOptions = labelOptions(
+      style = list("font-weight" = "normal", padding = "3px 8px"),
+      textsize = "15px",
+      direction = "auto")) %>%
+  addLegend(
+    group = "Tasa Mortalidad",
+    pal = pal, 
+    values = ~tasa_mortalidad, opacity = 0.7, 
+    title = HTML("Tasa Mortalidad [por 100mil hab]"),
+    position = "bottomright") %>% 
+  addLayersControl(
+    baseGroups = c("OSM (default)"),
+    overlayGroups = c("Tasa Mortalidad")) %>% 
+  hideGroup(c("Tasa Mortalidad"))
+m1
+
+## Mapa todo old -----
+# Desestimado pq se demora mucho en guardar, opcion leaflet funciona mejor
+
+# Mapa Varios parametros
+# OVERKILL: pero parametro Burst no me funciona ni en los ejemplos
+# Funcion permite modificar todos los mapas de manera simultanea
+# Genera un archivo muy grande 65MB, y demora 36 min en guardar!!!
+f_mapview <- function(datos, columna){
+  lab_data <- datos %>% pull(columna) %>% round(2)
+  mapview(datos, 
+          label=paste(datos$nombre_comuna,": ",lab_data,sep=""), 
+          zcol=columna,
+          layer.name=columna,
+          col.regions=brewer.pal(9, "YlOrRd"),
+          hide=T)
+}
+
+mapa_filtro <- mapa %>% 
+  dplyr::select(region, nombre_provincia, nombre_comuna, poblacion,
+                tasa_mortalidad, mp25, densidad_pob, densidad_pob_censal,`15-44`,`65+`,
+                perc_rural, perc_puebloOrig,
+                ingresoAutonomo_media, perc_menor_media, perc_isapre,perc_fonasa_A,
+                perc_fonasa_B,perc_fonasa_C,perc_fonasa_D,
+                perc_lenaCocina, perc_lenaCalefaccion,
+                tasa_contagios, tasa_camas, dias_primerContagio, dias_cuarentena, perc_letalidad,
+                tmed_summer,tmed_winter,hr_summer,hr_winter,heating_degree_15_summer,
+                heating_degree_15_winter)
+
+f_mapview(mapa_filtro, "tasa_mortalidad")
+
+m <- f_mapview(mapa_filtro,"tasa_mortalidad")+
+  f_mapview(mapa_filtro,"mp25")+
+  f_mapview(mapa_filtro,"poblacion")+
+  f_mapview(mapa_filtro,"tasa_contagios")+
+  f_mapview(mapa_filtro,"densidad_pob")+
+  f_mapview(mapa_filtro,"densidad_pob_censal")+
+  f_mapview(mapa_filtro,"15-44")+
+  f_mapview(mapa_filtro,"65+")+
+  f_mapview(mapa_filtro,"perc_rural")+
+  f_mapview(mapa_filtro,"perc_puebloOrig")+
+  f_mapview(mapa_filtro,"ingresoAutonomo_media")+
+  f_mapview(mapa_filtro,"perc_menor_media")+
+  f_mapview(mapa_filtro,"perc_isapre")+
+  f_mapview(mapa_filtro,"perc_fonasa_A")+
+  f_mapview(mapa_filtro,"perc_fonasa_D")+
+  f_mapview(mapa_filtro,"perc_lenaCocina")+
+  f_mapview(mapa_filtro,"perc_lenaCalefaccion")+
+  f_mapview(mapa_filtro,"tasa_camas")+
+  f_mapview(mapa_filtro,"dias_primerContagio")+
+  f_mapview(mapa_filtro,"dias_cuarentena")+
+  f_mapview(mapa_filtro,"perc_letalidad")+
+  f_mapview(mapa_filtro,"tmed_summer")+
+  f_mapview(mapa_filtro,"tmed_winter")+
+  f_mapview(mapa_filtro,"hr_summer")+
+  f_mapview(mapa_filtro,"hr_winter")+
+  f_mapview(mapa_filtro,"heating_degree_15_summer")+
+  f_mapview(mapa_filtro,"heating_degree_15_winter")
+
+
+# Save file as html
+mapshot(m, "Figuras/MapaParametrosComuna.html", selfcontained=F)
+rm(mapa, m, f_mapview)
 
 
 ## EoF
