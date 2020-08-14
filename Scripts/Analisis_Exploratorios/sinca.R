@@ -2,7 +2,7 @@
 ## SINCA: Datos concentracion
 ## PBH Julio 2020
 
-theme_set(theme_bw())
+theme_set(theme_bw(16)+theme(panel.grid.major = element_blank()))
 file_name <- "Scripts/Analisis_Exploratorios/Figuras/SINCA/%s.png"
 source("Scripts/Analisis_Exploratorios/f_figuras.R", encoding = "UTF-8")
 
@@ -167,5 +167,63 @@ ggplot(df_estaciones)+
   theme_minimal(base_size = 13)
 
 f_savePlot(last_plot(), sprintf(file_name,"MapaEstacionesAire"))
+
+## Expansion concentracion FIXED RADIUS ------
+
+## Cargar datos distancia
+df_dist <- read_rds("Data/Data_Modelo/distanciaComunaEstacionSinca.rsd")
+
+## Datos de monitoreo
+df_avg <- df_conc %>% 
+  group_by(site,region,codigo_comuna, year) %>% 
+  summarise(valor=mean(valor,na.rm=T),
+            disponibilidad=n()/365) %>% ungroup() %>% 
+  filter(disponibilidad>0.8) %>%
+  group_by(site, region,codigo_comuna) %>% 
+  summarise(valor=mean(valor, na.rm=T)) %>% ungroup()
+
+# Cruzo con estaciones con comunas, en base a distnacia
+corte_km <- 20
+# corte_km <- Inf
+df_dist <- df_dist %>% filter(dist<corte_km*1e3)
+# Join
+df_avg <- df_dist %>% left_join(df_avg, by=c("site","codigo_comuna"))
+
+## Promedio ponderado por inverso de la distancia
+df_avg <- df_avg %>% 
+  group_by(codigo_comuna, nombre_comuna) %>% 
+  summarise(avg=weighted.mean(avg, 1/(dist))) %>% ungroup() %>% 
+  right_join(mapa_comuna)
+
+## Mapas
+source("Scripts/Analisis_Exploratorios/f_figuras.R", encoding = "UTF-8")
+
+# Chile
+df_avg %>% 
+  fig_mapa(avg, limites = c(0,50), lwd=0.01,
+           titulo="Promedio 2010-2019 \n MP2.5 [ug/m3]")
+f_savePlot(last_plot(),file_path=sprintf(file_name,"MapaChile"))
+
+## Chile Facet
+fig_mapaChile_facet(df_avg, avg, limites=c(0,50),
+                    titulo = "Promedio 2010-2019 \n MP2.5 [ug/m3]")
+f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaChileFacet"))
+
+# Santiago
+df_avg %>% 
+  filter(mapa_rm==1) %>% 
+  fig_mapa(avg, limites = c(0,50), titulo="Promedio 2010-2019 \n MP2.5 [ug/m3]")
+f_savePlot(last_plot(),file_path = sprintf(file_name,"MapaSantiago"))
+           
+
+# Poblacion en comunas con datos MP2.5
+total_pob <- df_poblacion$poblacion %>% sum()
+pob_mp25 <- df_avg %>% left_join(df_poblacion) %>% pull(poblacion) %>% sum(na.rm=T)
+cat(round(pob_mp25/total_pob*100,1),
+    "% de poblacion en comunas con monitoreo de MP2.5")
+
+# ## Guardo Datos de MP2.5 expandidos a nivel comunal
+# df_avg %>% rename(mp25=avg) %>% select(codigo_comuna,mp25) %>% 
+#   saveRDS("Data/Data_Modelo/Datos_Concentraciones_20km.rsd")
 
 ## EoF
