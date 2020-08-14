@@ -197,4 +197,24 @@ df_region %>%
 ggsave(sprintf(file_name,"EcdfRegion"), last_plot(), dpi=900,
        width = 22.3, height = 14, units = "in")
 
+## COeficiente de variacion ----------
+df_cv <- df_modelo %>% dplyr::select(-geometry) %>%  
+  filter(!is.na(mp25)) %>% skim() %>% 
+  mutate(cv=numeric.sd/numeric.mean) %>% 
+  dplyr::select(skim_variable, cv) %>% na.omit()
+
+df_cv %>% 
+  filter(cv>0.5) %>% 
+  ggplot(aes(x=reorder(skim_variable,cv),y=cv))+
+  geom_col(fill="red")+
+  coord_flip(expand = F)+
+  # coord_cartesian()+
+  labs(x="Variable",y="Coeficiente Variacion",
+       caption = "Se muestran variables con C.V. mayor a 0.5")+
+  theme_bw(16)+
+  theme(axis.line.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major.y = element_blank())
+f_savePlot(last_plot(), sprintf(file_name,"coefVariacion"))
+
+rm(df_cv)
 ## EoF
