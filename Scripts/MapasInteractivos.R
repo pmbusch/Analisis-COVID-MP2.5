@@ -21,7 +21,7 @@ m <- mapview(mapa, label=mapa$nombre_comuna,
 m
 
 
-mapa2 <- mapa %>% select(geometry, nombre_comuna,
+mapa2 <- mapa %>% dplyr::select(geometry, nombre_comuna,
                          tasa_mortalidad, densidad_pob_censal,
                          perc_isapre, tasa_camas, perc_rural)
 
@@ -29,6 +29,14 @@ m2 <- mapview(mapa2, label=mapa2$nombre_comuna,
              burst=T, hide=T,
              col.regions=brewer.pal(9, "YlOrRd"))
 m2
+
+
+m3 <- mapview(mapa, label=mapa2$nombre_comuna, 
+              zcol=c("tasa_mortalidad","densidad_pob_censal",
+                     "perc_isapre", "tasa_camas", "perc_rural"),
+              hide=T,
+              col.regions=brewer.pal(9, "YlOrRd"))
+m3
 
 
 
@@ -76,7 +84,7 @@ m1 <- leaflet(mapa) %>%
   addLayersControl(
     baseGroups = c("OSM (default)"),
     overlayGroups = c("Tasa Mortalidad")) %>% 
-  hideGroup("Tasa Mortalidad")
+  hideGroup(c("Tasa Mortalidad"))
 m1
 
 
@@ -89,36 +97,193 @@ f_mapview <- function(datos, columna){
   lab_data <- datos %>% pull(columna) %>% round(2)
   mapview(datos, 
           label=paste(datos$nombre_comuna,": ",lab_data,sep=""), 
-          zcol=columna, 
+          zcol=columna,
+          layer.name=columna,
           col.regions=brewer.pal(9, "YlOrRd"),
           hide=T)
 }
-f_mapview(mapa, "tasa_mortalidad")
 
 mapa_filtro <- mapa %>% 
-  select(region, nombre_provincia, nombre_provincia, 
-         tasa_mortalidad, mp25, densidad_pob, densidad_pob_censal,
-         `65+`,ingresoAutonomo_media, perc_menor_media, perc_isapre,
-         tasa_contagios, tasa_camas, dias_primerContagio, dias_cuarentena)
+  dplyr::select(region, nombre_provincia, nombre_comuna, poblacion,
+         tasa_mortalidad, mp25, densidad_pob, densidad_pob_censal,`15-44`,`65+`,
+         perc_rural, perc_puebloOrig,
+         ingresoAutonomo_media, perc_menor_media, perc_isapre,perc_fonasa_A,
+         perc_fonasa_B,perc_fonasa_C,perc_fonasa_D,
+         perc_lenaCocina, perc_lenaCalefaccion,
+         tasa_contagios, tasa_camas, dias_primerContagio, dias_cuarentena, perc_letalidad,
+         tmed_summer,tmed_winter,hr_summer,hr_winter,heating_degree_15_summer,
+         heating_degree_15_winter)
 
+f_mapview(mapa_filtro, "tasa_mortalidad")
 
 m <- f_mapview(mapa_filtro,"tasa_mortalidad")+
   f_mapview(mapa_filtro,"mp25")+
+  f_mapview(mapa_filtro,"poblacion")+
   f_mapview(mapa_filtro,"tasa_contagios")+
   f_mapview(mapa_filtro,"densidad_pob")+
   f_mapview(mapa_filtro,"densidad_pob_censal")+
+  f_mapview(mapa_filtro,"15-44")+
   f_mapview(mapa_filtro,"65+")+
+  f_mapview(mapa_filtro,"perc_rural")+
+  f_mapview(mapa_filtro,"perc_puebloOrig")+
   f_mapview(mapa_filtro,"ingresoAutonomo_media")+
   f_mapview(mapa_filtro,"perc_menor_media")+
   f_mapview(mapa_filtro,"perc_isapre")+
+  f_mapview(mapa_filtro,"perc_fonasa_A")+
+  f_mapview(mapa_filtro,"perc_fonasa_D")+
+  f_mapview(mapa_filtro,"perc_lenaCocina")+
+  f_mapview(mapa_filtro,"perc_lenaCalefaccion")+
   f_mapview(mapa_filtro,"tasa_camas")+
   f_mapview(mapa_filtro,"dias_primerContagio")+
-  f_mapview(mapa_filtro,"dias_cuarentena")
+  f_mapview(mapa_filtro,"dias_cuarentena")+
+  f_mapview(mapa_filtro,"perc_letalidad")+
+  f_mapview(mapa_filtro,"tmed_summer")+
+  f_mapview(mapa_filtro,"tmed_winter")+
+  f_mapview(mapa_filtro,"hr_summer")+
+  f_mapview(mapa_filtro,"hr_winter")+
+  f_mapview(mapa_filtro,"heating_degree_15_summer")+
+  f_mapview(mapa_filtro,"heating_degree_15_winter")
+  
 
 # Save file as html
 mapshot(m, "Figuras/MapaParametrosComuna.html", selfcontained=F)
 rm(mapa, m, f_mapview)
 
+
+## OVERKILL 2: Leaflet
+f_leafleft <- function(map, datos,var, columna, unidad){
+  
+  pal <- colorBin("YlOrRd", bins = 9, domain=datos %>% pull(columna))
+  labels <- sprintf(
+    "<strong>%s</strong><br/> %s: %s [%s]",
+    datos$nombre_comuna, columna,
+    comma(datos %>% pull(columna),0.1), unidad) %>% 
+    lapply(HTML)
+  
+  map %>% 
+    addPolygons(
+    group = columna,
+    # fill
+    fillColor   = ~pal({{var}}),
+    fillOpacity = 0.7,
+    # line
+    dashArray   = "3",
+    weight      = 0.1,
+    color       = "white",
+    opacity     = 1,
+    # interaction
+    highlight = highlightOptions(
+      weight = 1,
+      color = "#666",
+      dashArray = "",
+      fillOpacity = 0.7,
+      bringToFront = TRUE),
+    label = labels,
+    labelOptions = labelOptions(
+      style = list("font-weight" = "normal", padding = "3px 8px"),
+      textsize = "15px",
+      direction = "auto")) %>%
+    addLegend(
+      group = columna,
+      pal = pal, 
+      values = ~{{var}}, opacity = 0.7, 
+      title = HTML(paste(columna, " [",unidad,"]",sep="")),
+      position = "bottomleft")
+}
+
+leaflet(mapa_filtro) %>% 
+  addTiles() %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$tasa_mortalidad,
+             "tasa_mortalidad", unidad = "por 100mil hab") %>% 
+  addLayersControl(
+    baseGroups = c("OSM (default)"),
+    overlayGroups = c("tasa_mortalidad")) %>% 
+  hideGroup(c("tasa_mortalidad"))
+
+
+m_leaf <- leaflet(mapa_filtro) %>% 
+  addTiles() %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$tasa_mortalidad,
+             "tasa_mortalidad", unidad = "por 100mil hab") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$mp25,
+             "mp25", unidad = "ug/m3") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$poblacion,
+             "poblacion", unidad = "hab") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$tasa_contagios,
+             "tasa_contagios", unidad = "por 100mil hab") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$densidad_pob,
+             "densidad_pob", unidad = "hab/km2") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$densidad_pob_censal,
+             "densidad_pob_censal", unidad = "hab/km2") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$`15-44`,
+             "15-44", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$`65+`,
+             "65+", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$perc_rural,
+             "perc_rural", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$perc_puebloOrig,
+             "perc_puebloOrig", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$ingresoAutonomo_media,
+             "ingresoAutonomo_media", unidad = "CLP mes") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$perc_menor_media,
+             "perc_menor_media", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$perc_isapre,
+             "perc_isapre", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$perc_fonasa_A,
+             "perc_fonasa_A", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$perc_fonasa_D,
+             "perc_fonasa_D", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$perc_lenaCocina,
+             "perc_lenaCocina", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$perc_lenaCalefaccion,
+             "perc_lenaCalefaccion", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$tasa_camas,
+             "tasa_camas", unidad = "por 100mil hab") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$dias_primerContagio,
+             "dias_primerContagio", unidad = "dias") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$dias_cuarentena,
+             "dias_cuarentena", unidad = "dias") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$perc_letalidad,
+             "perc_letalidad", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$tmed_summer,
+             "tmed_summer", unidad = "°C") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$tmed_winter,
+             "tmed_winter", unidad = "°C") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$hr_summer,
+             "hr_summer", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$hr_winter,
+             "hr_winter", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$heating_degree_15_summer,
+             "heating_degree_15_summer", unidad = "°C") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$heating_degree_15_winter,
+             "heating_degree_15_winter", unidad = "°C") %>% 
+  addLayersControl(
+    baseGroups = c("OpenStreetMap","Toner", "Toner by Stamen"),
+    overlayGroups = c("tasa_mortalidad","mp25","poblacion","tasa_contagios",
+                      "densidad_pob",
+                      "densidad_pob_censal","15-44","65+","perc_rural",
+                      "perc_puebloOrig","ingresoAutonomo_media",
+                      "perc_menor_media","perc_isapre","perc_fonasa_A",
+                      "perc_fonasa_D","perc_lenaCocina",
+                      "perc_lenaCalefaccion","tasa_camas",
+                      "dias_primerContagio","dias_cuarentena",
+                      "perc_letalidad","tmed_summer","tmed_winter",
+                      "hr_summer","hr_winter","heating_degree_15_summer",
+                      "heating_degree_15_winter")) %>% 
+  hideGroup(c("tasa_mortalidad","mp25","poblacion","tasa_contagios",
+              "densidad_pob","densidad_pob_censal","15-44","65+","perc_rural",
+              "perc_puebloOrig","ingresoAutonomo_media",
+              "perc_menor_media","perc_isapre","perc_fonasa_A",
+              "perc_fonasa_D","perc_lenaCocina",
+              "perc_lenaCalefaccion","tasa_camas",
+              "dias_primerContagio","dias_cuarentena",
+              "perc_letalidad","tmed_summer","tmed_winter",
+              "hr_summer","hr_winter","heating_degree_15_summer",
+              "heating_degree_15_winter"))
+# m_leaf
+
+mapshot(m_leaf, "Figuras/MapaParametrosComuna.html", selfcontained=F)
+rm(mapa_filtro, mapa, m_leaf, f_leafleft)
 
 ## Estaciones Monitoreo -------------
 library(sf)
