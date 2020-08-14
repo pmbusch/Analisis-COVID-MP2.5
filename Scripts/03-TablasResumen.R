@@ -10,7 +10,7 @@ df <- df_modelo %>%
          ingresoAutonomo_media=ingresoAutonomo_media/1e3) %>% 
   select(tasa_mortalidad, mp25, 
          poblacion,densidad_pob, `15-44`, `45-64`, `65+`,perc_mujer, 
-         perc_rural, perc_material_irrecuperable, 
+         perc_rural, perc_puebloOrig, perc_material_irrecuperable, 
          tasa_contagios, perc_letalidad,dias_primerContagio, 
          dias_primerMuerte, dias_cuarentena, tasa_camas,tasa_mortalidad_all,
          ingresoAutonomo_media, perc_isapre, perc_fonasa,
@@ -29,6 +29,7 @@ df <- df_modelo %>%
     `% 65+`=`65+`,
     `% Mujer`=perc_mujer,
     `% Rural`=perc_rural,
+    `% Pueblo Originario`=perc_puebloOrig,
     `% Vivienda con Material irrecuperable`=perc_material_irrecuperable,
     `Tasa Contagios COVID [por 100mil]`=tasa_contagios,
     `% Letalidad COVID`=perc_letalidad,
