@@ -18,6 +18,23 @@ df_conc$site %>% unique() %>% length()
 # Numero comunas con datos
 df_conc$codigo_comuna %>% unique() %>% length()
 
+## Numero estaciones con datos por año ------
+df_anual <- df_conc %>% group_by(site,codigo_comuna, year) %>% 
+  summarise(valor=mean(valor, na.rm=T),
+            disponibilidad=n()/365) %>% ungroup()
+
+df_anual %>% 
+  # filter(disponibilidad>0.8) %>%
+  group_by(year) %>% 
+  summarise(count=n()) %>% ungroup() %>% 
+  ggplot(aes(year, count))+
+  geom_col(fill="brown")+
+  scale_x_continuous(breaks=2010:2019)+
+  coord_cartesian(expand = F)+
+  labs(x="", y="Numero estaciones con datos")
+f_savePlot(last_plot(), sprintf(file_name,"NSite_anos"))
+
+rm(df_anual)
 
 ## Series de Tiempo -------
 
