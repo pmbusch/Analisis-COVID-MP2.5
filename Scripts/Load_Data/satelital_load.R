@@ -3,45 +3,142 @@
 ## Fuente: http://fizz.phys.dal.ca/~atmos/martin/?page_id=140
 ## PBH Agosto 2020
 
+
+## Librerias ------
+source("Scripts/00-Funciones.R", encoding = "UTF-8")
+source("Scripts/Aggregate_Data/poblacion_agg.R", encoding = "UTF-8")
+file_name <- "Figuras/Satelital/%s.png"
+theme_set(theme_bw(16)+theme(panel.grid.major = element_blank()))
 library(raster)
 library(RColorBrewer)
 
-file_url <- "Data/Data_Original/Satelital/%s"
+
+# Carga Datos -----
+file_url <- "Data/Data_Original/Satelital/2016/%s"
+file_url <- "Data/Data_Original/Satelital/2020/%s"
+
 
 file <- sprintf(file_url,
                 "GlobalGWRnoGWRcwUni_PM25_GL_201601_201612-RH35-NoNegs.asc")
+# Da cor 0.5
 file <- sprintf(file_url,
                 "GlobalGWRwUni_PM25_GL_201601_201612-RH35-NoNegs.asc")
 file <- sprintf(file_url,
-                "ACAG_PM25_V4GL03_201801_201812_0p05.nc")
+                "GlobalGWRwUni_PM25_GL_201601_201612-RH35_Median.nc")
 
+
+## Actualizado 2020 
+file <- sprintf(file_url,
+                "ACAG_PM25_V4GL03_201801_201812_0p05.nc")
+## Actualizado 2020 mayor resolucion (muy lento de cargar)
+# da cor -0.25
+file <- sprintf(file_url,
+                "ACAG_PM25_GWR_V4GL03_201601_201612_0p01.nc")
 
 # mp <- read_file(file)
-mp <- raster(file)
+mp <- raster(file,
+             crs="+init=EPSG:4326")
+
+# transpose and flip the raster to have correct orientation (nc file)
 mp
 mp %>% class()
-plot(mp)
-crs(mp) <- "+init=EPSG:4326" 
-
+# plot(mp)
+# crs(mp) <- "+init=EPSG:4326"
+mp<-mp %>% flip(direction='x') %>% flip(direction = 'y') %>% t()
 # mapview(mp)
 
 # Filter Chile extent
 mp_chile <- crop(mp, extent(-76,-66, -54.85, -17.5))
 
 # View on leaflet
-mapview(mp_chile, legend=T, col.regions= brewer.pal(9, "YlOrRd"),
+m1 <- mapview(mp_chile, legend=T, col.regions= brewer.pal(9, "YlOrRd"),
         # at = seq(0,50,5)
         maxpixels=3735000)
+m1
+
+## Extract data on monitor sites ----------
+## Estaciones
+df_conc <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
+df_conc <- df_conc %>% 
+  filter(year %in% c(2016) & pollutant=="mp2.5")
+estaciones <- df_conc %>% 
+  group_by(codigo_comuna,site, longitud, latitud) %>% 
+  summarise(avg=mean(valor, na.rm=T)) %>% ungroup() %>% 
+  na.omit() %>% 
+  left_join(codigos_territoriales)
+rm(df_conc)
+## Mapa con estaciones
+estaciones <- estaciones %>% 
+  left_join(mapa_comuna %>% as_tibble() %>% 
+              dplyr::select(codigo_comuna, mapa_rm))
+# Convertir a sf
+estaciones <- st_as_sf(estaciones, 
+                       coords = c("longitud","latitud"),
+                       remove = F, 
+                       crs="+proj=longlat +ellps=GRS80 +no_defs")
+
+## Cruzar raster con latlong points -------
+cruce <- extract(mp_chile, estaciones, method="bilinear")
+
+estaciones <- estaciones %>% mutate(avg_satelite=cruce)
+
+## Correlations ------
+cor(x= estaciones$avg, y= estaciones$avg_satelite,
+    use = "complete.obs",
+    method = "pearson")
+cor(x= estaciones$avg, y= estaciones$avg_satelite,
+    use = "complete.obs",
+    method = "spearman")
+
+# Plot
+p <- estaciones %>% 
+  ggplot(aes(avg, avg_satelite))+
+  geom_point(alpha=.5)+
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed")+
+  coord_cartesian(xlim=c(0,50),ylim=c(0,50), expand = F)+
+  labs(x="Monitor [ug/m3]", 
+       y="Satelite [ug/m3]",
+       title = "Año 2016")
+p
+# f_savePlot(p, sprintf(file_name, "Correlaciones2016",dpi=300))
+
+## Add lm equation
+lm_eqn <- function(x, y){
+  m <- lm(y ~ x)
+  eq <- " y = %sx + %s \n R2 = %s \n N = %s \n Unc = N(%s, %s)"
+  sprintf(eq, 
+          format(unname(coef(m)[2]), digits = 2),
+          format(unname(coef(m)[1]), digits = 2),
+          format(summary(m)$r.squared, digits = 3),
+          format(nobs(m),digits=0),
+          format(mean(summary(m)$residuals), digits=3),
+          format(var(summary(m)$residuals), digits=3))
+}
 
 
-library(rgdal)
+p+geom_label(x = 5, y = 45, parse = F,
+            label =lm_eqn(estaciones$avg, estaciones$avg_satelite),
+            hjust="inward")+
+  geom_smooth(method = "lm", se=F, col="red", formula = "y~x")
 
-file <- "GlobalGWRwUni_PM25_GL_201601_201612-RH35_Median.kml"
+f_savePlot(last_plot(), sprintf(file_name, "Correlaciones2016_act",dpi=300))
 
-import <- ogrListLayers(file)
-attr(import, "driver")
-attr(import, "nlayers")
+# Otras pruebas
+mod <- lm(avg_satelite~avg, estaciones)
+mod <- summary(mod)
+mod
+mod$r.squared
+mod$residuals
+mod$residuals %>% mean()
+mod$residuals %>% var()
+rm(mod, p)
 
-mp <- readOGR(file, "GlobalGWRwUni_PM25_GL_201601_201612-RH35.png")
+
+## Mapa estaciones satelite ------
+m <- m1+mapview(estaciones, label=estaciones$site, col.region="red")
+mapshot(m, url=sprintf(file_name, "Mapa__act") %>% str_replace("png","html"),
+        selfcontained=F)
+rm(m, m1)
+
 
 ## EoF
