@@ -17,14 +17,14 @@ library(RColorBrewer)
 file_url <- "Data/Data_Original/Satelital/2016/%s"
 file_url <- "Data/Data_Original/Satelital/2020/%s"
 
+file_nc <- "GlobalGWRwUni_PM25_GL_%s01_%s12-RH35_Median.nc"
 
 file <- sprintf(file_url,
                 "GlobalGWRnoGWRcwUni_PM25_GL_201601_201612-RH35-NoNegs.asc")
 # Da cor 0.5
-file <- sprintf(file_url,
-                "GlobalGWRwUni_PM25_GL_201601_201612-RH35-NoNegs.asc")
-file <- sprintf(file_url,
-                "GlobalGWRwUni_PM25_GL_201601_201612-RH35_Median.nc")
+# file <- sprintf(file_url,
+#                 "GlobalGWRwUni_PM25_GL_201601_201612-RH35-NoNegs.asc")
+file <- sprintf(file_url,sprintf(file_nc,2016,2016))
 
 
 ## Actualizado 2020 
@@ -60,7 +60,7 @@ m1
 ## Estaciones
 df_conc <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
 df_conc <- df_conc %>% 
-  filter(year %in% c(2016) & pollutant=="mp2.5")
+  filter(year %in% c(2013:2016) & pollutant=="mp2.5")
 estaciones <- df_conc %>% 
   group_by(codigo_comuna,site, longitud, latitud) %>% 
   summarise(avg=mean(valor, na.rm=T)) %>% ungroup() %>% 
@@ -77,10 +77,42 @@ estaciones <- st_as_sf(estaciones,
                        remove = F, 
                        crs="+proj=longlat +ellps=GRS80 +no_defs")
 
+
+
 ## Cruzar raster con latlong points -------
 cruce <- extract(mp_chile, estaciones, method="bilinear")
 
 estaciones <- estaciones %>% mutate(avg_satelite=cruce)
+
+
+## Cruzar serie de tiempo 2013-2016
+df_cruce <- data.frame()
+for (y in 2013:2016){
+  cat(y, "\n")
+  file <- sprintf(file_url,sprintf(file_nc,2016,2016))
+  mp <- raster(file, crs="+init=EPSG:4326")
+  cruce <- extract(mp, estaciones, method="bilinear")
+  df_aux <- tibble(avg_satelite=cruce, year=y,site=estaciones$site,
+                   codigo_comuna=estaciones$codigo_comuna)
+  df_cruce <- rbind(df_cruce, df_aux)
+  rm(file, mp, cruce, df_aux)
+}
+
+##Save file
+saveRDS(df_cruce,"cruce.rsd")
+df_cruce <- read_rds("cruce.rsd")
+
+estaciones <- df_conc %>% 
+  group_by(codigo_comuna,site,year, longitud, latitud) %>% 
+  summarise(avg=mean(valor, na.rm=T)) %>% ungroup() %>% 
+  na.omit() %>% 
+  left_join(codigos_territoriales)
+
+estaciones <- estaciones %>% 
+  left_join(mapa_comuna %>% as_tibble())
+
+estaciones <- left_join(estaciones, df_cruce)
+
 
 ## Correlations ------
 cor(x= estaciones$avg, y= estaciones$avg_satelite,
@@ -90,15 +122,20 @@ cor(x= estaciones$avg, y= estaciones$avg_satelite,
     use = "complete.obs",
     method = "spearman")
 
+## rangos
+estaciones$avg %>% range()
+estaciones$avg_satelite %>% range()
 # Plot
 p <- estaciones %>% 
+  mutate(rm=if_else(region=="M","RM","Resto Chile") %>% factor()) %>% 
   ggplot(aes(avg, avg_satelite))+
-  geom_point(alpha=.5)+
+  geom_point(alpha=.5, aes(col=rm))+
   geom_abline(intercept = 0, slope = 1, linetype = "dashed")+
-  coord_cartesian(xlim=c(0,50),ylim=c(0,50), expand = F)+
+  coord_cartesian(xlim=c(0,70),ylim=c(0,70), expand = F)+
   labs(x="Monitor [ug/m3]", 
        y="Satelite [ug/m3]",
-       title = "Año 2016")
+       color="")+
+  facet_wrap(~year)
 p
 # f_savePlot(p, sprintf(file_name, "Correlaciones2016",dpi=300))
 
@@ -116,15 +153,39 @@ lm_eqn <- function(x, y){
 }
 
 
-p+geom_label(x = 5, y = 45, parse = F,
-            label =lm_eqn(estaciones$avg, estaciones$avg_satelite),
-            hjust="inward")+
-  geom_smooth(method = "lm", se=F, col="red", formula = "y~x")
+lm_eqn <- function(df){
+  m <- lm(y ~ x, data=df)
+  eq <- "corr = %s \n y = %sx + %s \n R2 = %s \n N = %s \n Unc = N(%s, %s)"
+  sprintf(eq, 
+          format(cor(df$x,df$y, method="pearson"), digits=2),
+          format(unname(coef(m)[2]), digits = 2),
+          format(unname(coef(m)[1]), digits = 2),
+          format(summary(m)$r.squared, digits = 3),
+          format(nobs(m),digits=0),
+          format(mean(summary(m)$residuals), digits=3),
+          format(var(summary(m)$residuals), digits=3))
+}
 
-f_savePlot(last_plot(), sprintf(file_name, "Correlaciones2016_act",dpi=300))
+
+data_eq <- estaciones %>% 
+  dplyr::rename(x=avg, y=avg_satelite) %>% 
+  dplyr::select(x,y,year)
+eq <- plyr::ddply(.data = data_eq, .variables = .(year), lm_eqn)
+rm(data_eq)
+
+
+p+geom_label(data=eq, aes(x = 45, y = 11, label=V1), parse = F,
+            hjust="outward", size=2.8)+
+  geom_smooth(method = "lm", se=F, col="red", formula = "y~x")+
+  geom_point(alpha=.5, aes(col=rm))
+rm(eq)
+
+f_savePlot(last_plot(), sprintf(file_name, "Correlaciones_all",dpi=300))
 
 # Otras pruebas
+cor(estaciones$avg, estaciones$avg_satelite, method="pearson")
 mod <- lm(avg_satelite~avg, estaciones)
+nobs(mod)
 mod <- summary(mod)
 mod
 mod$r.squared
