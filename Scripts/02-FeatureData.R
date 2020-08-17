@@ -37,7 +37,7 @@ df_modelo %>% skim()
 
 ## Guardar datos -------
 cat('sep=; \n',file = "Data/Data_Modelo/Datos_Modelo.csv")
-write.table(df_modelo,"Data/Data_Modelo/Datos_Modelo.csv",
+write.table(df_modelo %>% select(-geometry),"Data/Data_Modelo/Datos_Modelo.csv",
             sep=';',row.names = F, append = T)
 
 saveRDS(df_modelo, "Data/Data_Modelo/Datos_Modelo.rsd")
@@ -46,7 +46,8 @@ save.image(".RData")
 ## Guardar datos aplanados_modelo (std: standard test data format)
 df_modelo_std <- df_modelo %>% 
   gather(variable, valor, -codigo_comuna,-codigo_provincia,-codigo_region,
-         -nombre_comuna,-nombre_provincia,-nombre_region,-region,-geometry)
+         -nombre_comuna,-nombre_provincia,-nombre_region,-region,-geometry) %>% 
+  select(-geometry)
 
 
 cat('sep=; \n',file = "Data/Data_Modelo/Datos_Modelo_std.csv")
