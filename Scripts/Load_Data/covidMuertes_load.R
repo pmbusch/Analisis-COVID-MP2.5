@@ -71,7 +71,7 @@ rm(url, df_muerteZero)
 #       exdir = "Data/Data_Original/DEIS")
 
 # lectura
-df_deis <- read_delim("Data/Data_Original/DEIS/DEFUNCIONES_FUENTE_DEIS_2016_2020_06082020.csv",
+df_deis <- read_delim("Data/Data_Original/DEIS/DEFUNCIONES_FUENTE_DEIS_2016_2020_13082020.csv",
                  delim = ";",col_names = F,
                  col_types = "dDccccccccc",
                  locale = locale(encoding = "windows-1252"))
@@ -82,6 +82,10 @@ names(df_deis) <- c("year","date","sexo","edad","codigo_comuna","comuna","region
 df_deis %>% group_by(capitulo) %>% summarise(count=n()) %>% arrange(desc(count))
 df_deis <- df_deis %>% filter(capitulo=="COVID-19") %>% 
   mutate(tipo=str_extract(causa, "Confirmado|Sospechoso") %>% str_to_lower())
+
+# Comparacion muertes
+df_muertes$casos_fallecidos %>% sum()
+df_deis %>% filter(tipo=="confirmado") %>% nrow()
 
 # Cruzar con comunas
 df_deis <- df_deis %>% filter(codigo_comuna!="99999") %>% 
@@ -103,6 +107,12 @@ df_deis <- df_deis %>% mutate(grupo_edad=case_when(
   edad %in% c("15 a 19","20 a 24","25 a 29","30 a 34","35 a 39","40 a 44") ~ "15-44",
   edad %in% c("45 a 49","50 a 54","55 a 59","60 a 64") ~ "45-64",
   T ~ "65+"))
+
+## Exportar para analisis
+# cat('sep=; \n',file = "MuertesCovid_Deis.csv")
+# write.table(df_deis,"MuertesCovid_Deis.csv",
+#             sep=';',row.names = F, append = T)
+
 
 # rm(df_deis)
 
