@@ -19,7 +19,6 @@ df_modelo <- df_modelo %>%
          proxy_lena_calefaccion=perc_lenaCalefaccion/100*heating_degree_15_winter) %>% 
   select(-fecha_cuarentena, -camas)
 
-
 ## Relleno NA ----------
 # dias cuarentena, muerte y contagio: No todas las comunas tienen cuarentena: defecto=0
 # camas: No todas las comunas tienen camas: defecto=0
@@ -33,6 +32,20 @@ df_modelo <- df_modelo %>%
          tasa_mortalidad_all=if_else(is.na(tasa_mortalidad_all),0,tasa_mortalidad_all))
 
 df_modelo %>% skim()
+
+## Densidad Poblacion en quintiles ------------
+## Fuente: https://stackoverflow.com/questions/7508229/how-to-create-a-column-with-a-quartile-rank
+## Devuelve un vector con la clasificacion de cada valor en su quintil
+qgroup = function(numvec, n = 5){
+  qtile = quantile(numvec, probs = seq(0, 1, 1/n), na.rm=T)
+  out = sapply(numvec, function(x) sum(x >= qtile[-(n+1)]))
+  out=paste("Q",out,sep="") %>% factor(levels=paste("Q",1:n,sep=""))
+  return(out)
+}
+
+df_modelo <- df_modelo %>% mutate(quintil_dens_pob=qgroup(densidad_pob, 5))
+df_modelo %>% group_by(quintil_dens_pob) %>% summarise(count=n()) %>% arrange(desc(count))
+rm(qgroup)
 
 
 ## Guardar datos -------
