@@ -51,5 +51,20 @@ df_poblacion <- df_poblacion %>%
   left_join(mapa_regiones %>% select(codigo_region, region)) %>% 
   select(-geometry) %>% 
   left_join(mapa_comuna %>% select(codigo_comuna, superficie, perimetro,superficie_censal))
-  
+
+## Curva acumulada poblacion ------
+# df_poblacion$poblacion %>% sum()
+# theme_set(theme_bw(16)+theme(panel.grid.major = element_blank()))
+# df_poblacion %>% 
+#   arrange(desc(poblacion)) %>% 
+#   rowid_to_column() %>% 
+#   ggplot(aes(x=reorder(rowid,desc(poblacion)),y=cumsum(poblacion), group=1))+
+#   geom_line(size=1)+
+#   labs(x="N° Comunas", y="Población acumulada")+
+#   scale_y_continuous(labels=function(x) format(x,big.mark = " ", decimal.mark = ".", scientific = F))+
+#   scale_x_discrete(breaks=seq(0,350,50))
+# 
+# source("Scripts/00-Funciones.R", encoding = "UTF-8")
+# f_savePlot(last_plot(),"Figuras/Analisis_general/PobAcumulada.png",dpi=300)
+
 ## EoF
