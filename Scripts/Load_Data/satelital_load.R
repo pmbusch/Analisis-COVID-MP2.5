@@ -3,6 +3,9 @@
 ## Fuente: http://fizz.phys.dal.ca/~atmos/martin/?page_id=140
 ## PBH Agosto 2020
 
+## Nota: codigo se debe modificar a mano para cargar un set u otro de datos
+# Por el momento los del paper 2016 dan mejor
+
 
 ## Librerias ------
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
@@ -18,33 +21,34 @@ file_url <- "Data/Data_Original/Satelital/2016/%s"
 file_url <- "Data/Data_Original/Satelital/2020/%s"
 
 file_nc <- "GlobalGWRwUni_PM25_GL_%s01_%s12-RH35_Median.nc"
+file_nc <- "ACAG_PM25_GWR_V4GL03_%s01_%s12_0p01.nc"
+
 
 file <- sprintf(file_url,
                 "GlobalGWRnoGWRcwUni_PM25_GL_201601_201612-RH35-NoNegs.asc")
 # Da cor 0.5
 # file <- sprintf(file_url,
 #                 "GlobalGWRwUni_PM25_GL_201601_201612-RH35-NoNegs.asc")
-file <- sprintf(file_url,sprintf(file_nc,2016,2016))
+file <- sprintf(file_url,sprintf(file_nc,2013,2013))
 
 
 ## Actualizado 2020 
 file <- sprintf(file_url,
-                "ACAG_PM25_V4GL03_201801_201812_0p05.nc")
+                "ACAG_PM25_GWR_V4GL03_201601_201612_0p05.nc")
 ## Actualizado 2020 mayor resolucion (muy lento de cargar)
-# da cor -0.25
+# da cor -0.11
 file <- sprintf(file_url,
                 "ACAG_PM25_GWR_V4GL03_201601_201612_0p01.nc")
 
 # mp <- read_file(file)
 mp <- raster(file,
              crs="+init=EPSG:4326")
+# transpose and flip the raster to have correct orientation (nc file of 2020 paper)
+mp<-mp %>% flip(direction='x') %>% flip(direction = 'y') %>% t()
 
-# transpose and flip the raster to have correct orientation (nc file)
 mp
 mp %>% class()
 # plot(mp)
-# crs(mp) <- "+init=EPSG:4326"
-mp<-mp %>% flip(direction='x') %>% flip(direction = 'y') %>% t()
 # mapview(mp)
 
 # Filter Chile extent
@@ -66,7 +70,7 @@ estaciones <- df_conc %>%
   summarise(avg=mean(valor, na.rm=T)) %>% ungroup() %>% 
   na.omit() %>% 
   left_join(codigos_territoriales)
-rm(df_conc)
+# rm(df_conc)
 ## Mapa con estaciones
 estaciones <- estaciones %>% 
   left_join(mapa_comuna %>% as_tibble() %>% 
@@ -91,6 +95,7 @@ for (y in 2013:2016){
   cat(y, "\n")
   file <- sprintf(file_url,sprintf(file_nc,2016,2016))
   mp <- raster(file, crs="+init=EPSG:4326")
+  # mp<-mp %>% flip(direction='x') %>% flip(direction = 'y') %>% t()
   cruce <- extract(mp, estaciones, method="bilinear")
   df_aux <- tibble(avg_satelite=cruce, year=y,site=estaciones$site,
                    codigo_comuna=estaciones$codigo_comuna)
@@ -99,7 +104,7 @@ for (y in 2013:2016){
 }
 
 ##Save file
-saveRDS(df_cruce,"cruce.rsd")
+saveRDS(df_cruce,"cruce_act.rsd")
 df_cruce <- read_rds("cruce.rsd")
 
 estaciones <- df_conc %>% 
@@ -112,6 +117,7 @@ estaciones <- estaciones %>%
   left_join(mapa_comuna %>% as_tibble())
 
 estaciones <- left_join(estaciones, df_cruce)
+estaciones <- estaciones %>% filter(!is.na(avg_satelite))
 
 
 ## Correlations ------
@@ -125,34 +131,28 @@ cor(x= estaciones$avg, y= estaciones$avg_satelite,
 ## rangos
 estaciones$avg %>% range()
 estaciones$avg_satelite %>% range()
-# Plot
+# Plot. Label lo incluyo para que se muestre en el grafico interactivo
 p <- estaciones %>% 
   mutate(rm=if_else(region=="M","RM","Resto Chile") %>% factor()) %>% 
-  ggplot(aes(avg, avg_satelite))+
+  mutate(texto=paste("Estacion: ",site,"\nComuna: ",nombre_comuna,sep="")) %>% 
+  ggplot(aes(avg, avg_satelite, label=texto))+
   geom_point(alpha=.5, aes(col=rm))+
   geom_abline(intercept = 0, slope = 1, linetype = "dashed")+
+  facet_wrap(~year)+
   coord_cartesian(xlim=c(0,70),ylim=c(0,70), expand = F)+
   labs(x="Monitor [ug/m3]", 
        y="Satelite [ug/m3]",
-       color="")+
-  facet_wrap(~year)
+       color="")
 p
+p_int <- plotly::ggplotly(p)
+mapshot(p_int,sprintf(file_name, "Correlaciones_all_interactivo") %>% 
+          str_replace("png","html"))
+rm(p_int)
+
 # f_savePlot(p, sprintf(file_name, "Correlaciones2016",dpi=300))
 
+
 ## Add lm equation
-lm_eqn <- function(x, y){
-  m <- lm(y ~ x)
-  eq <- " y = %sx + %s \n R2 = %s \n N = %s \n Unc = N(%s, %s)"
-  sprintf(eq, 
-          format(unname(coef(m)[2]), digits = 2),
-          format(unname(coef(m)[1]), digits = 2),
-          format(summary(m)$r.squared, digits = 3),
-          format(nobs(m),digits=0),
-          format(mean(summary(m)$residuals), digits=3),
-          format(var(summary(m)$residuals), digits=3))
-}
-
-
 lm_eqn <- function(df){
   m <- lm(y ~ x, data=df)
   eq <- "corr = %s \n y = %sx + %s \n R2 = %s \n N = %s \n Unc = N(%s, %s)"
@@ -170,17 +170,20 @@ lm_eqn <- function(df){
 data_eq <- estaciones %>% 
   dplyr::rename(x=avg, y=avg_satelite) %>% 
   dplyr::select(x,y,year)
+library(plyr)
 eq <- plyr::ddply(.data = data_eq, .variables = .(year), lm_eqn)
 rm(data_eq)
 
 
-p+geom_label(data=eq, aes(x = 45, y = 11, label=V1), parse = F,
-            hjust="outward", size=2.8)+
+p+geom_label(data=eq,  parse = F,
+             # aes(x = 45, y = 11, label=V1),
+             aes(x = 4, y = 55, label=V1),
+            hjust="inward", size=2.8)+
   geom_smooth(method = "lm", se=F, col="red", formula = "y~x")+
   geom_point(alpha=.5, aes(col=rm))
 rm(eq)
 
-f_savePlot(last_plot(), sprintf(file_name, "Correlaciones_all",dpi=300))
+f_savePlot(last_plot(), sprintf(file_name, "Correlaciones_all_act",dpi=300))
 
 # Otras pruebas
 cor(estaciones$avg, estaciones$avg_satelite, method="pearson")
