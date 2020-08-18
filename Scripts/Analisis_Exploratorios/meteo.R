@@ -8,11 +8,34 @@ source("Scripts/Analisis_Exploratorios/f_figuras.R", encoding = "UTF-8")
 
 # Carga datos brutos y Mapa --------
 df_meteo <- read_rds("Data/Data_Modelo/Datos_Meteorologia_raw.rsd")
+df_meteo <- df_meteo %>% mutate(year=year(date))
 
-# Promedio 2016-2019
+
+## Numero estaciones con datos por año ------
+df_anual <- df_meteo %>% 
+  filter(year %in% 2010:2019) %>% 
+  group_by(estacion,codigo_comuna, tipo, year) %>% 
+  summarise(valor=mean(valor, na.rm=T),
+            disponibilidad=n()/365) %>% ungroup()
+
+df_anual %>% 
+  # filter(disponibilidad>0.8) %>%
+  filter(tipo %in% c("tmed","tmax","tmin","hr")) %>% 
+  group_by(year,tipo) %>% 
+  summarise(count=n()) %>% ungroup() %>% 
+  ggplot(aes(year, count))+
+  geom_col(fill="brown")+
+  facet_wrap(~tipo)+
+  scale_x_continuous(breaks=2010:2019)+
+  coord_cartesian(expand = F)+
+  labs(x="", y="Numero estaciones con datos")
+f_savePlot(last_plot(), sprintf(file_name,"NSite_anos_meteo"))
+
+rm(df_anual)
+
+# Promedio 2010-2019
 df_avg <- df_meteo %>% 
-  mutate(year=year(date)) %>% 
-  filter(year>2016) %>% 
+  filter(year %in% 2010:2019) %>% 
   group_by(estacion,region,codigo_comuna, year,tipo) %>% 
   summarise(valor=mean(valor,na.rm=T)) %>% 
   group_by(estacion, region, codigo_comuna, tipo) %>% 
