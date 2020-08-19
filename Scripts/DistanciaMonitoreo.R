@@ -6,39 +6,56 @@
 ## agregar datos (opcion SINCA o meteorologia)
 ## PBH Julio 2020
 
-
+source("Scripts/Aggregate_Data/poblacion_agg.R", encoding = "UTF-8")
+file_url <- "Data/Data_Modelo/distancia%sEstacion%s.rsd"
 ## ELEGIR: SINCA o METEOROLOGIA (para no duplicar codigo) -----
 sinca <- T
-
 if (sinca){
   df_conc <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
   df_conc <- df_conc %>% filter(year %in% 2010:2019 & pollutant=="mp2.5")
-  file_out <- "Data/Data_Modelo/distanciaComunaEstacionSINCA.rsd"
   est_file <- "sinca"
+
 } else{
   df_conc <- read_rds("Data/Data_Modelo/Datos_Meteorologia_raw.rsd")
   df_conc <- df_conc %>% filter(year(date) %in% 2010:2019) %>% 
     rename(site=estacion)
-  file_out <- "Data/Data_Modelo/distanciaComunaEstacionMeteo.rsd"
   est_file <- "meteo"
   }
-rm(sinca)
 
+## ELEGIR: COMUNA O ZONA CENSAL (para no duplicar codigo)------
+# Para zonas aun no esta implementado bien las figuras de output
+comuna <- T
+if (comuna){
+  # mapa_orig <- mapa_comuna
+  mapa_orig <- rmapshaper::ms_dissolve(mapa_zonas %>% st_as_sf(), 
+                                                field = "codigo_comuna") %>%
+    left_join(codigos_territoriales)
+  file_out <- "Data/Data_Modelo/distanciaComunaEstacionSINCA.rsd"
+  zon_file <- "comuna"
+} else{
+  mapa_orig <- mapa_zonas %>% st_as_sf() %>% 
+    mutate(superficie=st_area(geometry) %>% as.numeric(),
+           perimetro=st_length(geometry) %>% as.numeric())
+  zon_file <- "zona"
+}
+file_out <- sprintf(file_url,zon_file, est_file)
+rm(sinca, comuna, file_url)
 
 ## Librerias ----
 library(sf)
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
-file_name <- "Figuras/Completa_MP/%s.png"
+file_name <- "Figuras/Distancia_Monitoreo/%s.png"
 theme_set(theme_bw(16)+theme(panel.grid.major = element_blank()))
 
-
-## Centroide comunas --------
-source("Scripts/Aggregate_Data/poblacion_agg.R", encoding = "UTF-8")
-comunas <- mapa_comuna %>% as_tibble() %>% 
+## Centroide comunas (obtenido como centroide de las zonas censales) --------
+comunas <- mapa_orig %>% as_tibble() %>% 
   left_join(codigos_territoriales) %>% 
   mutate(centroide=st_centroid(geometry),
          cent_lon=map_dbl(geometry, ~st_centroid(.x)[[1]]),
-         cent_lat=map_dbl(geometry, ~st_centroid(.x)[[2]]))
+         cent_lat=map_dbl(geometry, ~st_centroid(.x)[[2]])) %>% 
+  left_join(mapa_comuna %>% as_tibble() %>% 
+              select(codigo_comuna, mapa_rm), by=c("codigo_comuna"))
+rm(mapa_orig)
 
 ## Mapa RM: Poligonos + centroide
 comunas %>% 
@@ -70,8 +87,7 @@ estaciones <- st_as_sf(estaciones,
                           coords = c("longitud","latitud"),
                           remove = F, 
                           crs="+proj=longlat +ellps=GRS80 +no_defs")
-                          # crs=9155)
-
+                          
 comunas %>% 
   filter(mapa_rm==1) %>% 
   ggplot()+
@@ -87,6 +103,12 @@ comunas %>%
 f_savePlot(last_plot(), sprintf(file_name,
                                 paste("estaciones",est_file,sep="_")))
 
+# ## Inspect visually
+# centroides <- comunas %>% select(centroide, nombre_comuna) %>% st_as_sf()
+# mapview(comunas %>% st_as_sf())+
+#   mapview(estaciones, col.region="red")+
+#   mapview(centroides, col.region="green")
+# rm(centroides)
 
 ## Distancia entre Estaciones-Centroide ---------
 library(nngeo)
@@ -110,7 +132,9 @@ df_matrix <- df_matrix %>%
 
 # Join to comuna
 df <- comunas %>% 
-  dplyr::select(codigo_comuna, nombre_comuna, centroide) %>% 
+  dplyr::select(
+    # geocodigo,
+    codigo_comuna, nombre_comuna, centroide) %>% 
   rowid_to_column() %>%
   left_join(df_matrix, by=c("rowid"="comuna_index"))
 df %>% names()
@@ -125,10 +149,16 @@ rm(df_matrix)
 
 ## Distancia N primeros ---------------
 # Ordena por distancia para cada comuna, e incorpora un ranking
-df_dist <- df %>% arrange(codigo_comuna, dist) %>% 
-  group_by(nombre_comuna, codigo_comuna) %>% 
+df %>% names()
+df_dist <- df %>% 
+  arrange(codigo_comuna, dist) %>%
+  group_by(nombre_comuna, codigo_comuna) %>%
+  # arrange(geocodigo, dist) %>% 
+  # group_by(geocodigo) %>% 
   mutate(rank=rank(dist,ties.method = "first")) %>% ungroup() %>% 
-  left_join(comunas %>% select(codigo_comuna, centroide, mapa_rm)) %>% 
+  left_join(comunas %>% 
+              select(codigo_comuna, centroide, mapa_rm)) %>%
+              # select(geocodigo, centroide)) %>% 
   left_join(codigos_territoriales)
 
 # Exporta Matriz Distancia Comuna-Estacion
