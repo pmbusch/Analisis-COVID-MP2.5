@@ -17,7 +17,12 @@ f_remover_acentos <- function(x){
     str_replace_all("ó","o") %>% 
     str_replace_all("ú","u") %>% 
     str_replace_all("ñ","n") %>% 
-    str_replace_all("Ñ","N")
+    str_replace_all("Ñ","N") %>% 
+    str_replace_all("Á","A") %>% 
+    str_replace_all("É","E") %>% 
+    str_replace_all("Í","I") %>% 
+    str_replace_all("Ó","O") %>% 
+    str_replace_all("Ú","U")
 }
 
 f_split_n <- function(X,Sep,N){

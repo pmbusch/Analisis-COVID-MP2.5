@@ -2,11 +2,14 @@
 ## Descarga de datos de la web del SINCA
 ## PBH Octubre 2018
 ## Ultima atualizacion: PBH Jul 2020
+# Nota: Columna "Estacion" es el nombre original de la estacion para la descarga
+# Columna "site" es el nombre de la estacion modificado para evitar repeticiones
+
 
 options(dplyr.summarise.inform=FALSE)
 
 # Parametros ----------
-fecha_inicio <- "2010-01-01"
+fecha_inicio <- "2000-01-01"
 fecha_fin <- format(Sys.time(),'%Y-%m-%d')
 contaminantes <- c("mp2.5", "co", "no2")
 
@@ -16,11 +19,12 @@ source('Scripts/Load_Data/sinca_funcion_scrap.R')
 
 ## Carga Datos de las estaciones -------------
 # Tipo de las variables: c character, d double, D date
-cols_type <- "ccclccccdddccccDDccDccccclcccccc"
+cols_type <- "dcccclccccdddccccDDccDccccclcccccc"
 df_estaciones <- read_delim("Data/Data_Original/DatosEstacioneSINCA.csv", 
                             delim = ";", skip = 1, na = c("NA"),
                             col_types = cols_type,
-                            locale = locale(encoding = "windows-1252"))
+                            locale = locale(date_format = "%d-%m-%y",
+                                            encoding = "windows-1252"))
 rm(cols_type)
 spec(df_estaciones)
 
@@ -32,8 +36,10 @@ df_estaciones$pollutant %>% unique()
 # REGION, ESTACIONES, CONTAMINANTES Y METRICA
 df_descarga <- df_estaciones %>%  
   filter(estacion_enlinea %in% c(T,F) &
-           pollutant %in% contaminantes & 
-           metrica=="Diario" )
+           (pollutant %in% contaminantes)& 
+           metrica=="Diario")
+df_descarga$pollutant %>% unique()
+df_descarga$estacion %>% unique() %>% length()
 
 
 # Si estaba al dia al momento de recolectar la info, actualizamos la fecha fin
@@ -51,8 +57,8 @@ df_descarga<- df_descarga %>%
            strptime(format='%Y-%m-%d') %>% as_date(),
          to = fecha_fin %>% 
            strptime(format='%Y-%m-%d') %>% as_date(),
-         inicio_valido = from>contaminante_fechaInicio,
-         fin_valido = to<contaminante_fechaFin)
+         inicio_valido = from >= contaminante_fechaInicio,
+         fin_valido = to <= contaminante_fechaFin)
 
 # Dejar solamente fechas validas, si no esta dentro del rango se deja el valor limite
 df_descarga <- df_descarga %>% 
@@ -93,7 +99,8 @@ for (d in 1:nrow(df_descarga)){
     
     # Agregar info adicional
     df_conc <- df_conc %>% 
-      mutate(site=df_descarga$estacion[d],
+      mutate(estacion=df_descarga$estacion[d],
+             site=df_descarga$site[d],
              region=df_descarga$region[d],
              provincia=df_descarga$provincia[d],
              comuna=df_descarga$comuna[d],
@@ -113,14 +120,12 @@ for (d in 1:nrow(df_descarga)){
 
 
 ## Feat Data ----------------
-
 # Factores
 df <- df %>% mutate(site=site %>% as.factor(),
                     region=region %>% as.factor(),
                     provincia=provincia %>% as.factor(),
                     comuna=comuna %>% as.factor(),
                     pollutant=pollutant %>% as.factor())
-
 
 # Agregar codigos comunales ------
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
