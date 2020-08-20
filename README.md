@@ -1,12 +1,13 @@
 Evaluación de los efectos de la exposición prolongada a MP2.5 derivado del uso de leña y las incidencias por COVID-19 en el centro sur de Chile
 ================
-Análisis epidemiológico de la incidencia de COVID-19 y el uso intensivo de leña en las regiones sur y centro de Chile
+Análisis epidemiológico de la incidencia de COVID-19 y el uso intensivo de leña en las zonas sur y centro de Chile.
 
-Se busca determinar la relación entre la contaminación atmosférica de MP2.5 generada por la combustión de leña y 
-los contagios y fatalidades del COVID-19
+Se busca determinar la relación entre la contaminación atmosférica de MP2.5, generada por la combustión de leña, y 
+los contagios y fatalidades producto del COVID-19.
 
 El proyecto se subdivide en las siguientes secciones:
 * Carga de datos necesarios [`Load Data`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/Load_Data)
+	* Repositorio datos recopilados [`Datos`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Data/Data_Original)
 * Análisis exploratorio datos recopilados [`Analisis Exploratorios`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/Analisis_Exploratorios)
 * Resume datos a nivel comunal [`Aggregate Data`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/Aggregate_Data)
 * Análisis de la relación entre COVID-19 y MP2.5:
@@ -14,7 +15,7 @@ El proyecto se subdivide en las siguientes secciones:
 
 **Nota:** Si se desea explorar los scripts por separado se recomienda ejecutar el siguiente código para cargar todas las librerías necesarias: *source("Scripts/00-CargaLibrerias.R", encoding = "UTF-8")*
 
-**Fuente Datos:**
+# Fuente Datos
 * Datos COVID-19: MinCiencia (https://github.com/MinCiencia/Datos-COVID19/)
 	* Casos fallecidos por comuna *(producto 38)*
 	* Casos totales por comuna incremental *(producto 1)*
