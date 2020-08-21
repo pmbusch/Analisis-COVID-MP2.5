@@ -1,20 +1,24 @@
 ### Analisis-COVID-MP2.5
 ## Descarga de datos meteorologicos de https://climatologia.meteochile.gob.cl/
 ## PBH Julio 2020
+# Nota: Columna "nombre" es el nombre original de la estacion para la descarga
+# Columna "site" es el nombre de la estacion modificado para evitar repeticiones
+# Columna codigo nacional es dada por la pagina, y no se repite
+
 
 ## Scrap MeteoChile
 library(rvest)
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
 
 #Establecer el año que se quiere scrapear
-year_start <- 2010
+year_start <- 2000
 year_end <- 2020
 
 #Lee informacion de estaciones
 # estaciones = read_excel("Data/Estaciones_Frecuentes_MeteoChile.xlsx")
 estaciones = read_delim("Data/Data_Original/Estaciones_Meteo.csv",
                         delim = ";", skip = 1, na = c("NA"),
-                        col_types = "dccddddddcccc",
+                        col_types = "dcccddddddcccc",
                         locale = locale(encoding = "windows-1252"))
 
 
@@ -56,6 +60,7 @@ for (year in year_start:year_end){
         ## Datos de la estacion
         df <- df %>% mutate(tipo=tipo, 
                             estacion=est,
+                            site=estaciones[i,] %>% pull(site),
                             comuna=estaciones[i,] %>% pull(comuna),
                             provincia=estaciones[i,] %>% pull(provincia),
                             region=estaciones[i,] %>% pull(region),
@@ -126,8 +131,8 @@ df_meteo <- df_meteo %>%
            str_replace_all("Purrangue","Purranque") %>% 
            str_replace_all("San Bernando","San Bernardo") %>% 
            str_replace_all("Cabo de Hornos \\(Ex-Navarino\\)","Cabo de Hornos") %>% 
-           str_replace_all("de Zapallar, V region","Zapallar") %>% 
-           str_replace_all("de Retiro, VII region","Retiro")) %>%
+           str_replace_all("Zapallar, V region","Zapallar") %>% 
+           str_replace_all("Retiro, VII region","Retiro")) %>%
   left_join(codigos_territoriales %>% select(codigo_comuna, nombre_comuna),
             by=c("nombre_comuna")) %>% 
   select(-comuna, -nombre_comuna)
@@ -143,7 +148,7 @@ rm(estaciones, tipo_meteo, url, year_start, year_end,
 ## EoF
 
 ## Ubicacion comunal de las estaciones -------
-# DEPREACIADO
+# DEPRECIADO
 # 
 # library(sp)
 # df_sp <- SpatialPointsDataFrame(estaciones %>% select(longitud, latitud),
