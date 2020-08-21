@@ -206,7 +206,7 @@ df_cv <- df_modelo %>% dplyr::select(-geometry) %>%
 df_cv %>% 
   filter(cv>0.5) %>% 
   ggplot(aes(x=reorder(skim_variable,cv),y=cv))+
-  geom_col(fill="red")+
+  geom_col(fill="brown")+
   coord_flip(expand = F)+
   # coord_cartesian()+
   labs(x="Variable",y="Coeficiente Variacion",
