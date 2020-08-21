@@ -17,34 +17,22 @@ library(RColorBrewer)
 
 
 # Carga Datos -----
-file_url <- "Data/Data_Original/Satelital/2016/%s"
+# Elegir uno
 file_url <- "Data/Data_Original/Satelital/2020/%s"
+file_url <- "Data/Data_Original/Satelital/2016_NoDust/%s"
+file_url <- "Data/Data_Original/Satelital/2016/%s"
 
-file_nc <- "GlobalGWRwUni_PM25_GL_%s01_%s12-RH35_Median.nc"
-file_nc <- "ACAG_PM25_GWR_V4GL03_%s01_%s12_0p01.nc"
+file_nc <- "ACAG_PM25_GWR_V4GL03_%s01_%s12_0p01.nc" #2020
+file_nc <- "GlobalGWRwUni_PM25_GL_%s01_%s12-RH35_Median_NoDust_NoSalt" #2016 No Dust
+file_nc <- "GlobalGWRwUni_PM25_GL_%s01_%s12-RH35_Median.nc" #2016
 
+file <- sprintf(file_url,sprintf(file_nc,2016,2016))
 
-file <- sprintf(file_url,
-                "GlobalGWRnoGWRcwUni_PM25_GL_201601_201612-RH35-NoNegs.asc")
-# Da cor 0.5
-# file <- sprintf(file_url,
-#                 "GlobalGWRwUni_PM25_GL_201601_201612-RH35-NoNegs.asc")
-file <- sprintf(file_url,sprintf(file_nc,2013,2013))
-
-
-## Actualizado 2020 
-file <- sprintf(file_url,
-                "ACAG_PM25_GWR_V4GL03_201601_201612_0p05.nc")
-## Actualizado 2020 mayor resolucion (muy lento de cargar)
-# da cor -0.11
-file <- sprintf(file_url,
-                "ACAG_PM25_GWR_V4GL03_201601_201612_0p01.nc")
-
-# mp <- read_file(file)
 mp <- raster(file,
              crs="+init=EPSG:4326")
+
 # transpose and flip the raster to have correct orientation (nc file of 2020 paper)
-mp<-mp %>% flip(direction='x') %>% flip(direction = 'y') %>% t()
+# mp<-mp %>% flip(direction='x') %>% flip(direction = 'y') %>% t()
 
 mp
 mp %>% class()
@@ -64,13 +52,13 @@ m1
 ## Estaciones
 df_conc <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
 df_conc <- df_conc %>% 
-  filter(year %in% c(2013:2016) & pollutant=="mp2.5")
+  filter(year %in% c(2000:2016) & pollutant=="mp2.5")
 estaciones <- df_conc %>% 
   group_by(codigo_comuna,site, longitud, latitud) %>% 
   summarise(avg=mean(valor, na.rm=T)) %>% ungroup() %>% 
   na.omit() %>% 
   left_join(codigos_territoriales)
-# rm(df_conc)
+rm(df_conc)
 ## Mapa con estaciones
 estaciones <- estaciones %>% 
   left_join(mapa_comuna %>% as_tibble() %>% 
@@ -82,18 +70,16 @@ estaciones <- st_as_sf(estaciones,
                        crs="+proj=longlat +ellps=GRS80 +no_defs")
 
 
-
-## Cruzar raster con latlong points -------
+## Cruzar raster con latlong points
 cruce <- extract(mp_chile, estaciones, method="bilinear")
-
 estaciones <- estaciones %>% mutate(avg_satelite=cruce)
 
 
-## Cruzar serie de tiempo 2013-2016
+## Cruzar serie de tiempo 2000-2016 -----------
 df_cruce <- data.frame()
-for (y in 2013:2016){
+for (y in 2000:2016){
   cat(y, "\n")
-  file <- sprintf(file_url,sprintf(file_nc,2016,2016))
+  file <- sprintf(file_url,sprintf(file_nc,y,y))
   mp <- raster(file, crs="+init=EPSG:4326")
   # mp<-mp %>% flip(direction='x') %>% flip(direction = 'y') %>% t()
   cruce <- extract(mp, estaciones, method="bilinear")
@@ -104,21 +90,25 @@ for (y in 2013:2016){
 }
 
 ##Save file
-saveRDS(df_cruce,"cruce_act.rsd")
-df_cruce <- read_rds("cruce.rsd")
+saveRDS(df_cruce,"Data/cruceSatelite.rsd")
+df_cruce <- read_rds("Data/cruceSatelite.rsd")
 
+## Monitor sites values
+df_conc <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
+df_conc <- df_conc %>% 
+  filter(year %in% c(2000:2016) & pollutant=="mp2.5")
 estaciones <- df_conc %>% 
   group_by(codigo_comuna,site,year, longitud, latitud) %>% 
-  summarise(avg=mean(valor, na.rm=T)) %>% ungroup() %>% 
+  summarise(avg=mean(valor, na.rm=T),
+            dias=n()) %>% ungroup() %>% 
   na.omit() %>% 
   left_join(codigos_territoriales)
-
+rm(df_conc)
 estaciones <- estaciones %>% 
   left_join(mapa_comuna %>% as_tibble())
 
 estaciones <- left_join(estaciones, df_cruce)
 estaciones <- estaciones %>% filter(!is.na(avg_satelite))
-
 
 ## Correlations ------
 cor(x= estaciones$avg, y= estaciones$avg_satelite,
@@ -131,14 +121,15 @@ cor(x= estaciones$avg, y= estaciones$avg_satelite,
 ## rangos
 estaciones$avg %>% range()
 estaciones$avg_satelite %>% range()
-# Plot. Label lo incluyo para que se muestre en el grafico interactivo
+
+## Regresion Monitor vs Satelite -------------
 p <- estaciones %>% 
   mutate(rm=if_else(region=="M","RM","Resto Chile") %>% factor()) %>% 
   mutate(texto=paste("Estacion: ",site,"\nComuna: ",nombre_comuna,sep="")) %>% 
   ggplot(aes(avg, avg_satelite, label=texto))+
   geom_point(alpha=.5, aes(col=rm))+
   geom_abline(intercept = 0, slope = 1, linetype = "dashed")+
-  facet_wrap(~year)+
+  facet_wrap(~year, scales = "free")+
   coord_cartesian(xlim=c(0,70),ylim=c(0,70), expand = F)+
   labs(x="Monitor [ug/m3]", 
        y="Satelite [ug/m3]",
@@ -148,8 +139,6 @@ p_int <- plotly::ggplotly(p)
 mapshot(p_int,sprintf(file_name, "Correlaciones_all_interactivo") %>% 
           str_replace("png","html"))
 rm(p_int)
-
-# f_savePlot(p, sprintf(file_name, "Correlaciones2016",dpi=300))
 
 
 ## Add lm equation
@@ -170,20 +159,66 @@ lm_eqn <- function(df){
 data_eq <- estaciones %>% 
   dplyr::rename(x=avg, y=avg_satelite) %>% 
   dplyr::select(x,y,year)
-library(plyr)
-eq <- plyr::ddply(.data = data_eq, .variables = .(year), lm_eqn)
+# library(plyr)
+eq <- plyr::ddply(.data = data_eq, .variables = plyr::.(year), lm_eqn)
 rm(data_eq)
 
 
-p+geom_label(data=eq,  parse = F,
+p_eq <- p+geom_label(data=eq,  parse = F,
              # aes(x = 45, y = 11, label=V1),
              aes(x = 4, y = 55, label=V1),
             hjust="inward", size=2.8)+
-  geom_smooth(method = "lm", se=F, col="red", formula = "y~x")+
+  geom_smooth(method = "lm", se=T, col="black", formula = "y~x")+
   geom_point(alpha=.5, aes(col=rm))
-rm(eq)
+p_eq
+ggsave(sprintf(file_name,"Correlaciones_all"), p_eq, dpi=900,
+       width = 29.74, height = 18.6, units = "in")
+rm(eq,p_eq,p)
 
-f_savePlot(last_plot(), sprintf(file_name, "Correlaciones_all_act",dpi=300))
+## Regresion en el tiempo por monitor ------
+n_estaciones <- estaciones %>% group_by(nombre_comuna,site) %>% dplyr::summarise(count=n()) %>% 
+  arrange(desc(count))
+
+p_tiempo <- estaciones %>% 
+  # filter(site %in% c("Valdivia", "Las Condes","Rancagua I","Las Encinas Temuco")) %>%
+  mutate(texto=paste("Estacion: ",site,"\nComuna: ",nombre_comuna,sep="")) %>% 
+  mutate(year_label=if_else(year %in% seq(2000,2016,4),
+                            year %>% as.character(),"")) %>% 
+  ggplot(aes(avg, avg_satelite, label=texto))+
+  geom_point(alpha=.5, aes(col=year))+
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed")+
+  facet_wrap(~site, scales="free")+
+  geom_label_repel(aes(label=year_label))+
+  scale_color_distiller(palette = "YlOrRd", type = 'seq', na.value = "white", direction = 1)+
+  coord_cartesian(xlim=c(0,70),ylim=c(0,70), expand = F)+
+  labs(x="Monitor [ug/m3]", 
+       y="Satelite [ug/m3]",
+       color="")
+p_tiempo
+ggsave(sprintf(file_name,"Dispersion_Temporal"), p_tiempo, dpi=900,
+       width = 29.74, height = 18.6, units = "in")
+# p_int <- plotly::ggplotly(p_tiempo)
+# mapshot(p_int,sprintf(file_name, "Dispersion_Temporal_interactivo") %>% 
+#           str_replace("png","html"))
+rm(p_int,p_tiempo)
+
+## Serie temporal
+p_serieTiempo <- estaciones %>% 
+  # filter(site %in% c("Valdivia", "Las Condes","Rancagua I","Las Encinas Temuco")) %>%
+  mutate(texto=paste("Estacion: ",site,"\nComuna: ",nombre_comuna,sep="")) %>%
+  rename(Monitor=avg, Satelite=avg_satelite) %>% 
+  pivot_longer(cols=c("Monitor","Satelite")) %>% 
+  ggplot(aes(year, value,col=factor(name), label=texto))+
+  geom_line(aes(group=factor(name)))+
+  geom_point(size=0.5)+
+  facet_wrap(~site, scales="free")+
+  coord_cartesian(ylim=c(0,70), xlim=c(2000,2016), expand = T)+
+  labs(x="", y="MP2.5 [ug/m3]",color="")
+p_serieTiempo
+
+ggsave(sprintf(file_name,"SerieTemporal"), p_serieTiempo, dpi=900,
+       width = 29.74, height = 18.6, units = "in")
+rm(p_serieTiempo)
 
 # Otras pruebas
 cor(estaciones$avg, estaciones$avg_satelite, method="pearson")
