@@ -169,6 +169,7 @@ rm(mapa_filtro, mapa, m_leaf, f_leafleft)
 
 ## Estaciones Monitoreo -------------
 library(sf)
+source("Scripts/Aggregate_Data/poblacion_agg.R", encoding = "UTF-8")
 # Comunas
 comunas <- mapa_comuna %>% as.data.frame() %>% 
   left_join(codigos_territoriales) %>% 
@@ -191,7 +192,7 @@ estaciones_sinca <- df_conc %>%
             disponibilidad=n()/365) %>% ungroup() %>% 
   filter(disponibilidad>0.8) %>% 
   group_by(site, codigo_comuna, longitud, latitud) %>% 
-  summarise(avg=mean(avg, na.rm=T)) %>% 
+  summarise(avg=mean(avg, na.rm=T)) %>% ungroup() %>% 
   na.omit() %>% 
   left_join(codigos_territoriales)
 rm(df_conc)
@@ -201,10 +202,26 @@ estaciones_sinca <- st_as_sf(estaciones_sinca,
                        crs="+proj=longlat +ellps=GRS80 +no_defs")
 
 
+# Estaciones Sinca Meteo
+df_conc <- read_rds("Data/Data_Modelo/Datos_MeteorologiaSinca_raw.rsd")
+df_conc <- df_conc %>% filter(year %in% 2010:2019)
+estaciones_sinca_meteo <- df_conc %>% 
+  group_by(codigo_comuna,site, longitud, latitud,year) %>% 
+  summarise(count=n()) %>% ungroup() %>% 
+  group_by(site, codigo_comuna, longitud, latitud) %>% 
+  summarise(count=n()) %>% ungroup() %>% 
+  na.omit() %>% 
+  left_join(codigos_territoriales)
+rm(df_conc)
+estaciones_sinca_meteo <- st_as_sf(estaciones_sinca_meteo, 
+                             coords = c("longitud","latitud"),
+                             remove = F, 
+                             crs="+proj=longlat +ellps=GRS80 +no_defs")
+
 
 # Estaciones Meteorologia
 df_meteo <- read_rds("Data/Data_Modelo/Datos_Meteorologia_raw.rsd")
-df_meteo <- df_meteo %>% filter(year(date) %in% 2016:2019)
+df_meteo <- df_meteo %>% filter(year(date) %in% 2010:2019)
 estaciones_meteo <- df_meteo %>% 
   group_by(codigo_comuna,estacion,nombre_estacion, longitud, latitud) %>% 
   summarise(count=n()) %>% ungroup() %>% 
@@ -221,13 +238,14 @@ estaciones_meteo <- st_as_sf(estaciones_meteo,
 library(mapview)
 library(leaflet)
 
-
-m <- mapview(comunas_mapa, label=comunas_mapa$nombre_comuna, col.regions="blue",
-             layer.name = c("Centroides Comuna"))+
-  mapview(estaciones_sinca, label=estaciones_sinca$site, col.regions="red",
-          layer.name = c("Estaciones Monitoreo"))+
+m <- mapview(estaciones_sinca, label=estaciones_sinca$site, col.regions="red",
+          layer.name = c("Estaciones Sinca"))+
+  mapview(estaciones_sinca_meteo, label=estaciones_sinca_meteo$site, col.regions="brown",
+          layer.name = c("Estaciones Sinca Meteorologia"))+
   mapview(estaciones_meteo, label=estaciones_meteo$estacion, col.regions="orange",
           layer.name = c("Estaciones Meteorologia"))
+  # mapview(comunas_mapa, label=comunas_mapa$nombre_comuna, col.regions="blue",
+  #         layer.name = c("Centroides Comuna"))
 
 
 mapa_comuna_view <- mapa_comuna %>% 
@@ -237,37 +255,68 @@ m_comunas <- mapview(mapa_comuna_view,
                      alpha.regions=0.1, col.regions="green")
 rm(mapa_comuna_view)
 
-area_poblada <- st_read('Data/Data_Original/Areas_Pobladas/Areas_Pobladas.shp',
-                        layer = "Areas_Pobladas")
-area_poblada$Entidad %>% unique()
-m_area_poblada <- mapview(area_poblada,label=area_poblada$comuna,
-                          layer.name = c("Area Poblada bcn"),
-                          alpha.regions=0.1, col.regions="yellow")
-rm(area_poblada)
-
-
-zonas <- mapa_zonas %>% st_as_sf() %>% left_join(codigos_territoriales)
-zonas %>% class()
-m_zonas <- mapview(zonas, label=zonas$nombre_comuna,
-                   layer.name = c("Zonas Urbanas"),
-                   alpha.regions=0.1, col.regions="orange")
+# area_poblada <- st_read('Data/Data_Original/Areas_Pobladas/Areas_Pobladas.shp',
+#                         layer = "Areas_Pobladas")
+# area_poblada$Entidad %>% unique()
+# m_area_poblada <- mapview(area_poblada,label=area_poblada$comuna,
+#                           layer.name = c("Area Poblada bcn"),
+#                           alpha.regions=0.1, col.regions="yellow")
+# rm(area_poblada)
 
 ## Unir zonas censales a nivel de comuna
-library(rmapshaper)
-zonas %>% names()
-zonas_agg <- ms_dissolve(zonas, field = "codigo_comuna") %>%
+zonas <- rmapshaper::ms_dissolve(mapa_zonas %>% st_as_sf(), 
+                                 field = "codigo_comuna") %>%
   left_join(codigos_territoriales)
-m_zonas_agg <- mapview(zonas_agg, label=zonas_agg$nombre_comuna,
-                       layer.name = c("Zonas Urbanas Agregadas"),
-                       alpha.regions=0.1, col.regions="purple")
-rm(zonas, zonas_agg)
+zonas %>% class()
 
-m_all <- m+m_comunas+m_area_poblada+m_zonas_agg
+zonas_centroide <- zonas %>% as.data.frame() %>% 
+  mutate(centroide=st_centroid(geometry),
+         cent_lon=map_dbl(geometry, ~st_centroid(.x)[[1]]),
+         cent_lat=map_dbl(geometry, ~st_centroid(.x)[[2]])) %>% 
+  st_as_sf(coords = c("cent_lon","cent_lat"),
+           remove = F, 
+           crs="+proj=longlat +ellps=GRS80 +no_defs")
+
+m_zonas <- mapview(zonas, label=zonas$nombre_comuna,
+                   layer.name = c("Zonas Urbanas"),
+                   alpha.regions=0.1, col.regions="purple")+
+  mapview(zonas_centroide, label=zonas_centroide$nombre_comuna,
+          layer.name = c("Centroide Zonas Urbanas"),
+          col.regions="blue")
+rm(zonas_centroide)
+
+
+## Buffer estaciones 20 km
+# https://stackoverflow.com/questions/60895518/why-is-st-buffer-function-not-creating-an-r-object-that-correctly-displays-in-ma
+# library(rgeos)
+# library(rgdal)
+dist_buffer <- 20
+# EPSG:5361 = SIRGAS-Chile 2002 / UTM zone 19S
+buffer_sinca <- estaciones_sinca %>% st_transform(5361) %>% 
+  st_buffer(dist_buffer*1e3) %>% 
+  st_transform(4326)
+buffer_Sincameteo <- estaciones_sinca_meteo %>% st_transform(5361) %>% 
+  st_buffer(dist_buffer*1e3) %>% 
+  st_transform(4326)
+buffer_meteo <- estaciones_meteo %>% st_transform(5361) %>% 
+  st_buffer(dist_buffer*1e3) %>% 
+  st_transform(4326)
+
+m_buffer <- mapview(buffer_sinca, label=buffer_sinca$site, col.regions="red",
+        layer.name = c("Rango Estaciones Sinca"),alpha.regions=0.1 )+
+  mapview(buffer_Sincameteo, label=buffer_Sincameteo$site, col.regions="brown",
+          layer.name = c("Rango Estaciones Sinca Meteorologia"),alpha.regions=0.1 )+
+  mapview(buffer_meteo, label=buffer_meteo$nombre_estacion, col.regions="orange",
+          layer.name = c("Rango Estaciones Meteorologia"),alpha.regions=0.1 )
+
+# Unir todo
+m_all <- m+m_comunas+m_zonas+m_buffer
 
 # Save file as html
-mapshot(m_all, "Figuras/Completa_MP/EstacionesMonitoreo.html")
+mapshot(m_all, "Figuras/Distancia_Monitoreo/EstacionesMonitoreo.html",
+        selfcontained=F)
 
-rm(m, m_comunas, comunas_mapa,m_zonas, m_zonas_agg,
+rm(m, m_comunas, comunas_mapa,m_zonas, m_buffer,
    m_area_poblada,m_all, estaciones_sinca, estaciones_meteo)
 
 
