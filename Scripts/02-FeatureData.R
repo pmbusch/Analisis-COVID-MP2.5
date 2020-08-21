@@ -4,6 +4,7 @@
 
 ## Load all information ------
 source("Scripts/01-LoadAllData.R", encoding = "UTF-8")
+source("Scripts/00-Funciones.R", encoding = "UTF-8")
 
 df_modelo %>% skim()
 ## Parametros -----------
@@ -15,7 +16,7 @@ df_modelo <- df_modelo %>%
          dias_cuarentena=(fecha_muertes-fecha_cuarentena) %>% as.numeric(units="days"),
          densidad_pob=poblacion/superficie*1e6,
          densidad_pob_censal=poblacion/superficie_censal*1e6,
-         perc_letalidad=casos_fallecidos/casos_confirmados*100,
+         perc_letalidad=covid_fallecidos/casos_confirmados*100,
          proxy_lena_calefaccion=perc_lenaCalefaccion/100*heating_degree_15_winter) %>% 
   select(-fecha_cuarentena, -camas)
 
@@ -34,19 +35,8 @@ df_modelo <- df_modelo %>%
 df_modelo %>% skim()
 
 ## Densidad Poblacion en quintiles ------------
-## Fuente: https://stackoverflow.com/questions/7508229/how-to-create-a-column-with-a-quartile-rank
-## Devuelve un vector con la clasificacion de cada valor en su quintil
-qgroup = function(numvec, n = 5){
-  qtile = quantile(numvec, probs = seq(0, 1, 1/n), na.rm=T)
-  out = sapply(numvec, function(x) sum(x >= qtile[-(n+1)]))
-  out=paste("Q",out,sep="") %>% factor(levels=paste("Q",1:n,sep=""))
-  return(out)
-}
-
 df_modelo <- df_modelo %>% mutate(quintil_dens_pob=qgroup(densidad_pob, 5))
 df_modelo %>% group_by(quintil_dens_pob) %>% summarise(count=n()) %>% arrange(desc(count))
-rm(qgroup)
-
 
 ## Guardar datos -------
 cat('sep=; \n',file = "Data/Data_Modelo/Datos_Modelo.csv")
@@ -67,5 +57,14 @@ cat('sep=; \n',file = "Data/Data_Modelo/Datos_Modelo_std.csv")
 write.table(df_modelo_std,"Data/Data_Modelo/Datos_Modelo_std.csv",
             sep=';',row.names = F, append = T)
 rm(df_modelo_std)
+
+## Diccionario variables
+dicc_variables <- tibble(variable=names(df_modelo),
+                         descripcion=names(df_modelo) %>% f_replaceVar())
+
+cat('sep=; \n',file = "Data/Data_Modelo/Diccionario_variables.csv")
+write.table(dicc_variables,"Data/Data_Modelo/Diccionario_variables.csv",
+            sep=';',row.names = F, append = T)
+rm(dicc_variables)
 
 ## EoF

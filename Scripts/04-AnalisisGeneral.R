@@ -21,7 +21,7 @@ cat(round(pob_mp25/total_pob*100,1),
 
 # Poblacion en comunas con muertes ---------
 total_comunas <- nrow(df_modelo)
-comunas_muerte <- df_modelo %>% filter(casos_fallecidos>0) %>% nrow()
+comunas_muerte <- df_modelo %>% filter(covid_fallecidos>0) %>% nrow()
 cat(round(comunas_muerte/346*100,1),
     "% de comunas con muertes COVID")
 
@@ -30,7 +30,7 @@ rm(total_pob, pob_mp25, total_comunas, comunas_muerte)
 ## Scatter correlacion -----------
 df_modelo %>% 
   mutate(rm=if_else(region=="M","RM","Resto Chile") %>% factor()) %>% 
-  ggplot(aes(mp25, tasa_mortalidad, size=poblacion, col=rm))+
+  ggplot(aes(mp25, tasa_mortalidad_covid, size=poblacion, col=rm))+
   geom_point(alpha=.5)+
   scale_size(labels=function(x) format(x,big.mark = " ", digits=0, scientific = F))+
   labs(x="Concentración MP2.5 2016-2019 [ug/m3]", 
@@ -65,7 +65,7 @@ df_modelo %>% na.omit() %>%
 
 # Con variables de interes
 df_cor <- df_modelo %>% 
-  dplyr::select(tasa_mortalidad, mp25, `65+`,perc_mujer, 
+  dplyr::select(tasa_mortalidad_covid, mp25, `65+`,perc_mujer, 
                 densidad_pob, perc_rural, 
                 tasa_contagios,
                 dias_primerContagio,dias_primerMuerte, dias_cuarentena, tasa_camas,

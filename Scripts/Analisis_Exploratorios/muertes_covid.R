@@ -11,24 +11,24 @@ source("Scripts/Load_Data/covidMuertes_load.R", encoding = "UTF-8")
 
 # Poblacion en comunas con muertes ---------
 total_comunas <- nrow(df_muertes)
-comunas_muerte <- df_muertes %>% filter(casos_fallecidos>0) %>% nrow()
+comunas_muerte <- df_muertes %>% filter(covid_fallecidos>0) %>% nrow()
 cat(round(comunas_muerte/346*100,1),
     "% de comunas con muertes COVID")
 
 rm(total_comunas, comunas_muerte)
 
 ## Mapas -------
-df_muertes$tasa_mortalidad %>% range() # rango para los graficos
+df_muertes$tasa_mortalidad_covid %>% range() # rango para los graficos
 # Chile
 df_muertes %>% left_join(mapa_comuna) %>% 
-  fig_mapa(tasa_mortalidad, lwd=0.01,limites=c(0,250), 
+  fig_mapa(tasa_mortalidad_covid, lwd=0.01,limites=c(0,250), 
            titulo="Tasa Mortalidad Covid \n [muertes/100mil hab]")
 f_savePlot(last_plot(), 
            file_path = sprintf(file_name,"MapaChileCOVID"),dpi = 300)
 
 # Chile Facet
 df_muertes %>% left_join(mapa_comuna) %>% 
-  fig_mapaChile_facet(tasa_mortalidad,limites=c(0,250),
+  fig_mapaChile_facet(tasa_mortalidad_covid,limites=c(0,250),
                       titulo="Tasa Mortalidad Covid \n [muertes/100mil hab]")
 f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaChileCOVIDFacet"),dpi = 300)
 
@@ -37,7 +37,7 @@ f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaChileCOVIDFacet"),dpi
 df_muertes %>% left_join(mapa_comuna) %>% 
   left_join(codigos_territoriales) %>% 
   filter(mapa_rm==1) %>% 
-  fig_mapa(tasa_mortalidad, limites = c(0,250),
+  fig_mapa(tasa_mortalidad_covid, limites = c(0,250),
            titulo= "Tasa Mortalidad Covid \n [muertes/100mil hab]")
 f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaSantiagoCOVID"), dpi=100)
 
@@ -53,12 +53,12 @@ df_muertes <- df_muertes %>% na.omit() # limpio NA
 library(geofacet)
 df_muertes_tiempo <- df_muertes %>% 
   left_join(df_poblacion) %>% 
-  mutate(tasa_mortalidad=casos_fallecidos/poblacion*1e5,
+  mutate(tasa_mortalidad_covid=casos_fallecidos/poblacion*1e5,
          code=as.numeric(codigo_comuna)) %>% 
   right_join(cl_santiago_prov_grid1, by=c("code"))
   
 df_muertes_tiempo %>%  
-  ggplot(aes(x=fecha, y=tasa_mortalidad))+
+  ggplot(aes(x=fecha, y=tasa_mortalidad_covid))+
   geom_line()+
   facet_geo(~ name, grid="cl_santiago_prov_grid1")+
   labs(x="", y="")+
@@ -71,7 +71,7 @@ ggsave(sprintf(file_name,"MuertesSantiago"),
 ## Heatmap -------
 df_muertes_tiempo <- df_muertes %>% 
   left_join(df_poblacion) %>% 
-  mutate(tasa_mortalidad=casos_fallecidos/poblacion*1e5,
+  mutate(tasa_mortalidad_covid=casos_fallecidos/poblacion*1e5,
          code=as.numeric(codigo_comuna),
          region=NULL) %>% 
   left_join(mapa_comuna, by=c("codigo_comuna")) %>% 
@@ -81,8 +81,8 @@ df_muertes_tiempo %>%
   group_by(region,fecha) %>% 
   summarise(poblacion=sum(poblacion,na.rm=T),
             casos_fallecidos=sum(casos_fallecidos, na.rm=T)) %>% ungroup() %>% 
-  mutate(tasa_mortalidad=casos_fallecidos/poblacion*1e5) %>% 
-  ggplot(aes(x=fecha, y=reorder(region,desc(region)), fill=tasa_mortalidad))+
+  mutate(tasa_mortalidad_covid=casos_fallecidos/poblacion*1e5) %>% 
+  ggplot(aes(x=fecha, y=reorder(region,desc(region)), fill=tasa_mortalidad_covid))+
   geom_tile()+
   scale_fill_distiller(palette = "YlOrRd", type = 'seq', 
                        na.value = "white", direction = 1,
@@ -103,8 +103,8 @@ df_muertes_tiempo %>%
   group_by(region,fecha) %>% 
   summarise(poblacion=sum(poblacion,na.rm=T),
             fallecidos=sum(fallecidos, na.rm=T)) %>% ungroup() %>% 
-  mutate(tasa_mortalidad=fallecidos/poblacion*1e5) %>% 
-  ggplot(aes(x=fecha, y=reorder(region,desc(region)), fill=tasa_mortalidad))+
+  mutate(tasa_mortalidad_covid=fallecidos/poblacion*1e5) %>% 
+  ggplot(aes(x=fecha, y=reorder(region,desc(region)), fill=tasa_mortalidad_covid))+
   geom_tile()+
   scale_fill_distiller(palette = "YlOrRd", type = 'seq', 
                        na.value = "white", direction = 1,

@@ -2,13 +2,16 @@
 ## Tablas Resumen Info
 ## PBH Julio 2020
 
+
+source("Scripts/00-Funciones.R", encoding = "UTF-8")
+
 # Tablas Resumen general Promedio (sd) ---------------
 df_modelo %>% names()
 df <- df_modelo %>% 
   mutate(perc_fonasa=perc_fonasa_A+perc_fonasa_B+perc_fonasa_C+perc_fonasa_D,
          poblacion=poblacion/1e3,
          ingresoAutonomo_media=ingresoAutonomo_media/1e3) %>% 
-  select(tasa_mortalidad, mp25, 
+  select(tasa_mortalidad_covid, mp25, 
          poblacion,densidad_pob, `15-44`, `45-64`, `65+`,perc_mujer, 
          perc_rural, perc_puebloOrig, perc_material_irrecuperable, 
          tasa_contagios, perc_letalidad,dias_primerContagio, 
@@ -18,42 +21,11 @@ df <- df_modelo %>%
          cons_lena_calefactor_pp,cons_lena_cocina_pp,perc_lenaCocina,
          perc_lenaCalefaccion,perc_lenaAgua,
           hr_summer, hr_winter, tmed_summer, tmed_winter,
-         heating_degree_15_summer, heating_degree_15_winter) %>% 
-  rename(
-    `Tasa Mortalidad COVID [por 100mil]`=tasa_mortalidad,
-    `MP2.5 [ug/m3]`=mp25,
-    `Poblacion [miles]`=poblacion,
-    `Densidad [hab/km2]`=densidad_pob,
-    `% 15-44`=`15-44`,
-    `% 45-64`=`45-64`,
-    `% 65+`=`65+`,
-    `% Mujer`=perc_mujer,
-    `% Rural`=perc_rural,
-    `% Pueblo Originario`=perc_puebloOrig,
-    `% Vivienda con Material irrecuperable`=perc_material_irrecuperable,
-    `Tasa Contagios COVID [por 100mil]`=tasa_contagios,
-    `% Letalidad COVID`=perc_letalidad,
-    `Dias desde primer contagio`=dias_primerContagio,
-    `Dias desde primera muerte`=dias_primerMuerte,
-    `Dias desde cuarentena`=dias_cuarentena,
-    `Camas hospitalarias [por 100mil]`=tasa_camas,
-    `Tasa Mortalidad Total [por 100mil]`=tasa_mortalidad_all,
-    `Media Ingreso autonomo mensual [miles CLP]`=ingresoAutonomo_media,
-    `% Isapre`=perc_isapre,
-    `% Fonasa`=perc_fonasa,
-    `% Educación menor a media`=perc_menor_media,
-    `% Ocupado laboral`=perc_ocupado,
-    `Consumo anual leña calefactor [kWh per cápita]`=cons_lena_calefactor_pp,
-    `Consumo anual leña cocina [kWh per cápita]`=cons_lena_cocina_pp,
-    `% uso leña cocina`=perc_lenaCocina,
-    `% uso leña calefaccion`=perc_lenaCalefaccion,
-    `% uso leña agua caliente`=perc_lenaAgua,
-    `Humedad relativa media Verano [%]`=hr_summer,
-    `Humedad relativa media Invierno [%]`=hr_winter,
-    `Temperatura media Verano [°C]`=tmed_summer, 
-    `Temperatura media Invierno [°C]`=tmed_winter,
-    `Heating Degree 15°C Verano [°C]`=heating_degree_15_summer,
-    `Heating Degree 15°C Invierno [°C]`=heating_degree_15_winter)
+         heating_degree_15_summer, heating_degree_15_winter)
+names(df) <- names(df) %>% f_replaceVar()
+df <- df %>% rename(
+  `Poblacion [miles]`=Poblacion,
+  `Media Ingreso autonomo mensual [miles CLP]`=`Media Ingreso autonomo mensual`)
 
 # separo por la condicion de si tiene o no estacion
 df_sep <- df %>% 

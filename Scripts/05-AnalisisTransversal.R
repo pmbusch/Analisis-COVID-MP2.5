@@ -25,8 +25,8 @@ df_modelo %>% na.omit() %>% nrow() # dimension todas las variables
 # segun cuales podrian ser explicativas (y usadas en otros estudios)
 df_modelo %>% names()
 df <- df_modelo %>% 
-  dplyr::select(nombre_comuna,region, poblacion,tasa_mortalidad,
-                casos_fallecidos,mp25,
+  dplyr::select(nombre_comuna,region, poblacion,tasa_mortalidad_covid,
+                covid_fallecidos,mp25,
                 densidad_pob, `65+`, `15-44`, perc_puebloOrig, perc_rural,
                 dias_primerContagio, dias_cuarentena,tasa_camas,
                 perc_lenaCocina,
@@ -42,7 +42,7 @@ df <- df %>% na.omit()
 
 ## Poblacion va a off_set, dado que se estima la tasa
 # Buena explicacion: https://stats.stackexchange.com/questions/11182/when-to-use-an-offset-in-a-poisson-regression
-mod <- glmer.nb(casos_fallecidos ~ 
+mod <- glmer.nb(covid_fallecidos ~ 
                   mp25 +
                   scale(densidad_pob) + scale(`15-44`) + scale(`65+`) +
                   scale(perc_puebloOrig) + scale(perc_rural) +
@@ -166,14 +166,14 @@ lattice::qqmath(mod,id=0.05) ## quantile-quantile
 # MODELO PREDICE CASOS FALLECIDOS!
 # df %>% 
 #   mutate(y=predict(mod,type="response"),
-#          res=casos_fallecidos-y,
+#          res=covid_fallecidos-y,
 #          residuals=residuals(mod, type="response")) %>% 
-#   dplyr::select(nombre_comuna,poblacion,casos_fallecidos,y,res,residuals,
-#                 mp25,densidad_pob, tasa_mortalidad) %>% view()
+#   dplyr::select(nombre_comuna,poblacion,covid_fallecidos,y,res,residuals,
+#                 mp25,densidad_pob, tasa_mortalidad_covid) %>% view()
 
 # comparacion prediccion
 df %>% 
-  ggplot(aes(x = mp25, y = casos_fallecidos/poblacion*1e5)) +
+  ggplot(aes(x = mp25, y = covid_fallecidos/poblacion*1e5)) +
   geom_point(col="green",alpha=.5) +
   geom_line(aes(y = predict(mod,type="response")/poblacion*1e5),
             size=1, col="red", alpha=.5)+
@@ -182,7 +182,7 @@ df %>%
 
 df %>% 
   mutate(rm=if_else(region=="M","RM","Resto Chile") %>% factor()) %>% 
-  ggplot(aes(x = casos_fallecidos/poblacion*1e5)) +
+  ggplot(aes(x = covid_fallecidos/poblacion*1e5)) +
   geom_point(aes(y = predict(mod,type="response")/poblacion*1e5),
              col="red", 
              size=2,
@@ -201,8 +201,8 @@ source("Scripts/Analisis_Exploratorios/f_figuras.R", encoding = "UTF-8")
 df_map <- df %>%
   mutate(pred=predict(mod, type="response")/poblacion*1e5) %>% 
   left_join(codigos_territoriales) %>% 
-  select(codigo_comuna, tasa_mortalidad, pred) %>% 
-  rename(obs=tasa_mortalidad) %>% 
+  select(codigo_comuna, tasa_mortalidad_covid, pred) %>% 
+  rename(obs=tasa_mortalidad_covid) %>% 
   right_join(mapa_comuna) %>% 
   gather(tipo,tasa,obs, pred)
 
@@ -215,7 +215,7 @@ rm(df_map)
 ## Comparacion con Poisson -----------
 # BinNeg vs Poisson
 # https://stats.stackexchange.com/questions/311556/help-interpreting-count-data-glmm-using-lme4-glmer-and-glmer-nb-negative-binom
-modelformula <- formula(casos_fallecidos ~ 
+modelformula <- formula(covid_fallecidos ~ 
                           mp25 +
                           scale(densidad_pob) + scale(`15-44`) + scale(`65+`) +
                           scale(perc_puebloOrig) + scale(perc_rural) +
@@ -248,8 +248,8 @@ library(caret)
 ## Creo df solo con variables numericas de interes (y fuera de COVID)
 df <-  df_modelo %>% select_if(is.numeric) %>% 
   dplyr::select(
-    # -casos_fallecidos, -poblacion,
-    -tasa_mortalidad,
+    # -covid_fallecidos, -poblacion,
+    -tasa_mortalidad_covid,
     -tasa_contagios,-casos_confirmados,
     -pcr_region, -perc_letalidad,-defunciones,-tasa_mortalidad_all) %>% 
   na.omit()
@@ -270,7 +270,7 @@ modelLookup("glmStepAIC")
 
 # AIC estimates the relative amount of information lost by a given model: 
 # the less information a model loses, the higher the quality of that model
-glm_fit <- train(casos_fallecidos~ . +offset(log(poblacion)),
+glm_fit <- train(covid_fallecidos~ . +offset(log(poblacion)),
   # tasa_mortalidad ~ ., 
                  data=df,
                  method="glmStepAIC",
@@ -289,7 +289,7 @@ summary(glm_fit)
 # https://stats.stackexchange.com/questions/10419/what-is-theta-in-a-negative-binomial-regression-fitted-with-r
 getME(mod,"glmer.nb.theta") #valor del modelo origal
 # getME(glm_fit,"glmer.nb.theta")
-glm_fit_nb <- train(casos_fallecidos~ . +offset(log(poblacion)),
+glm_fit_nb <- train(covid_fallecidos~ . +offset(log(poblacion)),
                  data=df,
                  method="glmStepAIC",
                  family=negative.binomial(theta=279.9946,link="log"),
@@ -302,14 +302,14 @@ summary(glm_fit_nb)
 # df <-  df_modelo %>% 
 #   dplyr::select(-codigo_comuna, -nombre_comuna,-codigo_provincia,-nombre_provincia,
 #                 -codigo_region,-nombre_region,-region,
-#                 -tasa_mortalidad,-geometry,
+#                 -tasa_mortalidad_all,-geometry,
 #                 -tasa_contagios,-casos_confirmados,
 #                 -pcr_region, -perc_letalidad,-defunciones,-tasa_mortalidad_all) %>% 
 #   na.omit()
 # 
 # # Debo cambiar la semilla, sino no encuentra solucion factible
 # set.seed(3, sample.kind="Rounding")
-# glm_fit <- train(casos_fallecidos ~ .+ offset(log(poblacion)), 
+# glm_fit <- train(covid_fallecidos ~ .+ offset(log(poblacion)), 
 #                  data=df,
 #                  method="glm.nb",
 #                  na.action = na.omit)
@@ -327,7 +327,7 @@ summary(glm_fit_nb)
 # df <- df[,-cols]
 # Debo cambiar la semilla, sino no encuentra solucion factible
 # set.seed(64, sample.kind="Rounding")
-# glm_fit <- train(casos_fallecidos ~ .+ offset(log(poblacion)), 
+# glm_fit <- train(covid_fallecidos ~ .+ offset(log(poblacion)), 
 #                  data=df,
 #                  method="glm.nb",
 #                  na.action = na.omit)
@@ -338,7 +338,7 @@ summary(glm_fit_nb)
 #   cat(i, "\n")
 #   set.seed(i, sample.kind="Rounding")
 #   glm_fit <- tryCatch({
-#     train(casos_fallecidos ~ .+ offset(log(poblacion)),
+#     train(covid_fallecidos ~ .+ offset(log(poblacion)),
 #                    data=df,
 #                    method="glm.nb",
 #                    na.action = na.omit)
@@ -350,13 +350,14 @@ summary(glm_fit_nb)
 # summary(glm_fit)
 
 # eliminate variables with a low t-statistic
-# rfe(df,df$tasa_mortalidad, rfeControl=rfeControl(functions=lmFuncs))
+# rfe(df,df$tasa_mortalidad_covid, rfeControl=rfeControl(functions=lmFuncs))
 
 
-### PRUEBAS OTROS MODELOS
+### PRUEBAS OTROS MODELOS -------------------
 df <- df_modelo %>% 
-  dplyr::select(nombre_comuna,region, poblacion,tasa_mortalidad,
-                casos_fallecidos,mp25,
+  dplyr::select(nombre_comuna,region,nombre_provincia,
+                poblacion,tasa_mortalidad_covid,
+                covid_fallecidos,mp25,
                 densidad_pob, `65+`, `15-44`, perc_puebloOrig, perc_rural,
                 dias_primerContagio, dias_cuarentena,tasa_camas,
                 perc_lenaCocina,
@@ -368,7 +369,7 @@ df <- df_modelo %>%
 
 
 ## Sin MP2.5---------
-mod_sinMP <- glmer.nb(casos_fallecidos ~ 
+mod_sinMP <- glmer.nb(covid_fallecidos ~ 
                   scale(densidad_pob) + scale(`15-44`) + scale(`65+`) +
                   scale(perc_puebloOrig) + scale(perc_rural) +
                   scale(dias_primerContagio) +  scale(dias_cuarentena) + 
@@ -405,7 +406,7 @@ summary(m3)
 
 
 ## Sin RM---------
-mod_sinRM <- glmer.nb(casos_fallecidos ~ 
+mod_sinRM <- glmer.nb(covid_fallecidos ~ 
                         mp25 +
                         scale(densidad_pob) + scale(`15-44`) + scale(`65+`) +
                         scale(perc_puebloOrig) + scale(perc_rural) +
@@ -425,12 +426,33 @@ exp(summary(mod_sinRM)[10]$coefficients[2,1]) # exponencial coeficiente MP2.5
 
 
 ## Solo MP2.5---------
-modMP <- glmer.nb(casos_fallecidos ~ mp25 +
+modMP <- glmer.nb(covid_fallecidos ~ mp25 +
                   (1|region)+
                     offset(log(poblacion)),
                   data = df,
                   na.action=na.omit)
 summary(modMP)
 exp(summary(modMP)[10]$coefficients[2,1]) # exponencial coeficiente MP2.5
+
+
+## Random por Provincia---------
+modProv <- glmer.nb(covid_fallecidos ~ 
+                  mp25 +
+                  scale(densidad_pob) + scale(`15-44`) + scale(`65+`) +
+                  scale(perc_puebloOrig) + scale(perc_rural) +
+                  scale(dias_primerContagio) +  scale(dias_cuarentena) + 
+                  scale(tasa_camas) + 
+                  scale(perc_lenaCocina) + 
+                  scale(log(ingresoTotal_media)) + scale(perc_menor_media) + 
+                  scale(perc_fonasa_A) + scale(perc_fonasa_D) +
+                  scale(tmed_summer) + scale(tmed_winter) + 
+                  scale(heating_degree_15_summer) + scale(heating_degree_15_winter) +
+                  (1|nombre_provincia)+
+                  offset(log(poblacion)), 
+                data = df,
+                na.action=na.omit)
+
+summary(modProv)
+exp(summary(modProv)[10]$coefficients[2,1]) # exponencial coeficiente MP2.5
 
 ## EoF

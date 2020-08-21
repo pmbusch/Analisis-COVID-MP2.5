@@ -49,6 +49,6 @@ df_modelo <- df_poblacion %>%
   left_join(df_tasaMortalidad, by=c("codigo_comuna"))
 
 rm(df_poblacion, df_muertes, df_conc, df_camas, df_casos, df_cuarentena,
-   df_meteo, df_casen, df_censo, df_pcr, df_lena, df_tasaMortalidad, df_deis)
+   df_meteo, df_casen, df_censo, df_pcr, df_lena, df_tasaMortalidad)
 
 ## EoF

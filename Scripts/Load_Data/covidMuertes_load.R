@@ -43,11 +43,12 @@ rm(pob)
 
 ## Parametros --------
 df_muertes <- df_muertes %>% 
-  mutate(tasa_mortalidad=casos_fallecidos/poblacion*1e5) %>% 
+  rename(covid_fallecidos=casos_fallecidos) %>% 
+  mutate(tasa_mortalidad_covid=covid_fallecidos/poblacion*1e5) %>% 
   left_join(df_muerteZero %>% select(-comuna)) %>% 
   mutate(dias_primerMuerte=(fecha-dia_muerteZero) %>% 
            as.numeric(units="days")) %>% 
-  select(codigo_comuna, casos_fallecidos, tasa_mortalidad,
+  select(codigo_comuna, covid_fallecidos, tasa_mortalidad_covid,
          dias_primerMuerte)
 
 rm(url, df_muerteZero)
@@ -84,7 +85,7 @@ df_deis <- df_deis %>% filter(capitulo=="COVID-19") %>%
   mutate(tipo=str_extract(causa, "Confirmado|Sospechoso") %>% str_to_lower())
 
 # Comparacion muertes
-df_muertes$casos_fallecidos %>% sum()
+df_muertes$covid_fallecidos %>% sum()
 df_deis %>% filter(tipo=="confirmado") %>% nrow()
 
 # Cruzar con comunas
