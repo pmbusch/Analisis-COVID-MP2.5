@@ -24,7 +24,7 @@ if (sinca){
 
 ## ELEGIR: COMUNA O ZONA CENSAL (para no duplicar codigo)------
 # Para zonas aun no esta implementado bien las figuras de output
-comuna <- T
+comuna <- F
 if (comuna){
   # mapa_orig <- mapa_comuna
   mapa_orig <- rmapshaper::ms_dissolve(mapa_zonas %>% st_as_sf(), 
@@ -133,7 +133,7 @@ df_matrix <- df_matrix %>%
 # Join to comuna
 df <- comunas %>% 
   dplyr::select(
-    # geocodigo,
+    geocodigo,
     codigo_comuna, nombre_comuna, centroide) %>% 
   rowid_to_column() %>%
   left_join(df_matrix, by=c("rowid"="comuna_index"))
@@ -151,14 +151,14 @@ rm(df_matrix)
 # Ordena por distancia para cada comuna, e incorpora un ranking
 df %>% names()
 df_dist <- df %>% 
-  arrange(codigo_comuna, dist) %>%
-  group_by(nombre_comuna, codigo_comuna) %>%
-  # arrange(geocodigo, dist) %>% 
-  # group_by(geocodigo) %>% 
+  # arrange(codigo_comuna, dist) %>%
+  # group_by(nombre_comuna, codigo_comuna) %>%
+  arrange(geocodigo, dist) %>%
+  group_by(geocodigo) %>%
   mutate(rank=rank(dist,ties.method = "first")) %>% ungroup() %>% 
   left_join(comunas %>% 
-              select(codigo_comuna, centroide, mapa_rm)) %>%
-              # select(geocodigo, centroide)) %>% 
+              # select(codigo_comuna, centroide, mapa_rm)) %>%
+              select(geocodigo, centroide)) %>%
   left_join(codigos_territoriales)
 
 # Exporta Matriz Distancia Comuna-Estacion

@@ -55,11 +55,6 @@ df_conc <- df %>%
   filter(!is.na(valor))
 df_conc %>% n_distinct("site")
 
-# Fix name of site La Florida on talca
-# df_conc <- df_conc %>% 
-#   mutate(site=if_else(site=="La Florida"&codigo_comuna=="07101",
-#          "La Florida-Talca", site))
-
 ## Cargar datos distancia
 df_dist <- read_rds("Data/Data_Modelo/distanciacomunaEstacionsinca.rsd")
 df_dist_zona <- read_rds("Data/Data_Modelo/distanciazonaEstacionsinca.rsd")
