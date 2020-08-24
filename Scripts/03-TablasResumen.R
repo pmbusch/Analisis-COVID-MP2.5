@@ -1,8 +1,6 @@
 ### Analisis-COVID-MP2.5
 ## Tablas Resumen Info
 ## PBH Julio 2020
-
-
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
 
 # Tablas Resumen general Promedio (sd) ---------------

@@ -18,7 +18,6 @@ pob_mp25 <- df_modelo %>% filter(!is.na(mp25)) %>% pull(poblacion) %>% sum()
 cat(round(pob_mp25/total_pob*100,1),
     "% de poblacion en comunas con monitoreo de MP2.5")
 
-
 # Poblacion en comunas con muertes ---------
 total_comunas <- nrow(df_modelo)
 comunas_muerte <- df_modelo %>% filter(covid_fallecidos>0) %>% nrow()
@@ -30,6 +29,7 @@ rm(total_pob, pob_mp25, total_comunas, comunas_muerte)
 ## Scatter correlacion -----------
 df_modelo %>% 
   mutate(rm=if_else(region=="M","RM","Resto Chile") %>% factor()) %>% 
+  mutate(nombre_comuna=if_else(poblacion>1e5,nombre_comuna,"")) %>% #Label solo pob mayor a 100 mil
   ggplot(aes(mp25, tasa_mortalidad_covid, size=poblacion, col=rm))+
   geom_point(alpha=.5)+
   scale_size(labels=function(x) format(x,big.mark = " ", digits=0, scientific = F))+
@@ -196,6 +196,8 @@ df_region %>%
   facet_wrap(~var, scales = "free")
 ggsave(sprintf(file_name,"EcdfRegion"), last_plot(), dpi=900,
        width = 22.3, height = 14, units = "in")
+
+rm(df_region)
 
 ## COeficiente de variacion ----------
 df_cv <- df_modelo %>% dplyr::select(-geometry) %>%  
