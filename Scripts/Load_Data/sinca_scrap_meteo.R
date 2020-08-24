@@ -22,7 +22,7 @@ cols_type <- "dcccclccccdddccccDDccDccccclcccccc"
 df_estaciones <- read_delim("Data/Data_Original/DatosEstacioneSINCA.csv", 
                             delim = ";", skip = 1, na = c("NA"),
                             col_types = cols_type,
-                            locale = locale(date_format = "%d-%m-%y",
+                            locale = locale(date_format = "%Y-%m-%d",
                                             encoding = "windows-1252"))
 rm(cols_type)
 spec(df_estaciones)
