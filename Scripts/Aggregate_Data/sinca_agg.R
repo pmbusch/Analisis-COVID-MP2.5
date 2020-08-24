@@ -2,57 +2,26 @@
 ## Agrega datos de concentraciones
 ## PBH Julio 2020
 
-# Carga datos brutos --------
-# source("Scripts/Load_Data/sinca_scrap.R", encoding = "UTF-8") # Baja los datos
-df <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
-
-## Agregar a nivel comunal -----------
-## NOTAS:
-# Debo mejorar la agregacion al incluir otros contaminantes y ver bien 
-# promedio de estaciones con distinta disponibilidad de datos
-
-df_conc <- df %>% 
-  filter(year %in% 2010:2019 & pollutant=="mp2.5") %>% 
-  group_by(codigo_comuna, pollutant, unidad, site,year) %>% 
-  summarise(valor=mean(valor, na.rm=T),
-            disponibilidad=n()/365) %>% ungroup() %>% 
-  filter(disponibilidad>0.8) %>% 
-  group_by(site,codigo_comuna, pollutant, unidad) %>% 
-  summarise(valor=mean(valor, na.rm=T)) %>% ungroup()
-
-# Numero estaciones
-df_conc %>% n_distinct("site")
-  
-df_conc <- df_conc %>%   
-  group_by(codigo_comuna, pollutant, unidad) %>% 
-  summarise(valor=mean(valor, na.rm=T)) %>% ungroup()
-
-# Numero comunas
-df_conc %>% nrow()
-
-# Resumir data
-df_conc <- df_conc %>% 
-  rename(mp25=valor) %>% 
-  select(codigo_comuna, mp25)
-
-# Guarda datos ----------
-saveRDS(df_conc, "Data/Data_Modelo/Datos_Concentraciones.rsd")
-
-rm(df)
-
-
-## Expansion concentracion FIXED RADIUS ------
+## METODO 1: Expansion concentracion FIXED RADIUS ------
+# Carga datos Concentracion --------
 source("Scripts/Analisis_Exploratorios/f_figuras.R", encoding = "UTF-8")
 df <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
+
+# Periodo 2017-2019
 df_conc <- df %>% 
-  filter(year %in% 2016:2019 & pollutant=="mp2.5") %>% 
+  filter(year %in% 2017:2019 & pollutant=="mp2.5") %>% 
   group_by(codigo_comuna, pollutant, unidad, site,year) %>% 
   summarise(valor=mean(valor, na.rm=T),
-            disponibilidad=n()/365) %>% ungroup() %>% 
+            disponibilidad=n()/365) %>% ungroup()
+
+# Disponibilidad mayor a 80% en el año, y con los tres años de datos
+df_conc <- df_conc %>% 
   filter(disponibilidad>0.8) %>% 
   group_by(site,codigo_comuna, pollutant, unidad) %>% 
-  summarise(valor=mean(valor, na.rm=T)) %>% ungroup() %>% 
-  filter(!is.na(valor))
+  summarise(valor=mean(valor, na.rm=T),
+            count=n()) %>% ungroup() %>% 
+  filter(count==3) %>% select(-count)
+
 df_conc %>% n_distinct("site")
 
 ## Cargar datos distancia
@@ -84,30 +53,30 @@ df_avg <- df_dist_zona %>% left_join(pob, by=c("geocodigo")) %>% na.omit()
 rm(pob)
 
 # Add conc data
-## 21 de Mayo y La Florida nombres repetidos!!!!
 df_avg <- df_avg %>% left_join(df_conc %>% select(-codigo_comuna), 
-                               by=c("site")) %>% na.omit()
+                               by=c("site")) %>% filter(!is.na(valor))
 
 ## Promedio ponderado por inverso de la distancia a nivel de zona censal
-## Agregado a nivel de comuna ponderado por la poblacion
-library(RColorBrewer)
-
 df_mp <- df_avg %>% 
   group_by(geocodigo, codigo_comuna, poblacion) %>% 
-  summarise(valor=weighted.mean(valor, 1/(dist))) %>% ungroup()
+  summarise(valor=weighted.mean(valor, 1/(dist)),
+            count=n()) %>% ungroup()
 
 # View map on zonas
+library(RColorBrewer)
 m2 <- left_join(mapa_zonas, df_mp, by=c("geocodigo")) %>% st_as_sf()
 m3 <- mapview(m2, zcol="valor",col.regions=brewer.pal(9, "YlOrRd"))
 mapshot(m3, "Figuras/ConcentracionMP25_zonas.html")
 rm(m2,m3)
 
+## Promedio a nivel de comuna ponderado por la poblacion
 df_mp <- df_mp %>% 
   group_by(codigo_comuna) %>% 
   summarise(valor=weighted.mean(valor, poblacion)) %>% ungroup() %>% 
   right_join(mapa_comuna) %>% left_join(codigos_territoriales) %>% 
   rename(mp25=valor)
-df_mp %>% filter(!is.na(mp25)) %>% nrow() # N comunas con datos:125
+
+df_mp %>% filter(!is.na(mp25)) %>% nrow() # N comunas con datos:120
 
 m1 <- mapview(df_mp %>% st_as_sf(), 
       label=paste(df_mp$nombre_comuna,": ",
@@ -125,4 +94,45 @@ df_conc <- df_mp %>%
   select(codigo_comuna, mp25) %>% filter(!is.na(mp25))
 saveRDS(df_conc, "Data/Data_Modelo/Datos_Concentraciones.rsd")
 
+
+## METODO 2: Asignacion comuna donde se encuentra el monitor ------------
+# Carga datos brutos --------
+# source("Scripts/Load_Data/sinca_scrap.R", encoding = "UTF-8") # Baja los datos
+df <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
+
+## Agregar a nivel comunal -----------
+# Promedio 2017-2019
+df_conc <- df %>% 
+  filter(year %in% 2017:2019 & pollutant=="mp2.5") %>% 
+  group_by(codigo_comuna, pollutant, unidad, site,year) %>% 
+  summarise(valor=mean(valor, na.rm=T),
+            disponibilidad=n()/365) %>% ungroup()
+# Disponibildiad mayor a 80% y estaciones con todos los años de datos
+df_conc <- df_conc %>% 
+  filter(disponibilidad>0.8) %>% 
+  group_by(site,codigo_comuna, pollutant, unidad) %>% 
+  summarise(valor=mean(valor, na.rm=T),
+            count=n()) %>% ungroup() %>% 
+  filter(count==3) %>% select(-count)
+
+# Numero estaciones
+df_conc %>% n_distinct("site")
+
+# Promedio por comuna
+df_conc <- df_conc %>%   
+  group_by(codigo_comuna, pollutant, unidad) %>% 
+  summarise(valor=mean(valor, na.rm=T)) %>% ungroup()
+
+# Numero comunas
+df_conc %>% nrow()
+
+# Resumir data
+df_conc <- df_conc %>% 
+  rename(mp25=valor) %>% 
+  select(codigo_comuna, mp25)
+
+# Guarda datos ----------
+saveRDS(df_conc, "Data/Data_Modelo/Datos_Concentraciones.rsd")
+
+rm(df)
 ## EoF

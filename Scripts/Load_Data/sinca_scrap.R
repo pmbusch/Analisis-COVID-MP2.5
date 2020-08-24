@@ -23,7 +23,7 @@ cols_type <- "dcccclccccdddccccDDccDccccclcccccc"
 df_estaciones <- read_delim("Data/Data_Original/DatosEstacioneSINCA.csv", 
                             delim = ";", skip = 1, na = c("NA"),
                             col_types = cols_type,
-                            locale = locale(date_format = "%d-%m-%y",
+                            locale = locale(date_format = "%Y-%m-%d",
                                             encoding = "windows-1252"))
 rm(cols_type)
 spec(df_estaciones)
@@ -134,7 +134,6 @@ df <- df %>%
            str_replace_all("Aysen","Aisen") %>% 
            str_replace_all("Coyhaique","Coihaique")) %>% 
   left_join(codigos_territoriales,by=c("nombre_comuna"))
-
 
 
 # Guardar como objeto de R
