@@ -9,6 +9,7 @@
 theme_set(theme_bw(16)+theme(panel.grid.major = element_blank()))
 file_name <- "Figuras/Analisis_transversal/%s.png"
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
+source("Scripts/05-FuncionesAnalisisTransversal.R", encoding = "UTF-8")
 
 library(MASS)
 library(lme4)
@@ -37,8 +38,7 @@ df <- df_modelo %>%
                 heating_degree_18_summer, heating_degree_18_winter)
 
 df %>% na.omit() %>% dim() #dimension
-df <- df %>% na.omit()
-
+# df <- df %>% na.omit()
 
 ## Poblacion va a off_set, dado que se estima la tasa
 # Buena explicacion: https://stats.stackexchange.com/questions/11182/when-to-use-an-offset-in-a-poisson-regression
@@ -57,87 +57,37 @@ mod <- glmer.nb(covid_fallecidos ~
                   offset(log(poblacion)), 
                 data = df,
                 na.action=na.omit)
+
+# Solucion no convergencia
+# ss <- getME(mod,c("theta","fixef"))
+# mod2 <- update(mod,start=ss,control=glmerControl(optCtrl=list(maxfun=2e4)))
+# summary(mod2)
+# mod3 <- update(mod,start=ss,control=glmerControl(optimizer="bobyqa",
+#                                                      optCtrl=list(maxfun=2e5)))
+# summary(mod3)
+# mod <- mod3
 # Summary
 summary(mod)
 
-## Calculo MRR -------
+##  MRR -------
 # Se interpreta como el aumento relativo en la tasa de mortalidad covid por 1 ug/m3
 # Dado que los confundentes estan estandarizados, su MRR se interepreta como 
 # variacion relativa al aumento en 1 desviacion estandar de la variable confundente
 # Fuente: https://stats.idre.ucla.edu/r/dae/negative-binomial-regression/
-# est <- cbind(est=coef(mod), confint(mod))
+
 # Coef of fixed effects
-fixef(mod) %>% as.data.frame()
-est <- summary(mod)$coefficients[,1:4] %>% as.data.frame() %>% 
-  as_tibble(rownames = "parametro")
-names(est) <- c("parametro","coef","sd","z_value","p_value")
-
-## Add codes
-foot_note <- "Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1"
-est <- est %>% mutate(codes=case_when(
-  p_value<0.001 ~ "***",
-  p_value<0.01 ~ "**",
-  p_value<0.05 ~ "*",
-  p_value<0.1 ~ ".",
-  T ~ ""))
-
-## Tabla coeficientes
-est %>% 
-  mutate(parametro=parametro %>% 
-           str_remove_all("scale|\\(|\\)|log") %>% 
-           f_replaceVar()) %>% 
-  rename(Parametro=parametro, `Coef.`=coef, `Desv.`=sd,
-         `Valor-z`=z_value,`Valor-p`=p_value,`Sign.`=codes) %>% 
-  flextable() %>% 
-  colformat_num(big.mark=" ", digits=4, j=2:5,
-                na_str="s/i") %>% 
-  bold(bold=T, part="header") %>% bold(j=1, bold=T) %>% 
-  autofit(add_w = 0.1, add_h = 0.3) %>%
-  align(j=1, align = "left", part="all") %>% 
-  footnote(j=6, value=as_paragraph(foot_note), part="header", inline=T)
+f_tableCoef(mod) 
   # print(preview="pptx")
 
 ## MRR
-est <- est %>% mutate(low=coef-1.96*sd, high=coef+1.96*sd)
-est_mrr <- est[-1,] %>% mutate(coef=exp(coef) %>% round(2), 
-                    low=exp(low) %>% round(2), 
-                    high=exp(high) %>% round(2),
-                    ci=paste("(",low,", ",high,")",sep = ""),
-                    p_value=round(p_value,4))
-
-# Tabla MRR
-est_mrr %>% 
-  dplyr::select(parametro, coef, ci, p_value, codes) %>% 
-  mutate(parametro=parametro %>% 
-           str_remove_all("scale|\\(|\\)|log") %>% 
-           f_replaceVar()) %>% 
-  rename(Variable=parametro, MRR=coef, `95% I.C.`=ci,
-         `Valor-p`=p_value,`Sign.`=codes) %>% 
-  flextable() %>% 
-  bold(bold=T, part="header") %>% bold(j=1, bold=T) %>% 
-  autofit(add_w = 0.1, add_h = 0.3) %>%
-  align(j=1, align = "left", part="all") %>% 
-  footnote(j=5, value=as_paragraph(foot_note), part="header", inline=T)
+f_tableMRR(mod)
   # print(preview="pptx")
   # print(preview="docx")
-rm(foot_note)
 
 ## Figura MRR
-est_mrr %>% 
-  rowid_to_column() %>% 
-  mutate(parametro=parametro %>% 
-           str_remove_all("scale|\\(|\\)|log") %>% 
-           f_replaceVar()) %>% 
-  ggplot(aes(x=reorder(parametro,desc(rowid)), y=coef))+
-  geom_point()+
-  geom_errorbar(aes(ymin=low, ymax=high))+
-  geom_hline(yintercept = 1, linetype = "dashed")+
-  labs(x="",y="MRR")+
-  coord_flip()+
-  theme_bw(16)
+f_figMRR(mod)
 f_savePlot(last_plot(), sprintf(file_name,"MRR"), dpi=100)
 
-rm(est,est_mrr)
 
 
 ## Varianza random effects -----
@@ -183,8 +133,9 @@ df %>%
 df %>% 
   mutate(rm=if_else(region=="M","RM","Resto Chile") %>% factor()) %>% 
   ggplot(aes(x = covid_fallecidos/poblacion*1e5)) +
-  geom_point(aes(y = predict(mod,type="response")/poblacion*1e5),
-             col="red", 
+  geom_point(aes(y = predict(mod,type="response")/poblacion*1e5,
+                 col=rm),
+             # col="red", 
              size=2,
              alpha=.5)+
   geom_abline(intercept = 0, slope = 1, linetype = "dashed")+
@@ -384,6 +335,9 @@ mod_sinMP <- glmer.nb(covid_fallecidos ~
                 data = df,
                 na.action=na.omit)
 summary(mod_sinMP)
+f_tableCoef(mod_sinMP)
+f_tableMRR(mod_sinMP)
+f_figMRR(mod_sinMP)
 
 # Pq no converge?
 # https://rstudio-pubs-static.s3.amazonaws.com/33653_57fc7b8e5d484c909b615d8633c01d51.html
@@ -395,7 +349,7 @@ min(tt[ll==0])
 derivs1 <- mod_sinMP@optinfo$derivs
 sc_grad1 <- with(derivs1,solve(Hessian,gradient))
 max(abs(sc_grad1))
-# restart (LO SOUCIONA!)
+# restart (LO SOLUCIONA!)
 ss <- getME(mod_sinMP,c("theta","fixef"))
 m2 <- update(mod_sinMP,start=ss,control=glmerControl(optCtrl=list(maxfun=2e4)))
 summary(m2)
@@ -423,7 +377,9 @@ mod_sinRM <- glmer.nb(covid_fallecidos ~
                       na.action=na.omit)
 summary(mod_sinRM)
 exp(summary(mod_sinRM)[10]$coefficients[2,1]) # exponencial coeficiente MP2.5
-
+f_tableCoef(mod_sinRM)
+f_tableMRR(mod_sinRM)
+f_figMRR(mod_sinRM)
 
 ## Solo MP2.5---------
 modMP <- glmer.nb(covid_fallecidos ~ mp25 +
@@ -433,7 +389,9 @@ modMP <- glmer.nb(covid_fallecidos ~ mp25 +
                   na.action=na.omit)
 summary(modMP)
 exp(summary(modMP)[10]$coefficients[2,1]) # exponencial coeficiente MP2.5
-
+f_tableCoef(modMP)
+f_tableMRR(modMP)
+f_figMRR(modMP)
 
 ## Random por Provincia---------
 modProv <- glmer.nb(covid_fallecidos ~ 
@@ -454,5 +412,9 @@ modProv <- glmer.nb(covid_fallecidos ~
 
 summary(modProv)
 exp(summary(modProv)[10]$coefficients[2,1]) # exponencial coeficiente MP2.5
+f_tableCoef(modProv)
+f_tableMRR(modProv)
+f_figMRR(modProv)
+
 
 ## EoF
