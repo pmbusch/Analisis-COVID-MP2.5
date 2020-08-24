@@ -4,6 +4,7 @@
 ## PBH Agosto 2020
 
 ## Nota: codigo se debe modificar a mano para cargar un set u otro de datos
+## Set disponibles: paper 2020, paper 2016, paper 2016 sin dust sin salt
 # Por el momento los del paper 2016 dan mejor
 
 
@@ -23,7 +24,7 @@ file_url <- "Data/Data_Original/Satelital/2016_NoDust/%s"
 file_url <- "Data/Data_Original/Satelital/2016/%s"
 
 file_nc <- "ACAG_PM25_GWR_V4GL03_%s01_%s12_0p01.nc" #2020
-file_nc <- "GlobalGWRwUni_PM25_GL_%s01_%s12-RH35_Median_NoDust_NoSalt" #2016 No Dust
+file_nc <- "GlobalGWRwUni_PM25_GL_%s01_%s12-RH35_Median_NoDust_NoSalt.nc" #2016 No Dust
 file_nc <- "GlobalGWRwUni_PM25_GL_%s01_%s12-RH35_Median.nc" #2016
 
 file <- sprintf(file_url,sprintf(file_nc,2016,2016))
@@ -33,7 +34,6 @@ mp <- raster(file,
 
 # transpose and flip the raster to have correct orientation (nc file of 2020 paper)
 # mp<-mp %>% flip(direction='x') %>% flip(direction = 'y') %>% t()
-
 mp
 mp %>% class()
 # plot(mp)
@@ -90,8 +90,8 @@ for (y in 2000:2016){
 }
 
 ##Save file
-saveRDS(df_cruce,"Data/cruceSatelite.rsd")
-df_cruce <- read_rds("Data/cruceSatelite.rsd")
+saveRDS(df_cruce,"Data/cruceSatelite_NoDust.rsd")
+df_cruce <- read_rds("Data/cruceSatelite_NoDust.rsd")
 
 ## Monitor sites values
 df_conc <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
@@ -136,7 +136,7 @@ p <- estaciones %>%
        color="")
 p
 p_int <- plotly::ggplotly(p)
-mapshot(p_int,sprintf(file_name, "Correlaciones_all_interactivo") %>% 
+mapshot(p_int,sprintf(file_name, "Correlaciones_all_interactivo_NoDust") %>% 
           str_replace("png","html"))
 rm(p_int)
 
@@ -171,7 +171,7 @@ p_eq <- p+geom_label(data=eq,  parse = F,
   geom_smooth(method = "lm", se=T, col="black", formula = "y~x")+
   geom_point(alpha=.5, aes(col=rm))
 p_eq
-ggsave(sprintf(file_name,"Correlaciones_all"), p_eq, dpi=900,
+ggsave(sprintf(file_name,"Correlaciones_all_NoDust"), p_eq, dpi=900,
        width = 29.74, height = 18.6, units = "in")
 rm(eq,p_eq,p)
 
@@ -195,7 +195,7 @@ p_tiempo <- estaciones %>%
        y="Satelite [ug/m3]",
        color="")
 p_tiempo
-ggsave(sprintf(file_name,"Dispersion_Temporal"), p_tiempo, dpi=900,
+ggsave(sprintf(file_name,"Dispersion_Temporal_NoDust"), p_tiempo, dpi=900,
        width = 29.74, height = 18.6, units = "in")
 # p_int <- plotly::ggplotly(p_tiempo)
 # mapshot(p_int,sprintf(file_name, "Dispersion_Temporal_interactivo") %>% 
@@ -216,7 +216,7 @@ p_serieTiempo <- estaciones %>%
   labs(x="", y="MP2.5 [ug/m3]",color="")
 p_serieTiempo
 
-ggsave(sprintf(file_name,"SerieTemporal"), p_serieTiempo, dpi=900,
+ggsave(sprintf(file_name,"SerieTemporal_NoDust"), p_serieTiempo, dpi=900,
        width = 29.74, height = 18.6, units = "in")
 rm(p_serieTiempo)
 
@@ -235,7 +235,7 @@ rm(mod, p)
 
 ## Mapa estaciones satelite ------
 m <- m1+mapview(estaciones, label=estaciones$site, col.region="red")
-mapshot(m, url=sprintf(file_name, "Mapa__act") %>% str_replace("png","html"),
+mapshot(m, url=sprintf(file_name, "Mapa_act_NoDust") %>% str_replace("png","html"),
         selfcontained=F)
 rm(m, m1)
 
