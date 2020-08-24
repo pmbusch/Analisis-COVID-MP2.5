@@ -21,7 +21,7 @@ El proyecto se subdivide en las siguientes secciones:
 	* Casos totales por comuna incremental *(producto 1)*
 	* Exámenes PCR por región *(producto 7)*
 	* Cuarentenas Activas e Históricas *(producto 29)*
-* Concentración ambiental (2016-2019): SINCA (https://sinca.mma.gob.cl/)
+* Concentración ambiental (2017-2019): SINCA (https://sinca.mma.gob.cl/)
 	* MP2.5
 * Tasa de Mortalidad (2017): CENSO 2017 y DEIS (compilado por MinCiencia)
 	* Población 
@@ -35,7 +35,7 @@ El proyecto se subdivide en las siguientes secciones:
 	* Viviendas
 	* Materialidad Viviendas
 * Mapas de Chile: librería de R *chilemapas* (https://cran.r-project.org/web/packages/chilemapas/index.html)
-* Meteorología (2016-2019): Dirección Meteorológica de Chile (https://climatologia.meteochile.gob.cl/)
+* Meteorología (2017-2019): Dirección Meteorológica de Chile (https://climatologia.meteochile.gob.cl/)
 	* Temperatura (media, mínima y máxima diaria)
 	* Humedad relativa
 * Información Socioeconómica: CASEN 2017 (http://observatorio.ministeriodesarrollosocial.gob.cl/casen-multidimensional/casen/casen_2017.php)
