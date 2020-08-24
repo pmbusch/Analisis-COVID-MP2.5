@@ -14,6 +14,8 @@ Códigos
 * [`03-TablasResumen.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/03-TablasResumen.R): Genera tablas resumen de los datos levantados.
 * [`04-AnalisisGeneral.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/04-AnalisisGeneral.R): Análisis generales de los datos comunales: Indicadores, Scatter plot, Correlaciones y Densidades.
 * [`05-AnalisisTransversal.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/05-AnalisisTransversal.R): Modelo Transversal *(cross-sectional analysis)*
+* [`05-FuncionesAnalisisTransversal.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/05-FuncionesAnalisisTransversal.R): Funciones para analizar resultados del Modelo Transversal
+
 
 **Otros códigos de análisis:**
 * [`MapasInteractivos.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/MapasInteractivos.R): Genera mapas interactivos de datos comunales y de estaciones monitoreo.
