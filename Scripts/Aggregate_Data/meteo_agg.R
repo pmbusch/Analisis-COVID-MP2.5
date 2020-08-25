@@ -161,6 +161,30 @@ df_meteo %>% skim()
 # Save data
 saveRDS(df_meteo, "Data/Data_Modelo/Datos_Meteorologia.rsd")
 
+## Mapas ------
+source("Scripts/Analisis_Exploratorios/f_figuras.R", encoding = "UTF-8")
+file_name <- "Scripts/Analisis_Exploratorios/Figuras/meteo/%s.png"
+df_map <- df_meteo %>% right_join(mapa_comunas)
+df_map %>% names()
+
+# Temperatura
+df_map$tmed_anual %>% range(na.rm=T)
+fig_mapaChile_facet(df_map, tmed_anual, limites = c(8,17),
+                    titulo = "Temperatura media 2017-2019 \n [°C]")
+f_savePlot(last_plot(),file_path = sprintf(file_name,"MapaChileFacetTemp_ext"))
+
+# HR
+df_map$hr_anual %>% range(na.rm=T)
+fig_mapaChile_facet(df_map, hr_anual, limites = c(0,100),
+                    titulo = "Humedad relativa 2017-2019 \n [%]")
+f_savePlot(last_plot(),file_path = sprintf(file_name,"MapaChileFacetHr_ext"))
+
+# Heating Degree 15
+df_map$heating_degree_15_anual %>% range(na.rm=T)
+fig_mapaChile_facet(df_map, heating_degree_15_anual, limites = c(30,170),
+                    titulo = "Heating Degree diario 2017-2019 \n [°C]")
+f_savePlot(last_plot(),file_path = sprintf(file_name,"MapaChileFacetHD15_ext"))
+
 
 ## METODO 2: Uso Datos Meteorologia Chile -------------
 ## Util para un analisis sin MP, tiene mayor numero de comunas

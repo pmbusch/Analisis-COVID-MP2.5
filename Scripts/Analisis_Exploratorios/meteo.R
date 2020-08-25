@@ -2,7 +2,7 @@
 ## Meteorologia
 ## PBH Julio 2020
 
-theme_set(theme_bw())
+theme_set(theme_bw(16)+theme(panel.grid.major = element_blank()))
 file_name <- "Scripts/Analisis_Exploratorios/Figuras/meteo/%s.png"
 source("Scripts/Analisis_Exploratorios/f_figuras.R", encoding = "UTF-8")
 
