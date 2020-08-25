@@ -79,8 +79,8 @@ df_skim %>%
   autofit(add_w = 0.1, add_h = 0.3) %>%
   align(j=1, align = "left", part="all") %>% 
   footnote(j=4, value=as_paragraph("Coeficiente Variación"), 
-           part="header", inline=T) %>% 
-  print(preview="pptx")
+           part="header", inline=T)
+  # print(preview="pptx")
 
 rm(df_skim, df)
   

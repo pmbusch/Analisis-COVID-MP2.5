@@ -306,6 +306,7 @@ summary(glm_fit_nb)
 
 
 ### PRUEBAS OTROS MODELOS -------------------
+file_name <- "Figuras/Analisis_transversal/Otros_Modelos/%s.png"
 df <- df_modelo %>% 
   dplyr::select(nombre_comuna,region,nombre_provincia,
                 poblacion,tasa_mortalidad_covid,covid_fallecidos_65,
@@ -338,7 +339,9 @@ mod_sinMP <- glmer.nb(covid_fallecidos ~
 summary(mod_sinMP)
 f_tableCoef(mod_sinMP)
 f_tableMRR(mod_sinMP)
+  # print(preview="pptx")
 f_figMRR(mod_sinMP)
+f_savePlot(last_plot(), sprintf(file_name,"sinMP"),dpi=150)
 
 # Pq no converge?
 # https://rstudio-pubs-static.s3.amazonaws.com/33653_57fc7b8e5d484c909b615d8633c01d51.html
@@ -359,7 +362,7 @@ m3 <- update(mod_sinMP,start=ss,control=glmerControl(optimizer="bobyqa",
                                                  optCtrl=list(maxfun=2e5)))
 summary(m3)
 
-
+rm(mod_sinMP)
 ## Sin RM---------
 mod_sinRM <- glmer.nb(covid_fallecidos ~ 
                         mp25 +
@@ -380,7 +383,11 @@ summary(mod_sinRM)
 exp(summary(mod_sinRM)[10]$coefficients[2,1]) # exponencial coeficiente MP2.5
 f_tableCoef(mod_sinRM)
 f_tableMRR(mod_sinRM)
+  # print(preview="pptx")
 f_figMRR(mod_sinRM)
+f_savePlot(last_plot(), sprintf(file_name,"sinRM"),dpi=150)
+
+rm(mod_sinRM)
 
 ## Solo MP2.5---------
 modMP <- glmer.nb(covid_fallecidos ~ mp25 +
@@ -393,6 +400,7 @@ exp(summary(modMP)[10]$coefficients[2,1]) # exponencial coeficiente MP2.5
 f_tableCoef(modMP)
 f_tableMRR(modMP)
 f_figMRR(modMP)
+f_savePlot(last_plot(), sprintf(file_name,"soloMP"),dpi=150)
 
 ## Random por Provincia---------
 modProv <- glmer.nb(covid_fallecidos ~ 
@@ -415,7 +423,9 @@ summary(modProv)
 exp(summary(modProv)[10]$coefficients[2,1]) # exponencial coeficiente MP2.5
 f_tableCoef(modProv)
 f_tableMRR(modProv)
+  # print(preview="pptx")
 f_figMRR(modProv)
+f_savePlot(last_plot(), sprintf(file_name,"randomProvincia"),dpi=150)
 
 ## Fallecidos 65+---------
 mod_65 <- glmer.nb(covid_fallecidos_65 ~ 
@@ -437,6 +447,8 @@ summary(mod_65)
 exp(summary(mod_65)[10]$coefficients[2,1]) # exponencial coeficiente MP2.5
 f_tableCoef(mod_65)
 f_tableMRR(mod_65)
+  # print(preview="pptx")
 f_figMRR(mod_65)
+f_savePlot(last_plot(), sprintf(file_name,"fallecidos65"),dpi=150)
 
 ## EoF
