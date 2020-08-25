@@ -12,6 +12,7 @@ file_name <- "Figuras/Analisis_general/%s.png"
 ## Indicadores relevantes ------------
 
 # Poblacion en comunas con datos MP2.5
+df_modelo %>% filter(!is.na(mp25)) %>% nrow()
 total_pob <- df_modelo$poblacion %>% sum()
 pob_mp25 <- df_modelo %>% filter(!is.na(mp25)) %>% pull(poblacion) %>% sum()
 cat(round(pob_mp25/total_pob*100,1),
@@ -32,11 +33,10 @@ df_modelo %>%
   ggplot(aes(mp25, tasa_mortalidad_covid, size=poblacion, col=rm))+
   geom_point(alpha=.5)+
   scale_size(labels=function(x) format(x,big.mark = " ", digits=0, scientific = F))+
-  labs(x="Concentración MP2.5 2016-2019 [ug/m3]", 
+  labs(x="Concentración MP2.5 2017-2019 [ug/m3]", 
        y="Tasa Mortalidad COVID [muertes/100mil hab]",
        size="Poblacion",
-       color="")+
-  theme_bw(16)
+       color="")
 f_savePlot(last_plot(),
            sprintf(file_name, "Muertes_vs_MP25"), dpi=300)
 

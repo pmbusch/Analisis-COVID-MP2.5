@@ -109,8 +109,7 @@ f_figMRR <- function(model){
     geom_errorbar(aes(ymin=low, ymax=high))+
     geom_hline(yintercept = 1, linetype = "dashed")+
     labs(x="",y="MRR")+
-    coord_flip()+
-    theme_bw(16)
+    coord_flip()
   
   return(p)
 }
