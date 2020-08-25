@@ -72,18 +72,29 @@ rm(url, df_muerteZero)
 #       exdir = "Data/Data_Original/DEIS")
 
 # lectura
-df_deis <- read_delim("Data/Data_Original/DEIS/DEFUNCIONES_FUENTE_DEIS_2016_2020_13082020.csv",
+df_deis <- read_delim("Data/Data_Original/DEIS/DEFUNCIONES_FUENTE_DEIS_2016_2020_20082020.csv",
                  delim = ";",col_names = F,
-                 col_types = "dDccccccccc",
+                 col_types = "dDcddccccccccccccccccccccc",
                  locale = locale(encoding = "windows-1252"))
-names(df_deis) <- c("year","date","sexo","edad","codigo_comuna","comuna","region",
-               "causa_cie10","causa","cap_cie10","capitulo")
+spec(df_deis)
+names(df_deis) <- c("year","date","sexo","edad_tipo","edad",
+                    "codigo_comuna","comuna","region",
+                    "diag1","cap_diag1","glosa_cap_diag1",
+                    "grupo_diag1","glosa_grupo_diag1",
+                    "categ_diag1","glosa_categ_diag1",
+                    "subcateg_diag1","glosa_subcateg_diag1",
+                    "diag2","cap_diag2","glosa_cap_diag2",
+                    "grupo_diag2","glosa_grupo_diag2",
+                    "categ_diag2","glosa_categ_diag2",
+                    "subcateg_diag2","glosa_subcateg_diag2")
+                    # "causa_cie10","causa","cap_cie10","capitulo")
 
 # Filtro COVID
-df_deis %>% group_by(capitulo) %>% summarise(count=n()) %>% arrange(desc(count))
-df_deis <- df_deis %>% filter(capitulo=="COVID-19") %>% 
-  mutate(tipo=str_extract(causa, "Confirmado|Sospechoso") %>% str_to_lower())
-
+df_deis %>% group_by(glosa_subcateg_diag1) %>% summarise(count=n()) %>% arrange(desc(count))
+df_deis <- df_deis %>% filter(str_detect(glosa_subcateg_diag1,"COVID-19")) %>% 
+  mutate(tipo=str_extract(glosa_subcateg_diag1, "no identificado|identificado"),
+         tipo=if_else(tipo=="no identificado","sospechoso","confirmado"))
+  
 # Comparacion muertes
 df_muertes$covid_fallecidos %>% sum()
 df_deis %>% filter(tipo=="confirmado") %>% nrow()
@@ -93,21 +104,33 @@ df_deis <- df_deis %>% filter(codigo_comuna!="99999") %>%
   mutate(codigo_comuna=paste(
   if_else(str_length(codigo_comuna)==4,"0",""),codigo_comuna,sep=""))
 
+# Arreglo Edad
+df_deis %>% group_by(edad_tipo) %>% summarise(count=n()) %>% arrange(desc(count))
+df_deis <- df_deis %>% mutate(edad=if_else(edad_tipo!=1,0,edad),
+                              edad_tipo=1)
+
+
 # Factores
 df_deis <- df_deis %>% mutate(sexo=factor(sexo),
-                    edad=factor(edad),
-                    causa_cie10=factor(causa_cie10),
-                    cap_cie10=factor(cap_cie10),
+                    glosa_subcateg_diag1=factor(glosa_subcateg_diag1),
                     tipo=factor(tipo))
 nrow(df_deis) # muertes
 # df_deis %>% skim()
 
 df_deis$edad %>% unique()
 df_deis <- df_deis %>% mutate(grupo_edad=case_when(
-  edad %in% c("< 1","1 a 4","5 a 9","10 a 14") ~ "0-14",
-  edad %in% c("15 a 19","20 a 24","25 a 29","30 a 34","35 a 39","40 a 44") ~ "15-44",
-  edad %in% c("45 a 49","50 a 54","55 a 59","60 a 64") ~ "45-64",
+  edad < 15 ~ "0-14",
+  edad < 45 ~ "15-44",
+  edad < 65 ~ "45-64",
   T ~ "65+"))
+# df_deis %>% group_by(grupo_edad,edad) %>% 
+#   summarise(count=n()) %>% arrange(desc(count)) %>% view()
+# 
+# df_deis <- df_deis %>% mutate(grupo_edad=case_when(
+#   edad %in% c("< 1","1 a 4","5 a 9","10 a 14") ~ "0-14",
+#   edad %in% c("15 a 19","20 a 24","25 a 29","30 a 34","35 a 39","40 a 44") ~ "15-44",
+#   edad %in% c("45 a 49","50 a 54","55 a 59","60 a 64") ~ "45-64",
+#   T ~ "65+"))
 
 ## Exportar para analisis
 # cat('sep=; \n',file = "MuertesCovid_Deis.csv")
