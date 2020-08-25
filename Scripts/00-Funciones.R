@@ -101,7 +101,7 @@ f_replaceVar <- function(variable_orig){
       variable_orig== "defunciones" ~ "Número fallecidos todas las causas",
      variable_orig== "mp25" ~ "MP2.5 [ug/m3]",
      variable_orig== "densidad_pob" ~ "Densidad [hab/km2]",
-     variable_orig== "densidad_pob_censal" ~ "Densidad [hab/km2]",
+     variable_orig== "densidad_pob_censal" ~ "Densidad censal [hab/km2]",
      variable_orig== "quintil_dens_pob" ~ "Quintil densidad poblacion",
      variable_orig== "`15-44`" ~ "% 15-44",
      variable_orig== "15-44" ~ "% 15-44",
