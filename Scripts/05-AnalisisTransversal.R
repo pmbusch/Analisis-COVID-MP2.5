@@ -59,13 +59,13 @@ mod <- glmer.nb(covid_fallecidos ~
                 na.action=na.omit)
 
 # Solucion no convergencia
-# ss <- getME(mod,c("theta","fixef"))
+ss <- getME(mod,c("theta","fixef"))
 # mod2 <- update(mod,start=ss,control=glmerControl(optCtrl=list(maxfun=2e4)))
 # summary(mod2)
-# mod3 <- update(mod,start=ss,control=glmerControl(optimizer="bobyqa",
-#                                                      optCtrl=list(maxfun=2e5)))
-# summary(mod3)
-# mod <- mod3
+mod3 <- update(mod,start=ss,control=glmerControl(optimizer="bobyqa",
+                                                     optCtrl=list(maxfun=2e5)))
+summary(mod3)
+mod <- mod3
 # Summary
 summary(mod)
 
@@ -76,7 +76,7 @@ summary(mod)
 # Fuente: https://stats.idre.ucla.edu/r/dae/negative-binomial-regression/
 
 # Coef of fixed effects
-f_tableCoef(mod) 
+f_tableCoef(mod)
   # print(preview="pptx")
 
 ## MRR
@@ -85,7 +85,7 @@ f_tableMRR(mod)
   # print(preview="docx")
 
 ## Figura MRR
-f_figMRR(mod)
+f_figMRR(mod)+scale_y_continuous(breaks=seq(0,9,1))
 f_savePlot(last_plot(), sprintf(file_name,"MRR"), dpi=100)
 
 
@@ -131,29 +131,30 @@ df %>%
        y="Tasa Mortalidad COVID [muertes/100mil hab]")
 
 df %>% 
+  na.omit() %>% 
   mutate(rm=if_else(region=="M","RM","Resto Chile") %>% factor()) %>% 
   ggplot(aes(x = covid_fallecidos/poblacion*1e5)) +
   geom_point(aes(y = predict(mod,type="response")/poblacion*1e5,
                  col=rm),
              # col="red", 
-             size=2,
+             size=4,
              alpha=.5)+
   geom_abline(intercept = 0, slope = 1, linetype = "dashed")+
   coord_cartesian(xlim=c(0,250),ylim=c(0,250), expand = T)+
-  labs(x="Observada", 
-       y="Predicción")+
-  ggtitle("Tasa Mortalidad COVID [muertes/100mil hab]")+
+  labs(x="Observada", y="Predicción", col="")+
+  # ggtitle("Tasa Mortalidad COVID [muertes/100mil hab]")+
   theme(panel.grid.minor = element_blank())
-f_savePlot(last_plot(), sprintf(file_name,"Obs_vs_Pred"), dpi=100)
+f_savePlot(last_plot(), sprintf(file_name,"Obs_vs_Pred"), dpi=300)
 
 ## Mapa comparativo ---------
 # detach("package:gamm4", unload = TRUE)
 source("Scripts/Analisis_Exploratorios/f_figuras.R", encoding = "UTF-8")
 df_map <- df %>%
+  na.omit() %>% 
   mutate(pred=predict(mod, type="response")/poblacion*1e5) %>% 
   left_join(codigos_territoriales) %>% 
-  select(codigo_comuna, tasa_mortalidad_covid, pred) %>% 
-  rename(obs=tasa_mortalidad_covid) %>% 
+  dplyr::select(codigo_comuna, covid_fallecidos,poblacion, pred) %>% 
+  mutate(obs=covid_fallecidos/poblacion*1e5) %>% 
   right_join(mapa_comuna) %>% 
   gather(tipo,tasa,obs, pred)
 
@@ -307,7 +308,7 @@ summary(glm_fit_nb)
 ### PRUEBAS OTROS MODELOS -------------------
 df <- df_modelo %>% 
   dplyr::select(nombre_comuna,region,nombre_provincia,
-                poblacion,tasa_mortalidad_covid,
+                poblacion,tasa_mortalidad_covid,covid_fallecidos_65,
                 covid_fallecidos,mp25,
                 densidad_pob, `65+`, `15-44`, perc_puebloOrig, perc_rural,
                 dias_primerContagio, dias_cuarentena,tasa_camas,
@@ -416,5 +417,26 @@ f_tableCoef(modProv)
 f_tableMRR(modProv)
 f_figMRR(modProv)
 
+## Fallecidos 65+---------
+mod_65 <- glmer.nb(covid_fallecidos_65 ~ 
+                        mp25 +
+                        scale(densidad_pob) + 
+                        scale(perc_puebloOrig) + scale(perc_rural) +
+                        scale(dias_primerContagio) +  scale(dias_cuarentena) + 
+                        scale(tasa_camas) + 
+                        scale(perc_lenaCocina) + 
+                        scale(log(ingresoTotal_media)) + scale(perc_menor_media) + 
+                        scale(perc_fonasa_A) + scale(perc_fonasa_D) +
+                        scale(tmed_summer) + scale(tmed_winter) + 
+                        scale(heating_degree_15_summer) + scale(heating_degree_15_winter) +
+                        (1|region)+
+                        offset(log(poblacion*`65+`)), 
+                      data = df,
+                      na.action=na.omit)
+summary(mod_65)
+exp(summary(mod_65)[10]$coefficients[2,1]) # exponencial coeficiente MP2.5
+f_tableCoef(mod_65)
+f_tableMRR(mod_65)
+f_figMRR(mod_65)
 
 ## EoF
