@@ -94,6 +94,22 @@ df_conc <- df_mp %>%
   select(codigo_comuna, mp25) %>% filter(!is.na(mp25))
 saveRDS(df_conc, "Data/Data_Modelo/Datos_Concentraciones.rsd")
 
+## Mapas Chile --------
+# Chile Facet
+file_name <- "Scripts/Analisis_Exploratorios/Figuras/SINCA/%s.png"
+df_mp$mp25 %>% range(na.rm = T)
+fig_mapaChile_facet(df_mp, mp25, limites=c(0,50),
+                    titulo = "Promedio 2017-2019 \n MP2.5 [ug/m3]")
+f_savePlot(last_plot(),
+           file_path =sprintf(file_name,"MapaChileMP25Facet_Exp"),dpi=300)
+
+# Santiago
+df_map %>% 
+  filter(mapa_rm==1) %>% 
+  fig_mapa(valor,limites = c(0,50), titulo="Promedio 2017-2019 \n MP2.5 [ug/m3]")+
+  geom_sf_label(aes(label=nombre_comuna, geometry=geometry))
+f_savePlot(last_plot(), sprintf(file_name,"MapaSantiagoMP25_Exp"))
+
 
 ## METODO 2: Asignacion comuna donde se encuentra el monitor ------------
 # Carga datos brutos --------
