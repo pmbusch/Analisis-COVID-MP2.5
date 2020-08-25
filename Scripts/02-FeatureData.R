@@ -38,6 +38,22 @@ df_modelo %>% skim()
 df_modelo <- df_modelo %>% mutate(quintil_dens_pob=qgroup(densidad_pob, 5))
 df_modelo %>% group_by(quintil_dens_pob) %>% summarise(count=n()) %>% arrange(desc(count))
 
+
+## Muertes COVID DEIS ------------
+## Muertes grupo etario 65
+df_65 <- df_deis %>% 
+  group_by(codigo_comuna,grupo_edad,tipo) %>% 
+  summarise(covid_fallecidos_deis=n()) %>% ungroup()
+
+df_65 <- df_65 %>% 
+  filter(tipo=="confirmado" & grupo_edad=="65+") %>%
+  select(-tipo, -grupo_edad) %>% 
+  rename(covid_fallecidos_65=covid_fallecidos_deis)
+
+# Add to df_modelo
+df_modelo <- df_modelo %>% left_join(df_65)
+rm(df_65)
+
 ## Guardar datos -------
 cat('sep=; \n',file = "Data/Data_Modelo/Datos_Modelo.csv")
 write.table(df_modelo %>% select(-geometry),"Data/Data_Modelo/Datos_Modelo.csv",
