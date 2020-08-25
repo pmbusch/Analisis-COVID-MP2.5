@@ -63,7 +63,7 @@ f_leafleft <- function(map, datos,var, columna, unidad){
 
 mapa_filtro <- mapa %>% 
   dplyr::select(region, nombre_provincia, nombre_comuna, poblacion,
-                tasa_mortalidad, mp25, densidad_pob, densidad_pob_censal,`15-44`,`65+`,
+                tasa_mortalidad_covid, mp25, densidad_pob, densidad_pob_censal,`15-44`,`65+`,
                 perc_rural, perc_puebloOrig,
                 ingresoAutonomo_media, perc_menor_media, perc_isapre,perc_fonasa_A,
                 perc_fonasa_B,perc_fonasa_C,perc_fonasa_D,
@@ -85,8 +85,8 @@ mapa_filtro <- mapa %>%
 
 m_leaf <- leaflet(mapa_filtro) %>% 
   addTiles() %>% 
-  f_leafleft(mapa_filtro,mapa_filtro$tasa_mortalidad,
-             "tasa_mortalidad", unidad = "por 100mil hab") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$tasa_mortalidad_covid,
+             "tasa_mortalidad_covid", unidad = "por 100mil hab") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$mp25,
              "mp25", unidad = "ug/m3") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$poblacion,
@@ -141,7 +141,7 @@ m_leaf <- leaflet(mapa_filtro) %>%
              "heating_degree_15_winter", unidad = "°C") %>% 
   addLayersControl(
     baseGroups = c("OpenStreetMap","Toner", "Toner by Stamen"),
-    overlayGroups = c("tasa_mortalidad","mp25","poblacion","tasa_contagios",
+    overlayGroups = c("tasa_mortalidad_covid","mp25","poblacion","tasa_contagios",
                       "densidad_pob",
                       "densidad_pob_censal","15-44","65+","perc_rural",
                       "perc_puebloOrig","ingresoAutonomo_media",
@@ -152,7 +152,7 @@ m_leaf <- leaflet(mapa_filtro) %>%
                       "perc_letalidad","tmed_summer","tmed_winter",
                       "hr_summer","hr_winter","heating_degree_15_summer",
                       "heating_degree_15_winter")) %>% 
-  hideGroup(c("tasa_mortalidad","mp25","poblacion","tasa_contagios",
+  hideGroup(c("tasa_mortalidad_covid","mp25","poblacion","tasa_contagios",
               "densidad_pob","densidad_pob_censal","15-44","65+","perc_rural",
               "perc_puebloOrig","ingresoAutonomo_media",
               "perc_menor_media","perc_isapre","perc_fonasa_A",
@@ -166,6 +166,13 @@ m_leaf <- leaflet(mapa_filtro) %>%
 
 mapshot(m_leaf, "Figuras/MapaParametrosComuna.html", selfcontained=F)
 rm(mapa_filtro, mapa, m_leaf, f_leafleft)
+
+library(leafsync)
+
+m_leaf_dual <- sync(m_leaf,m_leaf, ncol=2)
+mapshot(m_leaf_dual, "Figuras/MapaParametrosComunaDual.html", selfcontained=F)
+
+rm(m_leaf,m_leaf_dual)
 
 ## Estaciones Monitoreo -------------
 library(sf)
