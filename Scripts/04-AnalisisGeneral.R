@@ -220,7 +220,8 @@ f_savePlot(last_plot(), sprintf(file_name,"coefVariacion"))
 rm(df_cv)
 
 
-## Jitter Comunas -------------
+## JITTER COMUNAS -------------
+## Porcentajes ----
 # Grafico Boxplot y Jitter de variables en percent (misma escala)
 df_modelo %>% names()
 df_box <- df_modelo %>% 
@@ -270,7 +271,7 @@ f_savePlot(last_plot(), sprintf(file_name,"jitter_perc"),dpi=300)
 
 rm(df_box)
 
-## Variables con escala numerica distinta --
+## Escala numerica distinta --------
 df_box <- df_modelo %>% 
   mutate(tiene_mp=!is.na(mp25)) %>% 
   select(codigo_comuna,tiene_mp,
@@ -345,5 +346,77 @@ df_box %>% filter(tiene_mp==T) %>%
 f_savePlot(last_plot(), sprintf(file_name,"jitter_scale"),dpi=300)
 
 rm(df_box)
+
+## Meteorologia por Season -----
+df_modelo %>% names()
+df_box <- df_modelo %>% 
+  mutate(tiene_mp=!is.na(mp25)) %>% 
+  select(codigo_comuna, tiene_mp,
+         tmed_fall,tmed_winter,tmed_spring,tmed_summer,
+         hr_fall,hr_winter,hr_spring,hr_summer,
+         heating_degree_15_fall,heating_degree_15_winter,
+         heating_degree_15_spring,heating_degree_15_summer,
+         heating_degree_18_fall,heating_degree_18_winter,
+         heating_degree_18_spring,heating_degree_18_summer)
+
+# Aplano y genero columna para orden
+df_box <- df_box %>% gather(var,value,-codigo_comuna,-tiene_mp) %>% filter(!is.na(value)) %>% 
+  rowid_to_column()
+df_box$value %>% range()
+
+# Clasifico por tipo de variable
+df_box <- df_box %>% 
+  mutate(tipo=case_when(
+    str_detect(var,"tmed") ~ "Temperatura Media",
+    str_detect(var,"hr") ~ "Humedad Relativa",
+    str_detect(var,"_15") ~ "Heating Degree 15°C",
+    str_detect(var,"_18") ~ "Heating Degree 18°C",
+    T ~ "s/i") %>% 
+      factor(levels=c("Temperatura Media","Humedad Relativa",
+                      "Heating Degree 15°C","Heating Degree 18°C")),
+    season=case_when(
+      str_detect(var,"fall") ~ "Otoño",
+      str_detect(var,"winter") ~ "Invierno",
+      str_detect(var,"spring") ~ "Primavera",
+      str_detect(var,"summer") ~ "Verano",
+      T ~ "s/i") %>% 
+      factor(levels=c("Otoño","Invierno",
+                      "Primavera","Verano")
+      ))
+
+# Grafico jitter
+df_box %>% 
+  filter(tiene_mp==T) %>% 
+  ggplot(aes(x=reorder(season,desc(rowid)), y=value, col=tipo))+
+  # geom_boxplot()+
+  geom_jitter(data=filter(df_box, tiene_mp==F) , alpha=.5,col="gray",height= 0)+
+  geom_jitter(alpha=.5,height= 0)+ #height 0: remove jitter on Y axis (value)
+  facet_wrap(~tipo, scales = "free")+
+  coord_flip(expand = F)+
+  labs(x="",y="",col="", 
+       caption = "Se muestran en color comunas con MP2.5, y en gris todas")+
+  theme(legend.position = "none")
+f_savePlot(last_plot(), sprintf(file_name,"jitter_meteo_season"),dpi=300)
+rm(df_box)
+
+
+
+
+## OTROS -----------
+# Cantidad de comunas por region con MP2.5
+df_modelo %>% 
+  filter(!is.na(mp25)) %>% 
+  group_by(region) %>% summarise(count=n()) %>% arrange(desc(count))
+
+## Correlaciones por region
+df_modelo %>% 
+  filter(!is.na(mp25)) %>% 
+  group_by(region) %>% 
+  summarise(count=n(),
+            corr_mp25=cor(tasa_mortalidad_covid,mp25),
+            corr_tmed_anual=cor(tasa_mortalidad_covid,tmed_anual),
+            corr_dens_pob=cor(tasa_mortalidad_covid,densidad_pob_censal),
+            corr_isapre=cor(tasa_mortalidad_covid,perc_isapre)) 
+
 
 ## EoF
