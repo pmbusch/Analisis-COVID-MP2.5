@@ -260,8 +260,8 @@ df_box %>%
   filter(tiene_mp==T) %>% 
   ggplot(aes(x=reorder(var,desc(rowid)), y=value, col=tipo))+
   # geom_boxplot()+
-  geom_jitter(data=filter(df_box, tiene_mp==F) , alpha=.5,col="gray")+
-  geom_jitter(alpha=.5)+
+  geom_jitter(data=filter(df_box, tiene_mp==F) , alpha=.5,col="gray",height= 0)+
+  geom_jitter(alpha=.5,height= 0)+ #height 0: remove jitter on Y axis (value)
   coord_flip(expand = F)+
   # scale_color_viridis_d()+
   labs(x="",y="",col="", 
@@ -334,8 +334,8 @@ df_box %>% filter(tiene_mp==T) %>%
   ggplot(aes(x=reorder(var,desc(rowid)), y=value, col=tipo))+
   geom_label(data = df_label,y=6, aes(label=label))+
   # geom_boxplot()+
-  geom_jitter(data=filter(df_box, tiene_mp==T), alpha=0.5, col="gray")+
-  geom_jitter(alpha=.5)+
+  geom_jitter(data=filter(df_box, tiene_mp==T), alpha=0.5, col="gray", height= 0)+
+  geom_jitter(alpha=.5, height= 0)+ #height 0: remove jitter on Y axis (value)
   geom_hline(yintercept = 0, linetype = "dashed")+
   coord_flip(expand = F)+
   # scale_color_viridis_d()+
@@ -343,7 +343,6 @@ df_box %>% filter(tiene_mp==T) %>%
        caption = "Se muestran en color comunas con MP2.5, y en gris todas.\n
        Variables estandarizadas. Mean (sd)")
 f_savePlot(last_plot(), sprintf(file_name,"jitter_scale"),dpi=300)
-
 
 rm(df_box)
 
