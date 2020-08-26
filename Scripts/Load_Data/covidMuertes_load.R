@@ -13,15 +13,6 @@ df_muertes <- read_csv(paste(url,"producto38","CasosFallecidosPorComuna_std.csv"
 names(df_muertes) <- names(df_muertes) %>% str_to_lower() %>% str_replace_all(" ","_")
 df_muertes <- df_muertes %>% na.omit() # limpio NA
 
-
-## Dia primer muerte por comuna ---------------
-# Limitado por fecha de primer reporte: 12-06-2020
-df_muerteZero <- df_muertes %>% 
-  filter(casos_fallecidos!=0) %>% #Filtro que haya casos
-  group_by(codigo_comuna,comuna) %>% 
-  summarise(dia_muerteZero=min(fecha, na.rm=T)) %>% ungroup()
-
-
 ## Muertes totales a la fecha -----------
 # Filtro fechas mas reciente (dado que son muertes acumuladas)
 fecha_muertes <- df_muertes$fecha %>% max()
@@ -44,14 +35,11 @@ rm(pob)
 ## Parametros --------
 df_muertes <- df_muertes %>% 
   rename(covid_fallecidos=casos_fallecidos) %>% 
-  mutate(tasa_mortalidad_covid=covid_fallecidos/poblacion*1e5) %>% 
-  left_join(df_muerteZero %>% select(-comuna)) %>% 
-  mutate(dias_primerMuerte=(fecha-dia_muerteZero) %>% 
-           as.numeric(units="days")) %>% 
-  select(codigo_comuna, covid_fallecidos, tasa_mortalidad_covid,
-         dias_primerMuerte)
+  mutate(tasa_mortalidad_covid=covid_fallecidos/poblacion*1e5)
 
-rm(url, df_muerteZero)
+## Falta unir dato de primera muerte COVID, que viene del DEIS
+rm(url)
+
 
 ### Muertes DEIS -------------
 # Descargar datos
@@ -90,6 +78,9 @@ names(df_deis) <- c("year","date","sexo","edad_tipo","edad",
                     # "causa_cie10","causa","cap_cie10","capitulo")
 
 # Filtro COVID
+df_deis %>% group_by(glosa_cap_diag1) %>% summarise(count=n()) %>% arrange(desc(count))
+df_deis %>% group_by(glosa_grupo_diag1) %>% summarise(count=n()) %>% arrange(desc(count))
+df_deis %>% group_by(glosa_categ_diag1) %>% summarise(count=n()) %>% arrange(desc(count))
 df_deis %>% group_by(glosa_subcateg_diag1) %>% summarise(count=n()) %>% arrange(desc(count))
 df_deis <- df_deis %>% filter(str_detect(glosa_subcateg_diag1,"COVID-19")) %>% 
   mutate(tipo=str_extract(glosa_subcateg_diag1, "no identificado|identificado"),
@@ -123,6 +114,24 @@ df_deis <- df_deis %>% mutate(grupo_edad=case_when(
   edad < 45 ~ "15-44",
   edad < 65 ~ "45-64",
   T ~ "65+"))
+
+## Dias primer muerte confirmada DEIS ------ 
+df_muerteZero <- df_deis %>% 
+  filter(tipo=="confirmado") %>% 
+  group_by(codigo_comuna, comuna) %>% 
+  summarise(dia_muerteZero=min(date, na.rm=T)) %>% ungroup()
+
+# Agrego este dato a df de muertes
+df_muertes <- df_muertes %>% 
+  left_join(df_muerteZero %>% select(-comuna)) %>% 
+  mutate(dias_primerMuerte=(fecha-dia_muerteZero) %>% 
+           as.numeric(units="days")) %>% 
+  select(codigo_comuna, covid_fallecidos, tasa_mortalidad_covid,
+         dias_primerMuerte)
+
+rm(df_muerteZero)
+  
+
 # df_deis %>% group_by(grupo_edad,edad) %>% 
 #   summarise(count=n()) %>% arrange(desc(count)) %>% view()
 # 
