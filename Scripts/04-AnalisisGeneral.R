@@ -220,19 +220,21 @@ f_savePlot(last_plot(), sprintf(file_name,"coefVariacion"))
 rm(df_cv)
 
 
-## Boxplot Percent -------------
+## Jitter Comunas -------------
 # Grafico Boxplot y Jitter de variables en percent (misma escala)
 df_modelo %>% names()
-df_box <- df_modelo %>% select(codigo_comuna,perc_letalidad,
-                               `15-44`,`45-64`,`65+`,perc_mujer,perc_rural,
-                               perc_puebloOrig,perc_material_irrecuperable,
-                               perc_menor_media,perc_ocupado,
-                               perc_isapre,perc_FFAA,perc_fonasa_A,perc_fonasa_B,
-                               perc_fonasa_C, perc_fonasa_D,
-                               perc_lenaCocina,perc_lenaCalefaccion,perc_lenaAgua)
+df_box <- df_modelo %>% 
+  mutate(tiene_mp=!is.na(mp25)) %>% 
+  select(codigo_comuna,perc_letalidad, tiene_mp,
+         `15-44`,`45-64`,`65+`,perc_mujer,perc_rural,
+         perc_puebloOrig,perc_material_irrecuperable,
+         perc_menor_media,perc_ocupado,
+         perc_fonasa_A,perc_fonasa_B,perc_fonasa_C, 
+         perc_fonasa_D,perc_isapre,perc_FFAA,
+         perc_lenaCocina,perc_lenaCalefaccion,perc_lenaAgua)
 
 # Aplano y genero columna para orden
-df_box <- df_box %>% gather(var,value,-codigo_comuna) %>% filter(!is.na(value)) %>% 
+df_box <- df_box %>% gather(var,value,-codigo_comuna,-tiene_mp) %>% filter(!is.na(value)) %>% 
   rowid_to_column()
 df_box$value %>% range()
 
@@ -252,39 +254,45 @@ df_box <- df_box %>%
       factor(levels=c("COVID-19","Demografía","Socioeconómico","Leña")))
  
 # Grafico jitter
+df_box <- df_box %>% 
+  mutate(var=var %>% f_replaceVar())
 df_box %>% 
-  mutate(var=var %>% f_replaceVar()) %>% 
-  ggplot(aes(x=reorder(var,desc(rowid)), y=value, fill=tipo, col=tipo))+
+  filter(tiene_mp==T) %>% 
+  ggplot(aes(x=reorder(var,desc(rowid)), y=value, col=tipo))+
   # geom_boxplot()+
+  geom_jitter(data=filter(df_box, tiene_mp==F) , alpha=.5,col="gray")+
   geom_jitter(alpha=.5)+
   coord_flip(expand = F)+
-  labs(x="",y="",fill="",col="")
+  # scale_color_viridis_d()+
+  labs(x="",y="",col="", 
+       caption = "Se muestran en color comunas con MP2.5, y en gris todas")
 f_savePlot(last_plot(), sprintf(file_name,"jitter_perc"),dpi=300)
-
 
 rm(df_box)
 
-
-## Prueba variables sin escala
-df_box <- df_modelo %>% select(codigo_comuna,
-                               tasa_mortalidad_covid, covid_fallecidos, 
-                               tasa_contagios,casos_confirmados,
-                               dias_primerContagio,dias_primerMuerte,dias_cuarentena,
-                               tasa_camas,
-                               mp25,
-                               poblacion, densidad_pob,densidad_pob_censal,
-                               ingresoTotal_media, ingresoAutonomo_media,
-                               tmed_anual, hr_anual, 
-                               heating_degree_15_anual, heating_degree_18_anual) %>% 
+## Variables con escala numerica distinta --
+df_box <- df_modelo %>% 
+  mutate(tiene_mp=!is.na(mp25)) %>% 
+  select(codigo_comuna,tiene_mp,
+         tasa_mortalidad_covid, covid_fallecidos, 
+         tasa_contagios,casos_confirmados,
+         dias_primerContagio,dias_primerMuerte,dias_cuarentena,tasa_camas,
+         mp25,
+         poblacion, densidad_pob,densidad_pob_censal,
+         ingresoTotal_media, ingresoAutonomo_media,
+         tmed_anual, hr_anual, 
+         heating_degree_15_anual, heating_degree_18_anual) %>% 
   mutate(poblacion=poblacion/1e3,
          ingresoTotal_media=ingresoTotal_media/1e3,
          ingresoAutonomo_media=ingresoAutonomo_media/1e3)
 
 ## Labels de promedios y desv estandar
-df_mean <- df_box %>% mutate_if(is.numeric, mean, na.rm=T) %>% 
-  select(-codigo_comuna) %>% head(1) %>% gather(var, mean)
-df_sd <- df_box %>% mutate_if(is.numeric, sd, na.rm=T) %>% 
-  select(-codigo_comuna) %>% head(1) %>% gather(var, sd)
+df_mean <- df_box %>% filter(tiene_mp==T) %>% 
+  mutate_if(is.numeric, mean, na.rm=T) %>% 
+  select(-codigo_comuna, -tiene_mp) %>% head(1) %>% gather(var, mean)
+df_sd <- df_box %>% filter(tiene_mp==T) %>% 
+  mutate_if(is.numeric, sd, na.rm=T) %>% 
+  select(-codigo_comuna,-tiene_mp) %>% head(1) %>% gather(var, sd)
 
 df_label <- cbind(df_mean, df_sd %>% select(sd))
 rm(df_mean,df_sd)
@@ -296,7 +304,8 @@ df_label <- df_label %>%
 
 # Estandarizo
 df_box <- df_box %>% mutate_if(is.numeric, scale)
-df_box <- df_box %>% gather(var,value,-codigo_comuna) %>% filter(!is.na(value)) %>% 
+df_box <- df_box %>% gather(var,value,-codigo_comuna,-tiene_mp) %>% 
+  filter(!is.na(value)) %>% 
   rowid_to_column()
 df_box$value %>% range()
 
@@ -318,19 +327,24 @@ df_label <- df_label %>% left_join(df_box %>% group_by(var,tipo) %>%
                                      summarise(count=n())) %>% 
   mutate(var=f_replaceVar(var))
 
-df_box %>% 
-  mutate(var=var %>% f_replaceVar()) %>% 
+# Grafico
+df_box <- df_box %>% 
+  mutate(var=f_replaceVar(var))
+df_box %>% filter(tiene_mp==T) %>% 
   ggplot(aes(x=reorder(var,desc(rowid)), y=value, col=tipo))+
   geom_label(data = df_label,y=6, aes(label=label))+
   # geom_boxplot()+
+  geom_jitter(data=filter(df_box, tiene_mp==T), alpha=0.5, col="gray")+
   geom_jitter(alpha=.5)+
   geom_hline(yintercept = 0, linetype = "dashed")+
   coord_flip(expand = F)+
-  labs(x="",y="",fill="",col="",caption = "Variables estandarizadas. Mean (sd)")
+  # scale_color_viridis_d()+
+  labs(x="",y="",col="",
+       caption = "Se muestran en color comunas con MP2.5, y en gris todas.\n
+       Variables estandarizadas. Mean (sd)")
 f_savePlot(last_plot(), sprintf(file_name,"jitter_scale"),dpi=300)
 
 
 rm(df_box)
-
 
 ## EoF
