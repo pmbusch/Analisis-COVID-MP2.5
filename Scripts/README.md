@@ -10,11 +10,12 @@ Códigos
 * [`00-CargaLibrerias.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/00-CargaLibrerias.R): Carga de librerias requeridas 
 * [`00-Funciones.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/00-Funciones.R): Funciones transversales al proyecto.
 * [`01-LoadAllData.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/01-LoadAllData.R): Consolida toda la información cargada a nivel comunal.
+	* [`01-UpdateCovidData.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/01-UpdateCovidData.R): Actualiza datos COVID-19 (alternativa más rápida que cargar todo nuevamente).
 * [`02-FeatureData.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/02-FeatureData.R): Trabaja información levantada y genera nuevas feature para el modelo.
 * [`03-TablasResumen.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/03-TablasResumen.R): Genera tablas resumen de los datos levantados.
 * [`04-AnalisisGeneral.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/04-AnalisisGeneral.R): Análisis generales de los datos comunales: Indicadores, Scatter plot, Correlaciones y Densidades.
 * [`05-AnalisisTransversal.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/05-AnalisisTransversal.R): Modelo Transversal *(cross-sectional analysis)*
-* [`05-FuncionesAnalisisTransversal.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/05-FuncionesAnalisisTransversal.R): Funciones para analizar resultados del Modelo Transversal
+	* [`05-FuncionesAnalisisTransversal.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/05-FuncionesAnalisisTransversal.R): Funciones para analizar resultados del Modelo Transversal
 
 
 **Otros códigos de análisis:**

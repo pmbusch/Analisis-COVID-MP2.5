@@ -3,7 +3,7 @@
 ## PBH Julio 2020
 
 ## Load all information ------
-source("Scripts/01-LoadAllData.R", encoding = "UTF-8")
+# source("Scripts/01-LoadAllData.R", encoding = "UTF-8")
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
 
 df_modelo %>% skim()
@@ -18,7 +18,7 @@ df_modelo <- df_modelo %>%
          densidad_pob_censal=poblacion/superficie_censal*1e6,
          perc_letalidad=covid_fallecidos/casos_confirmados*100,
          proxy_lena_calefaccion=perc_lenaCalefaccion/100*heating_degree_15_winter) %>% 
-  select(-fecha_cuarentena, -camas)
+  select(-fecha_cuarentena)
 
 ## Relleno NA ----------
 # dias cuarentena, muerte y contagio: No todas las comunas tienen cuarentena: defecto=0
@@ -36,7 +36,8 @@ df_modelo %>% skim()
 
 ## Densidad Poblacion en quintiles ------------
 df_modelo <- df_modelo %>% mutate(quintil_dens_pob=qgroup(densidad_pob, 5))
-df_modelo %>% group_by(quintil_dens_pob) %>% summarise(count=n()) %>% arrange(desc(count))
+df_modelo %>% group_by(quintil_dens_pob) %>% 
+  summarise(count=n()) %>% arrange(desc(count))
 
 
 ## Muertes COVID DEIS ------------
@@ -51,7 +52,9 @@ df_65 <- df_65 %>%
   rename(covid_fallecidos_65=covid_fallecidos_deis)
 
 # Add to df_modelo
-df_modelo <- df_modelo %>% left_join(df_65)
+df_modelo <- df_modelo %>% 
+  mutate(covid_fallecidos_65=NULL) %>%  # Para actualizaciones sin duplicados
+  left_join(df_65, by=c("codigo_comuna"))
 rm(df_65)
 
 ## Guardar datos -------
