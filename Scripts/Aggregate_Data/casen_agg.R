@@ -41,7 +41,7 @@ df_prevision <-  df_prevision %>%
   spread(prev, perc, fill=0) %>% select(-otro)
 
 
-## Leña 2015 ---------
+## Leña ---------
 df_lena_casen <- df_lena_casen %>% 
   mutate(perc_lenaCocina=lena_cocina/hab*100,
          perc_lenaCalefaccion=lena_calefaccion/hab*100,
