@@ -27,7 +27,7 @@ cat(round(comunas_muerte/346*100,1),
 rm(total_pob, pob_mp25, total_comunas, comunas_muerte)
 
 ## Scatter correlacion -----------
-df_modelo %>% 
+p1 <- df_modelo %>% 
   mutate(rm=if_else(region=="M","RM","Resto Chile") %>% factor()) %>% 
   mutate(nombre_comuna=if_else(poblacion>1e5,nombre_comuna,"")) %>% #Label solo pob mayor a 100 mil
   ggplot(aes(mp25, tasa_mortalidad_covid, size=poblacion, col=rm))+
@@ -37,17 +37,24 @@ df_modelo %>%
        y="Tasa Mortalidad COVID [muertes/100mil hab]",
        size="Poblacion",
        color="")
-f_savePlot(last_plot(),
+p1
+f_savePlot(p1,
            sprintf(file_name, "Muertes_vs_MP25"), dpi=300)
+
+## Analisis del grouping effect ----
+p1+geom_smooth(method = "lm", col="black")
+p1+geom_smooth(method = "lm")
+p1+geom_smooth(method = "lm",se=F, aes(col=region), data=df_modelo)
+
 
 # Interactive plot
 # plotly::ggplotly(last_plot())
 
-last_plot()+
+p1+
   geom_text_repel(aes(label=nombre_comuna))
 f_savePlot(last_plot(),
            sprintf(file_name, "Muertes_vs_MP25_name"), dpi=150)
-
+rm(p1)
 
 ## CORRELACIONES ------------
 library(corrplot)
