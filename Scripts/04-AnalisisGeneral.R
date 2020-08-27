@@ -232,14 +232,16 @@ rm(df_cv)
 # Grafico Boxplot y Jitter de variables en percent (misma escala)
 df_modelo %>% names()
 df_box <- df_modelo %>% 
-  mutate(tiene_mp=!is.na(mp25)) %>% 
+  mutate(tiene_mp=!is.na(mp25),
+         `0-14`=100-`15-44`-`45-64`-`65+`) %>% 
   select(codigo_comuna,perc_letalidad, tiene_mp,
-         `15-44`,`45-64`,`65+`,perc_mujer,perc_rural,
+         perc_lenaCocina,perc_lenaCalefaccion,perc_lenaAgua,
+         `0-14`,`15-44`,`45-64`,`65+`,perc_mujer,perc_rural,
          perc_puebloOrig,perc_material_irrecuperable,
          perc_menor_media,perc_ocupado,
          perc_fonasa_A,perc_fonasa_B,perc_fonasa_C, 
          perc_fonasa_D,perc_isapre,perc_FFAA,
-         perc_lenaCocina,perc_lenaCalefaccion,perc_lenaAgua)
+         hr_anual)
 
 # Aplano y genero columna para orden
 df_box <- df_box %>% gather(var,value,-codigo_comuna,-tiene_mp) %>% filter(!is.na(value)) %>% 
@@ -250,7 +252,7 @@ df_box$value %>% range()
 df_box <- df_box %>% 
   mutate(tipo=case_when(
     var=="perc_letalidad" ~ "COVID-19",
-    var %in% c("15-44","45-64","65+","perc_mujer",
+    var %in% c("0-14","15-44","45-64","65+","perc_mujer",
                "perc_rural","perc_puebloOrig",
                "perc_material_irrecuperable") ~ "Demografía",
     var %in% c("perc_menor_media","perc_ocupado",
@@ -258,8 +260,9 @@ df_box <- df_box %>%
                "perc_fonasa_C", "perc_fonasa_D")  ~ "Socioeconómico",
     var %in% c("perc_lenaCocina","perc_lenaCalefaccion",
                "perc_lenaAgua")  ~ "Leña",
+    var %in% c("hr_anual") ~ "Meteorología",
     T ~ "s/i") %>% 
-      factor(levels=c("COVID-19","Demografía","Socioeconómico","Leña")))
+      factor(levels=c("COVID-19","Leña","Demografía","Socioeconómico","Meteorología")))
  
 # Grafico jitter
 df_box <- df_box %>% 
@@ -270,12 +273,12 @@ df_box %>%
   # geom_boxplot()+
   geom_jitter(data=filter(df_box, tiene_mp==F) , alpha=.5,col="gray",height= 0)+
   geom_jitter(alpha=.5,height= 0)+ #height 0: remove jitter on Y axis (value)
+  # ggforce::facet_col(~tipo, scales="free", space="free")+
   coord_flip(expand = F)+
   # scale_color_viridis_d()+
   labs(x="",y="",col="", 
        caption = "Se muestran en color comunas con MP2.5, y en gris todas")
 f_savePlot(last_plot(), sprintf(file_name,"jitter_perc"),dpi=300)
-
 rm(df_box)
 
 ## Escala numerica distinta --------
@@ -286,13 +289,16 @@ df_box <- df_modelo %>%
          tasa_contagios,casos_confirmados,
          dias_primerContagio,dias_primerMuerte,dias_cuarentena,tasa_camas,
          mp25,
+         cons_lena_cocina_pp, cons_lena_calefactor_pp,
          poblacion, densidad_pob,densidad_pob_censal,
          ingresoTotal_media, ingresoAutonomo_media,
-         tmed_anual, hr_anual, 
-         heating_degree_15_anual, heating_degree_18_anual) %>% 
+         ingresoTotal_mediana, ingresoAutonomo_mediana,
+         tmed_anual, heating_degree_15_anual, heating_degree_18_anual) %>% 
   mutate(poblacion=poblacion/1e3,
          ingresoTotal_media=ingresoTotal_media/1e3,
-         ingresoAutonomo_media=ingresoAutonomo_media/1e3)
+         ingresoAutonomo_media=ingresoAutonomo_media/1e3,
+         ingresoTotal_mediana=ingresoTotal_mediana/1e3,
+         ingresoAutonomo_mediana=ingresoAutonomo_mediana/1e3)
 
 ## Labels de promedios y desv estandar
 df_mean <- df_box %>% filter(tiene_mp==T) %>% 
@@ -324,12 +330,14 @@ df_box <- df_box %>%
                "dias_primerContagio","dias_primerMuerte","dias_cuarentena",
                "tasa_camas") ~ "COVID-19",
     var == "mp25" ~ "MP2.5",
+    var %in% c("cons_lena_cocina_pp","cons_lena_calefactor_pp") ~ "Leña",
     var %in% c("poblacion","densidad_pob","densidad_pob_censal") ~ "Demografía",
-    var %in% c("ingresoTotal_media", "ingresoAutonomo_media")  ~ "Socioeconómico",
+    var %in% c("ingresoTotal_media", "ingresoAutonomo_media",
+               "ingresoTotal_mediana", "ingresoAutonomo_mediana")  ~ "Socioeconómico",
     var %in% c("tmed_anual", "hr_anual", 
                "heating_degree_15_anual", "heating_degree_18_anual")  ~ "Meteorología",
     T ~ "s/i") %>% 
-      factor(levels=c("COVID-19","MP2.5","Demografía","Socioeconómico","Meteorología")))
+      factor(levels=c("COVID-19","MP2.5","Leña","Demografía","Socioeconómico","Meteorología")))
 
 df_label <- df_label %>% left_join(df_box %>% group_by(var,tipo) %>% 
                                      summarise(count=n())) %>% 
@@ -351,8 +359,82 @@ df_box %>% filter(tiene_mp==T) %>%
        caption = "Se muestran en color comunas con MP2.5, y en gris todas.\n
        Variables estandarizadas. Mean (sd)")
 f_savePlot(last_plot(), sprintf(file_name,"jitter_scale"),dpi=300)
+rm(df_box, df_label)
 
-rm(df_box)
+## Escala numerica distinta Facet --------
+df_box <- df_modelo %>% 
+  mutate(tiene_mp=!is.na(mp25)) %>% 
+  select(codigo_comuna,tiene_mp,
+         tasa_mortalidad_covid, covid_fallecidos, 
+         tasa_contagios,casos_confirmados,
+         dias_primerContagio,dias_primerMuerte,dias_cuarentena,tasa_camas,
+         mp25,
+         densidad_pob,densidad_pob_censal,
+         ingresoTotal_media, ingresoAutonomo_media,
+         ingresoTotal_mediana, ingresoAutonomo_mediana,
+         tmed_anual, 
+         heating_degree_15_anual, heating_degree_18_anual) %>% 
+  mutate(ingresoTotal_media=ingresoTotal_media/1e3,
+         ingresoAutonomo_media=ingresoAutonomo_media/1e3,
+         ingresoTotal_mediana=ingresoTotal_mediana/1e3,
+         ingresoAutonomo_mediana=ingresoAutonomo_mediana/1e3,
+         # poblacion=poblacion/1e3,
+         tasa_contagios=tasa_contagios/1e3,
+         casos_confirmados=casos_confirmados/1e3,
+         heating_degree_15_anual=heating_degree_15_anual/24,
+         heating_degree_18_anual=heating_degree_18_anual/24)
+
+# Aplano y genero columna para orden
+df_box <- df_box %>% gather(var,value,-codigo_comuna,-tiene_mp) %>% 
+  filter(!is.na(value)) %>% rowid_to_column()
+df_box$value %>% range()
+
+df_box <- df_box %>% 
+  mutate(tipo=case_when(
+    var %in% c("tasa_mortalidad_covid", "covid_fallecidos",
+               "tasa_contagios","casos_confirmados",
+               "dias_primerContagio","dias_primerMuerte","dias_cuarentena",
+               "tasa_camas") ~ "COVID-19",
+    var == "mp25" ~ "MP2.5",
+    var %in% c("poblacion","densidad_pob","densidad_pob_censal") ~ "Demografía",
+    var %in% c("ingresoTotal_media", "ingresoAutonomo_media",
+               "ingresoTotal_mediana", "ingresoAutonomo_mediana")  ~ "Socioeconómico",
+    var %in% c("tmed_anual", "hr_anual", 
+               "heating_degree_15_anual", "heating_degree_18_anual")  ~ "Meteorología",
+    T ~ "s/i") %>% 
+      factor(levels=c("COVID-19","MP2.5","Demografía","Socioeconómico","Meteorología")))
+
+# Clasficacion para Facet
+df_box <- df_box %>% 
+  mutate(tipo_facet=case_when(
+    var %in% c("tasa_mortalidad_covid", "covid_fallecidos") ~ "Muertes COVID-19",
+    var %in% c("tasa_contagios","casos_confirmados") ~ "Miles Casos COVID-19",
+    var %in% c("dias_primerContagio","dias_primerMuerte",
+               "dias_cuarentena") ~ "Dias pandemia",
+    var %in% c("tasa_camas") ~ "Camas",
+    var == "mp25" ~ "MP2.5",
+    var %in% c("densidad_pob","densidad_pob_censal") ~ "Densidad",
+    var %in% c("ingresoTotal_media", "ingresoAutonomo_media",
+               "ingresoTotal_mediana", "ingresoAutonomo_mediana")  ~ "Ingresos",
+    var %in% c("tmed_anual","heating_degree_15_anual", 
+               "heating_degree_18_anual")  ~ "Temperatura",
+    T ~ "s/i") %>% 
+      factor())
+# Grafico
+df_box <- df_box %>% 
+  mutate(var=f_replaceVar(var))
+df_box %>% filter(tiene_mp==T) %>% 
+  ggplot(aes(x=reorder(var,desc(rowid)), y=value, col=tipo))+
+  geom_jitter(data=filter(df_box, tiene_mp==T), alpha=0.5, col="gray", height= 0)+
+  geom_jitter(alpha=.5, height= 0)+ #height 0: remove jitter on Y axis (value)
+  geom_hline(yintercept = 0, linetype = "dashed")+
+  facet_wrap(~reorder(tipo_facet, rowid), scales="free",ncol = 2)+
+  # ggforce::facet_col(~reorder(tipo_facet, rowid), scales="free",space="free")+
+  coord_flip(expand = F)+
+  labs(x="",y="",col="",
+       caption = "Se muestran en color comunas con MP2.5, y en gris todas.")
+f_savePlot(last_plot(), sprintf(file_name,"jitter_facet_num"),dpi=300)
+rm(df_box, df_label)
 
 ## Meteorologia por Season -----
 df_modelo %>% names()
@@ -407,8 +489,6 @@ f_savePlot(last_plot(), sprintf(file_name,"jitter_meteo_season"),dpi=300)
 rm(df_box)
 
 
-
-
 ## OTROS -----------
 # Cantidad de comunas por region con MP2.5
 df_modelo %>% 
@@ -424,6 +504,5 @@ df_modelo %>%
             corr_tmed_anual=cor(tasa_mortalidad_covid,tmed_anual),
             corr_dens_pob=cor(tasa_mortalidad_covid,densidad_pob_censal),
             corr_isapre=cor(tasa_mortalidad_covid,perc_isapre)) 
-
 
 ## EoF

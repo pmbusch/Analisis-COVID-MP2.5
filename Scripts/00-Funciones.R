@@ -103,6 +103,8 @@ f_replaceVar <- function(variable_orig){
      variable_orig== "densidad_pob" ~ "Densidad [hab/km2]",
      variable_orig== "densidad_pob_censal" ~ "Densidad censal [hab/km2]",
      variable_orig== "quintil_dens_pob" ~ "Quintil densidad poblacion",
+     variable_orig== "`0-14`" ~ "% 0-14",
+     variable_orig== "0-14" ~ "% 0-14",
      variable_orig== "`15-44`" ~ "% 15-44",
      variable_orig== "15-44" ~ "% 15-44",
      variable_orig== "`45-64`" ~ "% 45-64",
