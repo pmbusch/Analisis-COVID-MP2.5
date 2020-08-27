@@ -104,10 +104,9 @@ f_savePlot(last_plot(),
            file_path =sprintf(file_name,"MapaChileMP25Facet_Exp"),dpi=300)
 
 # Santiago
-df_map %>% 
+df_mp %>% 
   filter(mapa_rm==1) %>% 
-  fig_mapa(valor,limites = c(0,50), titulo="Promedio 2017-2019 \n MP2.5 [ug/m3]")+
-  geom_sf_label(aes(label=nombre_comuna, geometry=geometry))
+  fig_mapa(mp25,limites = c(0,50), titulo="Promedio 2017-2019 \n MP2.5 [ug/m3]")
 f_savePlot(last_plot(), sprintf(file_name,"MapaSantiagoMP25_Exp"))
 
 
