@@ -389,6 +389,32 @@ f_savePlot(last_plot(), sprintf(file_name,"sinRM"),dpi=150)
 
 rm(mod_sinRM)
 
+## Solo RM---------
+mod_RM <- glm.nb(covid_fallecidos ~ 
+                        mp25 +
+                        scale(densidad_pob) + scale(`15-44`) + scale(`65+`) +
+                        scale(perc_puebloOrig) + scale(perc_rural) +
+                        scale(dias_primerContagio) +  scale(dias_cuarentena) + 
+                        scale(tasa_camas) + 
+                        scale(perc_lenaCocina) + 
+                        scale(log(ingresoTotal_media)) + scale(perc_menor_media) + 
+                        scale(perc_fonasa_A) + scale(perc_fonasa_D) +
+                        scale(tmed_summer) + scale(tmed_winter) + 
+                        scale(heating_degree_15_summer) + scale(heating_degree_15_winter) +
+                        offset(log(poblacion)), 
+                      data = df %>% filter(region=="M"),
+                      na.action=na.omit)
+summary(mod_RM)
+nobs(mod_RM)
+exp(summary(mod_RM)$coefficients[2,1]) # exponencial coeficiente MP2.5
+f_tableCoef(mod_RM)
+f_tableMRR(mod_RM)
+  # print(preview="pptx")
+f_figMRR(mod_RM)
+f_savePlot(last_plot(), sprintf(file_name,"soloRM"),dpi=150)
+rm(mod_RM)
+
+
 ## Solo MP2.5---------
 modMP <- glmer.nb(covid_fallecidos ~ mp25 +
                   (1|region)+
@@ -427,6 +453,33 @@ f_tableMRR(modProv)
 f_figMRR(modProv)
 f_savePlot(last_plot(), sprintf(file_name,"randomProvincia"),dpi=150)
 
+
+## Sin Random Intercept---------
+mod_nb <- glm.nb(covid_fallecidos ~ 
+                   mp25 +
+                   scale(densidad_pob) + scale(`15-44`) + scale(`65+`) +
+                   scale(perc_puebloOrig) + scale(perc_rural) +
+                   scale(dias_primerContagio) +  scale(dias_cuarentena) + 
+                   scale(tasa_camas) + 
+                   scale(perc_lenaCocina) + 
+                   scale(log(ingresoTotal_media)) + scale(perc_menor_media) + 
+                   scale(perc_fonasa_A) + scale(perc_fonasa_D) +
+                   scale(tmed_summer) + scale(tmed_winter) + 
+                   scale(heating_degree_15_summer) + scale(heating_degree_15_winter) +
+                   offset(log(poblacion)), 
+                 data = df,
+                 na.action=na.omit)
+summary(mod_nb)
+nobs(mod_nb)
+exp(summary(mod_nb)$coefficients[2,1]) # exponencial coeficiente MP2.5
+f_tableCoef(mod_nb)
+f_tableMRR(mod_nb) %>% 
+  print(preview="pptx")
+f_figMRR(mod_nb)
+f_savePlot(last_plot(), sprintf(file_name,"sinRandomIntercept"),dpi=150)
+rm(mod_nb)
+
+
 ## Fallecidos 65+---------
 mod_65 <- glmer.nb(covid_fallecidos_65 ~ 
                         mp25 +
@@ -450,5 +503,63 @@ f_tableMRR(mod_65)
   # print(preview="pptx")
 f_figMRR(mod_65)
 f_savePlot(last_plot(), sprintf(file_name,"fallecidos65"),dpi=150)
+
+
+## Random Zonas---------
+df_zonas <- df %>% 
+  mutate(zona=case_when(
+    region %in% c("XV","I","II","III","IV") ~ "Norte",
+    region %in% c("V","VI","VII") ~ "Centro",
+    region %in% c("M") ~ "RM",
+    region %in% c("VIII","XVI","IX","XIV") ~ "Sur",
+    region %in% c("X","XI","XII") ~ "Austral") %>% factor())
+
+mod_zona <- glmer.nb(covid_fallecidos ~ 
+                   mp25 +
+                   scale(densidad_pob) + scale(`15-44`) + scale(`65+`) +
+                   scale(perc_puebloOrig) + scale(perc_rural) +
+                   scale(dias_primerContagio) +  scale(dias_cuarentena) + 
+                   scale(tasa_camas) + 
+                   scale(perc_lenaCocina) + 
+                   scale(log(ingresoTotal_media)) + scale(perc_menor_media) + 
+                   scale(perc_fonasa_A) + scale(perc_fonasa_D) +
+                   scale(tmed_summer) + scale(tmed_winter) + 
+                   scale(heating_degree_15_summer) + scale(heating_degree_15_winter) +
+                   (1|zona)+  
+                   offset(log(poblacion)), 
+                 data = df_zonas,
+                 na.action=na.omit)
+summary(mod_zona)
+exp(summary(mod_zona)[10]$coefficients[2,1]) # exponencial coeficiente MP2.5
+ranef(mod_zona)
+f_tableCoef(mod_zona)
+f_tableMRR(mod_zona)
+  # print(preview="pptx")
+f_figMRR(mod_zona)
+f_savePlot(last_plot(), sprintf(file_name,"randomZonas"),dpi=150)
+rm(mod_zona, df_zonas)
+
+
+### Grafico MRR Resumen modelos probados ------------
+
+# Por el momento los ingreso manualmente
+df_mrr <- data.frame(
+  method = c("Principal", "Sin RM", "Solo RM",
+             "Random Provincia","Random Zona","Sin Random", 
+             "Fallecidos 65+"),
+  RR = c(0.98, 0.98, 0.95, 0.98, 0.97, 1.01, 0.98),
+  lower_CI = c(0.95,0.94,0.87,0.95,0.95,0.98,0.95),
+  upper_CI = c(1.01,1.01,1.04,1.02,1.00,1.04,1.01))
+
+## Figure MRR
+df_mrr %>% 
+  rowid_to_column() %>% 
+  ggplot(aes(x=reorder(method,desc(rowid)), y=RR))+
+  geom_point(size=2)+
+  geom_errorbar(aes(ymin=lower_CI, ymax=upper_CI))+
+  geom_hline(yintercept = 1, linetype = "dashed")+
+  labs(x="",y="MRR")+
+  coord_flip()
+f_savePlot(last_plot(), sprintf(file_name,"resumenMRR"),dpi=150)
 
 ## EoF
