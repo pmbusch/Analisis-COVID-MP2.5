@@ -104,4 +104,6 @@ mapa_comuna <- mapa_comuna %>%
   mutate(superficie_censal=if_else(is.na(superficie_censal),
                                    superficie,superficie_censal))
 
+rm(df_zona)
+
 ## EoF

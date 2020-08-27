@@ -67,4 +67,30 @@ df_poblacion <- df_poblacion %>%
 # source("Scripts/00-Funciones.R", encoding = "UTF-8")
 # f_savePlot(last_plot(),"Figuras/Analisis_general/PobAcumulada.png",dpi=300)
 
+## Densidad segun zonas censales -----------
+# Parametros estadisticos de densidades segun zonas censales
+df_zona <- censo_2017_zonas %>%
+  left_join(mapa_zonas) %>% 
+  left_join(codigos_territoriales) %>%
+  mutate(superficie=st_area(geometry) %>% as.numeric(),
+         perimetro=st_length(geometry) %>% as.numeric()) %>% 
+  na.omit()
+df_zona$poblacion %>% sum()
+
+# Densidad
+df_zona <- df_zona %>% 
+  mutate(densidad_pob_manzana=poblacion/superficie*1e6)
+
+## Agrupar a nivel de comuna
+df_zona <- df_zona %>% 
+  group_by(codigo_comuna) %>% 
+  summarise(densidad_pob_manzana_media=mean(densidad_pob_manzana, na.rm=T),
+            densidad_pob_manzana_mediana=median(densidad_pob_manzana, na.rm=T),
+            densidad_pob_manzana_p90=quantile(densidad_pob_manzana,0.9, na.rm=T)) %>% 
+  ungroup()
+
+## Add to df_poblacion
+df_poblacion <- df_poblacion %>% left_join(df_zona)
+rm(df_zona)
+
 ## EoF
