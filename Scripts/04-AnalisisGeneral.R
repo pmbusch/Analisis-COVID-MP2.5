@@ -160,6 +160,105 @@ dev.off()
 
 rm(df_cor, p.mat, cor.mtest)
 
+# Correlacion con grouping effect -----------
+# Pairwise remuve NA para cada par de vectores comparados, no para la totalidad
+df_cor %>% 
+  cor(method = "pearson",use="pairwise.complete.obs")
+
+## Correlacion a nivel Nacional
+n <- df_modelo %>%
+  select(tasa_mortalidad_covid, mp25) %>% 
+  na.omit() %>% nrow()
+corr <- df_modelo %>% 
+  select(tasa_mortalidad_covid, mp25) %>% 
+  na.omit() %>% 
+  {cor(.$tasa_mortalidad_covid,.$mp25,use="complete.obs")}
+df_cor <- data.frame(
+  region="Nacional",
+  count=n,
+  corr_mp25=corr)
+rm(corr,n)
+
+## Correlaciones por region
+cor_region <- df_modelo %>% 
+  select(region, tasa_mortalidad_covid, mp25) %>% 
+  na.omit() %>% 
+  group_by(region) %>% 
+  summarise(count=n(),
+            corr_mp25=cor(tasa_mortalidad_covid,mp25,use="complete.obs")) %>% 
+  rbind(df_cor)
+# Tabla resumen
+cor_region %>% 
+  rename(Region=region, `N° Obs`=count, 
+         `Correlación`=corr_mp25) %>% 
+  flextable() %>% 
+  colformat_num(big.mark=" ", digits=0, j=2,
+                na_str="NA") %>%
+  colformat_num(big.mark=" ", digits=2, j=3,
+                na_str="NA") %>%
+  bold(bold=T, part="header") %>% bold(j=1, bold=T) %>% 
+  autofit(add_w = 0.1, add_h = 0.3) %>%
+  align(j=1, align = "center", part="all") %>% 
+  bold(bold = T, part="body", i=16) %>% 
+  flextable::color(color="blue", i = ~ `Correlación`> 0.25, j=3) %>% 
+  flextable::color(color="red", i = ~ `Correlación`< -0.25, j=3)
+  # print(preview="pptx")
+rm(cor_region)
+
+
+## Correlaciones por zona
+cor_zona <- df_modelo %>% 
+  select(zona, tasa_mortalidad_covid, mp25) %>% 
+  na.omit() %>% 
+  group_by(zona) %>% 
+  summarise(count=n(),
+            corr_mp25=cor(tasa_mortalidad_covid,mp25,use="complete.obs")) %>% 
+  rbind(df_cor %>% rename(zona=region))
+# Tabla resumen
+cor_zona %>% 
+  rename(Zona=zona, `N° Obs`=count, 
+         `Correlación`=corr_mp25) %>% 
+  flextable() %>% 
+  colformat_num(big.mark=" ", digits=0, j=2,
+                na_str="NA") %>%
+  colformat_num(big.mark=" ", digits=2, j=3,
+                na_str="NA") %>%
+  bold(bold=T, part="header") %>% bold(j=1, bold=T) %>% 
+  autofit(add_w = 0.1, add_h = 0.3) %>%
+  align(j=1, align = "center", part="all") %>% 
+  bold(bold = T, part="body", i=6) %>% 
+  flextable::color(color="blue", i = ~ `Correlación`> 0.25, j=3) %>% 
+  flextable::color(color="red", i = ~ `Correlación`< -0.25, j=3)
+# print(preview="pptx")
+rm(cor_zona)
+
+## Correlaciones por zona termica
+cor_zona <- df_modelo %>% 
+  select(zona_termica, tasa_mortalidad_covid, mp25) %>% 
+  na.omit() %>% 
+  group_by(zona_termica) %>% 
+  summarise(count=n(),
+            corr_mp25=cor(tasa_mortalidad_covid,mp25,use="complete.obs")) %>% 
+  rbind(df_cor %>% rename(zona_termica=region))
+# Tabla resumen
+cor_zona %>% 
+  rename(`Zona Termica`=zona_termica, `N° Obs`=count, 
+         `Correlación`=corr_mp25) %>% 
+  flextable() %>% 
+  colformat_num(big.mark=" ", digits=0, j=2,
+                na_str="NA") %>%
+  colformat_num(big.mark=" ", digits=2, j=3,
+                na_str="NA") %>%
+  bold(bold=T, part="header") %>% bold(j=1, bold=T) %>% 
+  autofit(add_w = 0.1, add_h = 0.3) %>%
+  align(j=1, align = "center", part="all") %>% 
+  bold(bold = T, part="body", i=8) %>% 
+  flextable::color(color="blue", i = ~ `Correlación`> 0.25, j=3) %>% 
+  flextable::color(color="red", i = ~ `Correlación`< -0.25, j=3) 
+# print(preview="pptx")
+rm(cor_zona, df_cor)
+
+
 ## Densidaddes  por variable ---------------
 df_modelo %>% 
   select_if(is.numeric) %>% 
@@ -495,14 +594,6 @@ df_modelo %>%
   filter(!is.na(mp25)) %>% 
   group_by(region) %>% summarise(count=n()) %>% arrange(desc(count))
 
-## Correlaciones por region
-df_modelo %>% 
-  filter(!is.na(mp25)) %>% 
-  group_by(region) %>% 
-  summarise(count=n(),
-            corr_mp25=cor(tasa_mortalidad_covid,mp25),
-            corr_tmed_anual=cor(tasa_mortalidad_covid,tmed_anual),
-            corr_dens_pob=cor(tasa_mortalidad_covid,densidad_pob_censal),
-            corr_isapre=cor(tasa_mortalidad_covid,perc_isapre)) 
+
 
 ## EoF
