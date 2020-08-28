@@ -308,7 +308,7 @@ summary(glm_fit_nb)
 ### PRUEBAS OTROS MODELOS -------------------
 file_name <- "Figuras/Analisis_transversal/Otros_Modelos/%s.png"
 df <- df_modelo %>% 
-  dplyr::select(nombre_comuna,region,nombre_provincia,
+  dplyr::select(nombre_comuna,region,nombre_provincia,zona, zona_termica,
                 poblacion,tasa_mortalidad_covid,covid_fallecidos_65,
                 covid_fallecidos,mp25,
                 densidad_pob, `65+`, `15-44`, perc_puebloOrig, perc_rural,
@@ -506,14 +506,6 @@ f_savePlot(last_plot(), sprintf(file_name,"fallecidos65"),dpi=150)
 
 
 ## Random Zonas---------
-df_zonas <- df %>% 
-  mutate(zona=case_when(
-    region %in% c("XV","I","II","III","IV") ~ "Norte",
-    region %in% c("V","VI","VII") ~ "Centro",
-    region %in% c("M") ~ "RM",
-    region %in% c("VIII","XVI","IX","XIV") ~ "Sur",
-    region %in% c("X","XI","XII") ~ "Austral") %>% factor())
-
 mod_zona <- glmer.nb(covid_fallecidos ~ 
                    mp25 +
                    scale(densidad_pob) + scale(`15-44`) + scale(`65+`) +
@@ -527,7 +519,7 @@ mod_zona <- glmer.nb(covid_fallecidos ~
                    scale(heating_degree_15_summer) + scale(heating_degree_15_winter) +
                    (1|zona)+  
                    offset(log(poblacion)), 
-                 data = df_zonas,
+                 data = df,
                  na.action=na.omit)
 summary(mod_zona)
 exp(summary(mod_zona)[10]$coefficients[2,1]) # exponencial coeficiente MP2.5

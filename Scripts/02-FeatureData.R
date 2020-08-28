@@ -6,6 +6,7 @@
 # source("Scripts/01-LoadAllData.R", encoding = "UTF-8")
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
 
+df_modelo %>% names() %>% sort()
 df_modelo %>% skim()
 ## Parametros -----------
 # Superficie de m2 se pasa a km2

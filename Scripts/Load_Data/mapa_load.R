@@ -41,6 +41,28 @@ mapa_comuna <- mapa_comuna %>% mutate(
     codigo_region=="16" ~ "VIII",
     T ~ "otro") %>% factor(levels = levels_region))
 
+
+# Zonas
+mapa_comuna <- mapa_comuna %>% 
+  mutate(zona=case_when(
+    region %in% c("XV","I","II","III","IV") ~ "Norte",
+    region %in% c("V","VI","VII") ~ "Centro",
+    region %in% c("M") ~ "RM",
+    region %in% c("VIII","XVI","IX","XIV") ~ "Sur",
+    region %in% c("X","XI","XII") ~ "Austral") %>% 
+      factor(levels=c("Norte","Centro","RM","Sur","Austral")))
+
+## Zonas termicas
+df_zonificacion <- read_excel("Data/Data_Original/Zonificacion_Termica.xlsx") %>% 
+  mutate(zona_termica=as.numeric(zona_principal) %>% factor(),
+         codigo_comuna=paste(if_else(str_length(codigo_comuna)==4,"0",""),
+                             codigo_comuna, sep=""))
+
+mapa_comuna <- mapa_comuna %>% 
+  left_join(df_zonificacion %>% select(codigo_comuna,zona_termica), 
+            by=c("codigo_comuna"))
+
+
 ## Añado variable boolean para filtar mapa de RM customizado
 # Contiene todas las comunas en la Provincia de Santiago, menos Lo Barnechea
 # Contiene ademas las comunas de San Bernardo, Puente Alto, Padre Hurtado, calera de tango, 
