@@ -310,7 +310,7 @@ file_name <- "Figuras/Analisis_transversal/Otros_Modelos/%s.png"
 df <- df_modelo %>% 
   dplyr::select(nombre_comuna,region,nombre_provincia,zona, zona_termica,
                 poblacion,tasa_mortalidad_covid,covid_fallecidos_65,
-                covid_fallecidos,mp25,
+                covid_fallecidos,mp25,mp25_winter,
                 densidad_pob, `65+`, `15-44`, perc_puebloOrig, perc_rural,
                 dias_primerContagio, dias_cuarentena,tasa_camas,
                 perc_lenaCocina,
@@ -386,7 +386,6 @@ f_tableMRR(mod_sinRM)
   # print(preview="pptx")
 f_figMRR(mod_sinRM)
 f_savePlot(last_plot(), sprintf(file_name,"sinRM"),dpi=150)
-
 rm(mod_sinRM)
 
 ## Solo RM---------
@@ -414,6 +413,31 @@ f_figMRR(mod_RM)
 f_savePlot(last_plot(), sprintf(file_name,"soloRM"),dpi=150)
 rm(mod_RM)
 
+
+## MP2.5 Winter---------
+mod_mp25winter<- glmer.nb(covid_fallecidos ~ 
+                        mp25_winter +
+                        scale(densidad_pob) + scale(`15-44`) + scale(`65+`) +
+                        scale(perc_puebloOrig) + scale(perc_rural) +
+                        scale(dias_primerContagio) +  scale(dias_cuarentena) + 
+                        scale(tasa_camas) + 
+                        scale(perc_lenaCocina) + 
+                        scale(log(ingresoTotal_media)) + scale(perc_menor_media) + 
+                        scale(perc_fonasa_A) + scale(perc_fonasa_D) +
+                        scale(tmed_summer) + scale(tmed_winter) + 
+                        scale(heating_degree_15_summer) + scale(heating_degree_15_winter) +
+                        (1|region)+
+                        offset(log(poblacion)), 
+                      data = df,
+                      na.action=na.omit)
+summary(mod_mp25winter)
+exp(summary(mod_mp25winter)[10]$coefficients[2,1]) # exponencial coeficiente MP2.5
+f_tableCoef(mod_mp25winter)
+f_tableMRR(mod_mp25winter)
+# print(preview="pptx")
+f_figMRR(mod_mp25winter)
+f_savePlot(last_plot(), sprintf(file_name,"MP25Winter"),dpi=150)
+rm(mod_mp25winter)
 
 ## Solo MP2.5---------
 modMP <- glmer.nb(covid_fallecidos ~ mp25 +
@@ -453,6 +477,57 @@ f_tableMRR(modProv)
 f_figMRR(modProv)
 f_savePlot(last_plot(), sprintf(file_name,"randomProvincia"),dpi=150)
 
+## Random Zonas---------
+mod_zona <- glmer.nb(covid_fallecidos ~ 
+                       mp25 +
+                       scale(densidad_pob) + scale(`15-44`) + scale(`65+`) +
+                       scale(perc_puebloOrig) + scale(perc_rural) +
+                       scale(dias_primerContagio) +  scale(dias_cuarentena) + 
+                       scale(tasa_camas) + 
+                       scale(perc_lenaCocina) + 
+                       scale(log(ingresoTotal_media)) + scale(perc_menor_media) + 
+                       scale(perc_fonasa_A) + scale(perc_fonasa_D) +
+                       scale(tmed_summer) + scale(tmed_winter) + 
+                       scale(heating_degree_15_summer) + scale(heating_degree_15_winter) +
+                       (1|zona)+  
+                       offset(log(poblacion)), 
+                     data = df,
+                     na.action=na.omit)
+summary(mod_zona)
+exp(summary(mod_zona)[10]$coefficients[2,1]) # exponencial coeficiente MP2.5
+ranef(mod_zona)
+f_tableCoef(mod_zona)
+f_tableMRR(mod_zona)
+# print(preview="pptx")
+f_figMRR(mod_zona)
+f_savePlot(last_plot(), sprintf(file_name,"randomZonas"),dpi=150)
+rm(mod_zona, df_zonas)
+
+## Random Zona Termica---------
+mod_zonaTermica <- glmer.nb(covid_fallecidos ~ 
+                       mp25 +
+                       scale(densidad_pob) + scale(`15-44`) + scale(`65+`) +
+                       scale(perc_puebloOrig) + scale(perc_rural) +
+                       scale(dias_primerContagio) +  scale(dias_cuarentena) + 
+                       scale(tasa_camas) + 
+                       scale(perc_lenaCocina) + 
+                       scale(log(ingresoTotal_media)) + scale(perc_menor_media) + 
+                       scale(perc_fonasa_A) + scale(perc_fonasa_D) +
+                       scale(tmed_summer) + scale(tmed_winter) + 
+                       scale(heating_degree_15_summer) + scale(heating_degree_15_winter) +
+                       (1|zona_termica)+  
+                       offset(log(poblacion)), 
+                     data = df,
+                     na.action=na.omit)
+summary(mod_zonaTermica)
+exp(summary(mod_zonaTermica)[10]$coefficients[2,1]) # exponencial coeficiente MP2.5
+ranef(mod_zonaTermica)
+f_tableCoef(mod_zonaTermica)
+f_tableMRR(mod_zonaTermica)
+# print(preview="pptx")
+f_figMRR(mod_zonaTermica)
+f_savePlot(last_plot(), sprintf(file_name,"randomZonaTermica"),dpi=150)
+rm(mod_zonaTermica, df_zonas)
 
 ## Sin Random Intercept---------
 mod_nb <- glm.nb(covid_fallecidos ~ 
@@ -505,43 +580,19 @@ f_figMRR(mod_65)
 f_savePlot(last_plot(), sprintf(file_name,"fallecidos65"),dpi=150)
 
 
-## Random Zonas---------
-mod_zona <- glmer.nb(covid_fallecidos ~ 
-                   mp25 +
-                   scale(densidad_pob) + scale(`15-44`) + scale(`65+`) +
-                   scale(perc_puebloOrig) + scale(perc_rural) +
-                   scale(dias_primerContagio) +  scale(dias_cuarentena) + 
-                   scale(tasa_camas) + 
-                   scale(perc_lenaCocina) + 
-                   scale(log(ingresoTotal_media)) + scale(perc_menor_media) + 
-                   scale(perc_fonasa_A) + scale(perc_fonasa_D) +
-                   scale(tmed_summer) + scale(tmed_winter) + 
-                   scale(heating_degree_15_summer) + scale(heating_degree_15_winter) +
-                   (1|zona)+  
-                   offset(log(poblacion)), 
-                 data = df,
-                 na.action=na.omit)
-summary(mod_zona)
-exp(summary(mod_zona)[10]$coefficients[2,1]) # exponencial coeficiente MP2.5
-ranef(mod_zona)
-f_tableCoef(mod_zona)
-f_tableMRR(mod_zona)
-  # print(preview="pptx")
-f_figMRR(mod_zona)
-f_savePlot(last_plot(), sprintf(file_name,"randomZonas"),dpi=150)
-rm(mod_zona, df_zonas)
+
 
 
 ### Grafico MRR Resumen modelos probados ------------
 
 # Por el momento los ingreso manualmente
 df_mrr <- data.frame(
-  method = c("Principal", "Sin RM", "Solo RM",
-             "Random Provincia","Random Zona","Sin Random", 
+  method = c("Principal","MP2.5 Invierno", "Sin RM", "Solo RM",
+             "Random Provincia","Random Zona","Random Zona Termica","Sin Random", 
              "Fallecidos 65+"),
-  RR = c(0.98, 0.98, 0.95, 0.98, 0.97, 1.01, 0.98),
-  lower_CI = c(0.95,0.94,0.87,0.95,0.95,0.98,0.95),
-  upper_CI = c(1.01,1.01,1.04,1.02,1.00,1.04,1.01))
+  RR = c(0.98,0.99, 0.98, 0.95, 0.98, 0.97,1.01, 1.01, 0.98),
+  lower_CI = c(0.95,0.98,0.94,0.87,0.95,0.95,0.98,0.98,0.95),
+  upper_CI = c(1.01,1.01,1.01,1.04,1.02,1.00,1.04,1.04,1.01))
 
 ## Figure MRR
 df_mrr %>% 
