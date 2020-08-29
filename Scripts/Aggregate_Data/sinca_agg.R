@@ -7,20 +7,35 @@
 source("Scripts/Analisis_Exploratorios/f_figuras.R", encoding = "UTF-8")
 df <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
 
+## Añadir Season
+df %>% names() %>% sort()
+df <- df %>% mutate(season=getSeason(date))
+df <- df %>% mutate(season="anual") %>% rbind(df)
+df$season %>% unique()
+
+
 # Periodo 2017-2019
 df_conc <- df %>% 
   filter(year %in% 2017:2019 & pollutant=="mp2.5") %>% 
-  group_by(codigo_comuna, pollutant, unidad, site,year) %>% 
+  group_by(codigo_comuna, pollutant, unidad, site,year,season) %>% 
   summarise(valor=mean(valor, na.rm=T),
             disponibilidad=n()/365) %>% ungroup()
 
 # Disponibilidad mayor a 80% en el año, y con los tres años de datos
-df_conc <- df_conc %>% 
-  filter(disponibilidad>0.8) %>% 
-  group_by(site,codigo_comuna, pollutant, unidad) %>% 
+sitios_validos <- df_conc %>% 
+  filter(season=="anual" & disponibilidad>0.8) %>% 
+  group_by(codigo_comuna,site) %>% 
   summarise(valor=mean(valor, na.rm=T),
             count=n()) %>% ungroup() %>% 
-  filter(count==3) %>% select(-count)
+  filter(count==3) %>% pull(site)
+
+
+df_conc <- df_conc %>% 
+  filter(site %in% sitios_validos) %>% 
+  group_by(codigo_comuna, site, season) %>% 
+  summarise(valor=mean(valor, na.rm=T)) %>% ungroup()
+rm(sitios_validos)
+
 
 df_conc %>% n_distinct("site")
 
@@ -58,23 +73,26 @@ df_avg <- df_avg %>% left_join(df_conc %>% select(-codigo_comuna),
 
 ## Promedio ponderado por inverso de la distancia a nivel de zona censal
 df_mp <- df_avg %>% 
-  group_by(geocodigo, codigo_comuna, poblacion) %>% 
+  group_by(geocodigo, codigo_comuna, poblacion, season) %>% 
   summarise(valor=weighted.mean(valor, 1/(dist)),
             count=n()) %>% ungroup()
 
 # View map on zonas
 library(RColorBrewer)
 m2 <- left_join(mapa_zonas, df_mp, by=c("geocodigo")) %>% st_as_sf()
-m3 <- mapview(m2, zcol="valor",col.regions=brewer.pal(9, "YlOrRd"))
-mapshot(m3, "Figuras/ConcentracionMP25_zonas.html")
+m3 <- m2 %>% filter(season=="anual") %>% 
+  mapview(zcol="valor",col.regions=brewer.pal(9, "YlOrRd"))
+mapshot(m3, "Figuras/ConcentracionMP25_zonas.html",
+        selfcontained=F)
 rm(m2,m3)
 
 ## Promedio a nivel de comuna ponderado por la poblacion
 df_mp <- df_mp %>% 
-  group_by(codigo_comuna) %>% 
+  group_by(codigo_comuna, season) %>% 
   summarise(valor=weighted.mean(valor, poblacion)) %>% ungroup() %>% 
-  right_join(mapa_comuna) %>% left_join(codigos_territoriales) %>% 
-  rename(mp25=valor)
+  mutate(season=paste("mp25",season,sep="_")) %>% 
+  spread(season,valor) %>% rename(mp25=mp25_anual) %>% 
+  right_join(mapa_comuna) %>% left_join(codigos_territoriales)
 
 df_mp %>% filter(!is.na(mp25)) %>% nrow() # N comunas con datos:120
 
@@ -91,7 +109,8 @@ rm(m1)
 
 # Guarda datos ----------
 df_conc <- df_mp %>% 
-  select(codigo_comuna, mp25) %>% filter(!is.na(mp25))
+  select(codigo_comuna, mp25, mp25_fall, mp25_winter, mp25_spring, mp25_summer) %>% 
+  filter(!is.na(mp25))
 saveRDS(df_conc, "Data/Data_Modelo/Datos_Concentraciones.rsd")
 
 ## Mapas Chile --------

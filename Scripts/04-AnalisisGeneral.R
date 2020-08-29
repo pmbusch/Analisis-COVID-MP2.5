@@ -166,6 +166,7 @@ df_cor %>%
   cor(method = "pearson",use="pairwise.complete.obs")
 
 ## Correlacion a nivel Nacional
+# df_modelo <- df_modelo %>% mutate(mp25=mp25_winter)
 n <- df_modelo %>%
   select(tasa_mortalidad_covid, mp25) %>% 
   na.omit() %>% nrow()
@@ -467,7 +468,7 @@ df_box <- df_modelo %>%
          tasa_mortalidad_covid, covid_fallecidos, 
          tasa_contagios,casos_confirmados,
          dias_primerContagio,dias_primerMuerte,dias_cuarentena,tasa_camas,
-         mp25,
+         mp25, mp25_winter,
          densidad_pob,densidad_pob_censal,
          ingresoTotal_media, ingresoAutonomo_media,
          ingresoTotal_mediana, ingresoAutonomo_mediana,
@@ -494,7 +495,8 @@ df_box <- df_box %>%
                "tasa_contagios","casos_confirmados",
                "dias_primerContagio","dias_primerMuerte","dias_cuarentena",
                "tasa_camas") ~ "COVID-19",
-    var == "mp25" ~ "MP2.5",
+    var %in% c("mp25","mp25_fall", "mp25_winter", 
+               "mp25_spring", "mp25_summer") ~ "MP2.5",
     var %in% c("poblacion","densidad_pob","densidad_pob_censal") ~ "Demografía",
     var %in% c("ingresoTotal_media", "ingresoAutonomo_media",
                "ingresoTotal_mediana", "ingresoAutonomo_mediana")  ~ "Socioeconómico",
@@ -511,7 +513,8 @@ df_box <- df_box %>%
     var %in% c("dias_primerContagio","dias_primerMuerte",
                "dias_cuarentena") ~ "Dias pandemia",
     var %in% c("tasa_camas") ~ "Camas",
-    var == "mp25" ~ "MP2.5",
+    var %in% c("mp25","mp25_fall", "mp25_winter", 
+               "mp25_spring", "mp25_summer") ~ "MP2.5",
     var %in% c("densidad_pob","densidad_pob_censal") ~ "Densidad",
     var %in% c("ingresoTotal_media", "ingresoAutonomo_media",
                "ingresoTotal_mediana", "ingresoAutonomo_mediana")  ~ "Ingresos",
