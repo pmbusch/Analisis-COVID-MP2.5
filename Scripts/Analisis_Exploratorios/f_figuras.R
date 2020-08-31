@@ -3,7 +3,7 @@
 ## Funciones de visualizacion fijas
 ## PBH Julio 2020
 
-theme_set(theme_bw())
+theme_set(theme_bw(16)+theme(panel.grid.major = element_blank()))
 source("Scripts/Aggregate_Data/poblacion_agg.R", encoding = "UTF-8")
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
 library(patchwork)

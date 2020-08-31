@@ -8,6 +8,7 @@
 ## Librerias ------
 theme_set(theme_bw(16)+theme(panel.grid.major = element_blank()))
 file_name <- "Figuras/Analisis_transversal/%s.png"
+file_mod <- "Data/Data_Modelo/Modelos/%s.rsd"
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
 source("Scripts/05-FuncionesAnalisisTransversal.R", encoding = "UTF-8")
 
@@ -68,6 +69,9 @@ summary(mod3)
 mod <- mod3
 # Summary
 summary(mod)
+
+
+saveRDS(mod, sprintf(file_mod,"original"))
 
 ##  MRR -------
 # Se interpreta como el aumento relativo en la tasa de mortalidad covid por 1 ug/m3
@@ -338,10 +342,12 @@ mod_sinMP <- glmer.nb(covid_fallecidos ~
                 na.action=na.omit)
 summary(mod_sinMP)
 f_tableCoef(mod_sinMP)
-f_tableMRR(mod_sinMP)
+f_tableMRR(mod_sinMP) 
   # print(preview="pptx")
 f_figMRR(mod_sinMP)
 f_savePlot(last_plot(), sprintf(file_name,"sinMP"),dpi=150)
+saveRDS(mod_sinMP, sprintf(file_mod,"sin_MP"))
+rm(mod_sinMP)
 
 # Pq no converge?
 # https://rstudio-pubs-static.s3.amazonaws.com/33653_57fc7b8e5d484c909b615d8633c01d51.html
@@ -361,8 +367,6 @@ summary(m2)
 m3 <- update(mod_sinMP,start=ss,control=glmerControl(optimizer="bobyqa",
                                                  optCtrl=list(maxfun=2e5)))
 summary(m3)
-
-rm(mod_sinMP)
 ## Sin RM---------
 mod_sinRM <- glmer.nb(covid_fallecidos ~ 
                         mp25 +
@@ -382,10 +386,11 @@ mod_sinRM <- glmer.nb(covid_fallecidos ~
 summary(mod_sinRM)
 exp(summary(mod_sinRM)[10]$coefficients[2,1]) # exponencial coeficiente MP2.5
 f_tableCoef(mod_sinRM)
-f_tableMRR(mod_sinRM)
+f_tableMRR(mod_sinRM) 
   # print(preview="pptx")
 f_figMRR(mod_sinRM)
 f_savePlot(last_plot(), sprintf(file_name,"sinRM"),dpi=150)
+saveRDS(mod_sinRM, sprintf(file_mod,"sin_RM"))
 rm(mod_sinRM)
 
 ## Solo RM---------
@@ -411,6 +416,7 @@ f_tableMRR(mod_RM)
   # print(preview="pptx")
 f_figMRR(mod_RM)
 f_savePlot(last_plot(), sprintf(file_name,"soloRM"),dpi=150)
+saveRDS(mod_RM, sprintf(file_mod,"soloRM"))
 rm(mod_RM)
 
 
@@ -437,6 +443,7 @@ f_tableMRR(mod_mp25winter)
 # print(preview="pptx")
 f_figMRR(mod_mp25winter)
 f_savePlot(last_plot(), sprintf(file_name,"MP25Winter"),dpi=150)
+saveRDS(mod_mp25winter, sprintf(file_mod,"MP25Winter"))
 rm(mod_mp25winter)
 
 ## Solo MP2.5---------
@@ -451,6 +458,8 @@ f_tableCoef(modMP)
 f_tableMRR(modMP)
 f_figMRR(modMP)
 f_savePlot(last_plot(), sprintf(file_name,"soloMP"),dpi=150)
+saveRDS(modMP, sprintf(file_mod,"soloMP"))
+rm(modMP)
 
 ## Random por Provincia---------
 modProv <- glmer.nb(covid_fallecidos ~ 
@@ -476,6 +485,8 @@ f_tableMRR(modProv)
   # print(preview="pptx")
 f_figMRR(modProv)
 f_savePlot(last_plot(), sprintf(file_name,"randomProvincia"),dpi=150)
+saveRDS(modProv, sprintf(file_mod,"randomProvincia"))
+rm(modProv)
 
 ## Random Zonas---------
 mod_zona <- glmer.nb(covid_fallecidos ~ 
@@ -501,6 +512,7 @@ f_tableMRR(mod_zona)
 # print(preview="pptx")
 f_figMRR(mod_zona)
 f_savePlot(last_plot(), sprintf(file_name,"randomZonas"),dpi=150)
+saveRDS(mod_zona, sprintf(file_mod,"randomZonas"))
 rm(mod_zona, df_zonas)
 
 ## Random Zona Termica---------
@@ -527,11 +539,12 @@ f_tableMRR(mod_zonaTermica)
 # print(preview="pptx")
 f_figMRR(mod_zonaTermica)
 f_savePlot(last_plot(), sprintf(file_name,"randomZonaTermica"),dpi=150)
+saveRDS(mod_zonaTermica, sprintf(file_mod,"randomZonaTermica"))
 rm(mod_zonaTermica, df_zonas)
 
 ## Sin Random Intercept---------
 mod_nb <- glm.nb(covid_fallecidos ~ 
-                   mp25 +
+                   mp25 + rm +
                    scale(densidad_pob) + scale(`15-44`) + scale(`65+`) +
                    scale(perc_puebloOrig) + scale(perc_rural) +
                    scale(dias_primerContagio) +  scale(dias_cuarentena) + 
@@ -542,16 +555,18 @@ mod_nb <- glm.nb(covid_fallecidos ~
                    scale(tmed_summer) + scale(tmed_winter) + 
                    scale(heating_degree_15_summer) + scale(heating_degree_15_winter) +
                    offset(log(poblacion)), 
-                 data = df,
+                 data = df %>% 
+                   mutate(rm=if_else(region=="M","RM","Resto Chile") %>% factor()),
                  na.action=na.omit)
 summary(mod_nb)
 nobs(mod_nb)
 exp(summary(mod_nb)$coefficients[2,1]) # exponencial coeficiente MP2.5
 f_tableCoef(mod_nb)
-f_tableMRR(mod_nb) %>% 
-  print(preview="pptx")
+f_tableMRR(mod_nb)
+  # print(preview="pptx")
 f_figMRR(mod_nb)
 f_savePlot(last_plot(), sprintf(file_name,"sinRandomIntercept"),dpi=150)
+saveRDS(mod_nb, sprintf(file_mod,"sinRandomIntercept"))
 rm(mod_nb)
 
 
@@ -574,25 +589,35 @@ mod_65 <- glmer.nb(covid_fallecidos_65 ~
 summary(mod_65)
 exp(summary(mod_65)[10]$coefficients[2,1]) # exponencial coeficiente MP2.5
 f_tableCoef(mod_65)
-f_tableMRR(mod_65)
+f_tableMRR(mod_65) 
   # print(preview="pptx")
 f_figMRR(mod_65)
 f_savePlot(last_plot(), sprintf(file_name,"fallecidos65"),dpi=150)
-
-
-
+saveRDS(mod_65, sprintf(file_mod,"fallecidos65"))
+rm(mod_65)
 
 
 ### Grafico MRR Resumen modelos probados ------------
 
+mod_sinMP <- read_rds(sprintf(file_mod,"sin_MP"))
+mod_sinRM <- read_rds(sprintf(file_mod,"sin_RM"))
+mod_RM <- read_rds(sprintf(file_mod,"soloRM"))
+mod_mp25winter <- read_rds(sprintf(file_mod,"MP25Winter"))
+modMP <- read_rds(sprintf(file_mod,"soloMP"))
+modProv <- read_rds(sprintf(file_mod,"randomProvincia"))
+mod_zona <- read_rds(sprintf(file_mod,"randomZonas"))
+mod_zonaTermica <- read_rds(sprintf(file_mod,"randomZonaTermica"))
+mod_nb <- read_rds(sprintf(file_mod,"sinRandomIntercept"))
+mod_65 <- read_rds(sprintf(file_mod,"fallecidos65"))
+
 # Por el momento los ingreso manualmente
 df_mrr <- data.frame(
   method = c("Principal","MP2.5 Invierno", "Sin RM", "Solo RM",
-             "Random Provincia","Random Zona","Random Zona Termica","Sin Random", 
+             "Random Zona","Random Zona Termica","Sin Random", 
              "Fallecidos 65+"),
-  RR = c(0.98,0.99, 0.98, 0.95, 0.98, 0.97,1.01, 1.01, 0.98),
-  lower_CI = c(0.95,0.98,0.94,0.87,0.95,0.95,0.98,0.98,0.95),
-  upper_CI = c(1.01,1.01,1.01,1.04,1.02,1.00,1.04,1.04,1.01))
+  RR = c(0.98,0.99, 0.98, 0.97, 0.97,1.01, 0.98, 0.98),
+  lower_CI = c(0.95,0.98,0.95,0.89,0.95,0.98,0.95,0.95),
+  upper_CI = c(1.01,1.01,1.01,1.06,1.00,1.05,1,1.01))
 
 ## Figure MRR
 df_mrr %>% 

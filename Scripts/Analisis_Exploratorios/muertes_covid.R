@@ -2,7 +2,7 @@
 ## Muertes Covid
 ## PBH Julio 2020
 
-theme_set(theme_bw())
+theme_set(theme_bw(16)+theme(panel.grid.major = element_blank()))
 file_name <- "Scripts/Analisis_Exploratorios/Figuras/COVID/%s.png"
 source("Scripts/Analisis_Exploratorios/f_figuras.R", encoding = "UTF-8")
 
@@ -21,14 +21,14 @@ rm(total_comunas, comunas_muerte)
 df_muertes$tasa_mortalidad_covid %>% range() # rango para los graficos
 # Chile
 df_muertes %>% left_join(mapa_comuna) %>% 
-  fig_mapa(tasa_mortalidad_covid, lwd=0.01,limites=c(0,250), 
+  fig_mapa(tasa_mortalidad_covid, lwd=0.01,limites=c(0,260), 
            titulo="Tasa Mortalidad Covid \n [muertes/100mil hab]")
 f_savePlot(last_plot(), 
            file_path = sprintf(file_name,"MapaChileCOVID"),dpi = 300)
 
 # Chile Facet
 df_muertes %>% left_join(mapa_comuna) %>% 
-  fig_mapaChile_facet(tasa_mortalidad_covid,limites=c(0,250),
+  fig_mapaChile_facet(tasa_mortalidad_covid,limites=c(0,260),
                       titulo="Tasa Mortalidad Covid \n [muertes/100mil hab]")
 f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaChileCOVIDFacet"),dpi = 300)
 
@@ -37,7 +37,7 @@ f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaChileCOVIDFacet"),dpi
 df_muertes %>% left_join(mapa_comuna) %>% 
   left_join(codigos_territoriales) %>% 
   filter(mapa_rm==1) %>% 
-  fig_mapa(tasa_mortalidad_covid, limites = c(0,250),
+  fig_mapa(tasa_mortalidad_covid, limites = c(0,260),
            titulo= "Tasa Mortalidad Covid \n [muertes/100mil hab]")
 f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaSantiagoCOVID"), dpi=100)
 
@@ -62,7 +62,10 @@ df_muertes_tiempo %>%
   geom_line()+
   facet_geo(~ name, grid="cl_santiago_prov_grid1")+
   labs(x="", y="")+
-  ggtitle("Tasa mortalidad COVID [por 100mil]")+theme(plot.title = element_text(hjust = 0.5))
+  ggtitle("Tasa mortalidad COVID [por 100mil]")+
+    theme(plot.title = element_text(hjust = 0.5),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank())
 
 ggsave(sprintf(file_name,"MuertesSantiago"),
        last_plot(),dpi=600,
