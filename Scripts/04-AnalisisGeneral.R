@@ -28,7 +28,6 @@ rm(total_pob, pob_mp25, total_comunas, comunas_muerte)
 
 ## Scatter correlacion -----------
 p1 <- df_modelo %>% 
-  mutate(rm=if_else(region=="M","RM","Resto Chile") %>% factor()) %>% 
   mutate(nombre_comuna=if_else(poblacion>1e5,nombre_comuna,"")) %>% #Label solo pob mayor a 100 mil
   ggplot(aes(mp25, tasa_mortalidad_covid, size=poblacion, col=rm))+
   geom_point(alpha=.5)+

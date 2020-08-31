@@ -33,6 +33,10 @@ df_modelo <- df_modelo %>%
          tasa_camas=if_else(is.na(tasa_camas),0,tasa_camas),
          tasa_mortalidad_all=if_else(is.na(tasa_mortalidad_all),0,tasa_mortalidad_all))
 
+## Add RM Factor
+df_modelo <- df_modelo %>% 
+  mutate(rm=if_else(region=="M","RM","Resto Chile"))
+
 df_modelo %>% skim()
 
 

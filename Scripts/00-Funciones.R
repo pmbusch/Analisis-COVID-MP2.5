@@ -109,6 +109,7 @@ f_replaceVar <- function(variable_orig){
      variable_orig== "quintil_dens_pob" ~ "Quintil densidad poblacion",
      variable_orig== "densidad_pob_manzana_mediana" ~ "Mediana densidad manzana",
      variable_orig== "densidad_pob_manzana_p90" ~ "Percentil 90 densidad manzana",
+     variable_orig== "densidad_pob_manzana_media" ~ "Media densidad manzana",
      variable_orig== "`0-14`" ~ "% 0-14",
      variable_orig== "0-14" ~ "% 0-14",
      variable_orig== "`15-44`" ~ "% 15-44",
@@ -141,6 +142,7 @@ f_replaceVar <- function(variable_orig){
      variable_orig== "perc_FFAA" ~ "% Previsión Salud FF.AA.",
      variable_orig== "perc_menor_media"~ "% Educación menor a media",
      variable_orig== "perc_ocupado"~ "% Ocupado laboral",
+     variable_orig=="consumo_lena_m3" ~" Consumo regional leña CDT"
      variable_orig== "cons_lena_calefactor_pp"~ "Consumo anual leña calefactor [kWh per cápita]",
      variable_orig== "cons_lena_cocina_pp"~ "Consumo anual leña cocina [kWh per cápita]",
      variable_orig== "perc_lenaCocina"~ "% Uso leña cocina",
@@ -166,6 +168,7 @@ f_replaceVar <- function(variable_orig){
      variable_orig== "heating_degree_18_winter"~ "Heating Degree 18°C Invierno [°C]",
      variable_orig== "heating_degree_18_fall"~ "Heating Degree 18°C Otoño [°C]",
      variable_orig== "heating_degree_18_spring"~ "Heating Degree 18°C Primavera [°C]",
+     variable_orig== "proxy_lena_calefaccion"~ "Proxy Calefacción Leña",
       T ~ variable_orig))
 }
 
