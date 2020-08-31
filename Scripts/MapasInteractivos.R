@@ -63,14 +63,19 @@ f_leafleft <- function(map, datos,var, columna, unidad){
 
 mapa_filtro <- mapa %>% 
   dplyr::select(region, nombre_provincia, nombre_comuna, poblacion,
-                tasa_mortalidad_covid, mp25, densidad_pob, densidad_pob_censal,`15-44`,`65+`,
+                tasa_mortalidad_covid, mp25, mp25_winter,
+                densidad_pob, densidad_pob_censal,
+                densidad_pob_manzana_mediana,densidad_pob_manzana_p90,
+                `15-44`,`65+`,
                 perc_rural, perc_puebloOrig,
                 ingresoAutonomo_media, perc_menor_media, perc_isapre,perc_fonasa_A,
                 perc_fonasa_B,perc_fonasa_C,perc_fonasa_D,
                 perc_lenaCocina, perc_lenaCalefaccion,
-                tasa_contagios, tasa_camas, dias_primerContagio, dias_cuarentena, perc_letalidad,
+                tasa_contagios, tasa_camas, dias_primerContagio, dias_primerMuerte,
+                dias_cuarentena, perc_letalidad,
                 tmed_summer,tmed_winter,hr_summer,hr_winter,heating_degree_15_summer,
-                heating_degree_15_winter)
+                heating_degree_15_winter) %>% 
+  mutate(`0-14`=100-`15-44`-`65+`)
 
 # PRUEBA FUNCION
 # leaflet(mapa_filtro) %>% 
@@ -89,6 +94,8 @@ m_leaf <- leaflet(mapa_filtro) %>%
              "tasa_mortalidad_covid", unidad = "por 100mil hab") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$mp25,
              "mp25", unidad = "ug/m3") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$mp25_winter,
+             "mp25_winter", unidad = "ug/m3") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$poblacion,
              "poblacion", unidad = "hab") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$tasa_contagios,
@@ -97,6 +104,8 @@ m_leaf <- leaflet(mapa_filtro) %>%
              "densidad_pob", unidad = "hab/km2") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$densidad_pob_censal,
              "densidad_pob_censal", unidad = "hab/km2") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$`0-14`,
+             "0-14", unidad = "%") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$`15-44`,
              "15-44", unidad = "%") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$`65+`,
@@ -123,6 +132,8 @@ m_leaf <- leaflet(mapa_filtro) %>%
              "tasa_camas", unidad = "por 100mil hab") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$dias_primerContagio,
              "dias_primerContagio", unidad = "dias") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$dias_primerMuerte,
+             "dias_primerMuerte", unidad = "dias") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$dias_cuarentena,
              "dias_cuarentena", unidad = "dias") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$perc_letalidad,
@@ -141,24 +152,26 @@ m_leaf <- leaflet(mapa_filtro) %>%
              "heating_degree_15_winter", unidad = "°C") %>% 
   addLayersControl(
     baseGroups = c("OpenStreetMap","Toner", "Toner by Stamen"),
-    overlayGroups = c("tasa_mortalidad_covid","mp25","poblacion","tasa_contagios",
+    overlayGroups = c("tasa_mortalidad_covid","mp25","mp25_winter",
+                      "poblacion","tasa_contagios",
                       "densidad_pob",
-                      "densidad_pob_censal","15-44","65+","perc_rural",
+                      "densidad_pob_censal","0-14","15-44","65+","perc_rural",
                       "perc_puebloOrig","ingresoAutonomo_media",
                       "perc_menor_media","perc_isapre","perc_fonasa_A",
                       "perc_fonasa_D","perc_lenaCocina",
                       "perc_lenaCalefaccion","tasa_camas",
-                      "dias_primerContagio","dias_cuarentena",
+                      "dias_primerContagio","dias_primerMuerte","dias_cuarentena",
                       "perc_letalidad","tmed_summer","tmed_winter",
                       "hr_summer","hr_winter","heating_degree_15_summer",
                       "heating_degree_15_winter")) %>% 
-  hideGroup(c("tasa_mortalidad_covid","mp25","poblacion","tasa_contagios",
-              "densidad_pob","densidad_pob_censal","15-44","65+","perc_rural",
+  hideGroup(c("tasa_mortalidad_covid","mp25","mp25_winter",
+              "poblacion","tasa_contagios",
+              "densidad_pob","densidad_pob_censal","0-14","15-44","65+","perc_rural",
               "perc_puebloOrig","ingresoAutonomo_media",
               "perc_menor_media","perc_isapre","perc_fonasa_A",
               "perc_fonasa_D","perc_lenaCocina",
               "perc_lenaCalefaccion","tasa_camas",
-              "dias_primerContagio","dias_cuarentena",
+              "dias_primerContagio","dias_primerMuerte","dias_cuarentena",
               "perc_letalidad","tmed_summer","tmed_winter",
               "hr_summer","hr_winter","heating_degree_15_summer",
               "heating_degree_15_winter"))
