@@ -45,11 +45,12 @@ f_savePlot(p1,
 p1+geom_smooth(method = "lm", col="black")
 p1+geom_smooth(method = "lm")
 p1+geom_smooth(method = "lm",se=F, aes(col=region), data=df_modelo)
+p1+geom_smooth(method = "lm",se=F, aes(col=rm), 
+               data=df_modelo %>% mutate(rm=if_else(region=="M","RM","Resto Chile") %>% factor()))
 
 
 # Interactive plot
 # plotly::ggplotly(last_plot())
-
 p1+
   geom_text_repel(aes(label=nombre_comuna))
 f_savePlot(last_plot(),
@@ -159,6 +160,19 @@ df_cor %>%
 dev.off()
 
 rm(df_cor, p.mat, cor.mtest)
+
+
+## GGPAIRS ------
+df_pairs <- df_modelo %>% 
+  mutate(rm=if_else(region=="M","RM","Resto Chile") %>% factor()) %>% 
+  select(rm,tasa_mortalidad_covid, mp25, densidad_pob_censal,
+         perc_fonasa_B, perc_lenaCalefaccion, tmed_winter)
+names(df_pairs) <- names(df_pairs) %>% f_replaceVar()
+p <- GGally::ggpairs(df_pairs, aes(col=rm, alpha=0.5),
+                     columns = 2:ncol(df_pairs))
+p
+f_savePlot(p, sprintf(file_name, "ggpairs"), dpi=300)
+rm(df_pairs,p)
 
 # Correlacion con grouping effect -----------
 # Pairwise remuve NA para cada par de vectores comparados, no para la totalidad
@@ -462,6 +476,7 @@ f_savePlot(last_plot(), sprintf(file_name,"jitter_scale"),dpi=300)
 rm(df_box, df_label)
 
 ## Escala numerica distinta Facet --------
+df_modelo %>% names() 
 df_box <- df_modelo %>% 
   mutate(tiene_mp=!is.na(mp25)) %>% 
   select(codigo_comuna,tiene_mp,
@@ -470,6 +485,7 @@ df_box <- df_modelo %>%
          dias_primerContagio,dias_primerMuerte,dias_cuarentena,tasa_camas,
          mp25, mp25_winter,
          densidad_pob,densidad_pob_censal,
+         densidad_pob_manzana_p90,
          ingresoTotal_media, ingresoAutonomo_media,
          ingresoTotal_mediana, ingresoAutonomo_mediana,
          tmed_anual, 
@@ -497,7 +513,9 @@ df_box <- df_box %>%
                "tasa_camas") ~ "COVID-19",
     var %in% c("mp25","mp25_fall", "mp25_winter", 
                "mp25_spring", "mp25_summer") ~ "MP2.5",
-    var %in% c("poblacion","densidad_pob","densidad_pob_censal") ~ "Demografía",
+    var %in% c("poblacion","densidad_pob","densidad_pob_censal",
+               "densidad_pob_manzana_mediana",
+               "densidad_pob_manzana_p90") ~ "Demografía",
     var %in% c("ingresoTotal_media", "ingresoAutonomo_media",
                "ingresoTotal_mediana", "ingresoAutonomo_mediana")  ~ "Socioeconómico",
     var %in% c("tmed_anual", "hr_anual", 
@@ -515,7 +533,9 @@ df_box <- df_box %>%
     var %in% c("tasa_camas") ~ "Camas",
     var %in% c("mp25","mp25_fall", "mp25_winter", 
                "mp25_spring", "mp25_summer") ~ "MP2.5",
-    var %in% c("densidad_pob","densidad_pob_censal") ~ "Densidad",
+    var %in% c("densidad_pob","densidad_pob_censal",
+               "densidad_pob_manzana_mediana",
+               "densidad_pob_manzana_p90") ~ "Densidad",
     var %in% c("ingresoTotal_media", "ingresoAutonomo_media",
                "ingresoTotal_mediana", "ingresoAutonomo_mediana")  ~ "Ingresos",
     var %in% c("tmed_anual","heating_degree_15_anual", 
@@ -548,7 +568,15 @@ df_box <- df_modelo %>%
          heating_degree_15_fall,heating_degree_15_winter,
          heating_degree_15_spring,heating_degree_15_summer,
          heating_degree_18_fall,heating_degree_18_winter,
-         heating_degree_18_spring,heating_degree_18_summer)
+         heating_degree_18_spring,heating_degree_18_summer) %>% 
+  mutate(heating_degree_15_fall=heating_degree_15_fall/24,
+         heating_degree_15_winter=heating_degree_15_winter/24,
+         heating_degree_15_spring=heating_degree_15_spring/24,
+         heating_degree_15_summer=heating_degree_15_summer/24,
+         heating_degree_18_fall=heating_degree_18_fall/24,
+         heating_degree_18_winter=heating_degree_18_winter/24,
+         heating_degree_18_spring=heating_degree_18_spring/24,
+         heating_degree_18_summer=heating_degree_18_summer/24)
 
 # Aplano y genero columna para orden
 df_box <- df_box %>% gather(var,value,-codigo_comuna,-tiene_mp) %>% filter(!is.na(value)) %>% 
