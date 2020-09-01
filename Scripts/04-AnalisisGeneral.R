@@ -437,20 +437,7 @@ df_box <- df_box %>% gather(var,value,-codigo_comuna,-tiene_mp) %>%
 df_box$value %>% range()
 
 df_box <- df_box %>% 
-  mutate(tipo=case_when(
-    var %in% c("tasa_mortalidad_covid", "covid_fallecidos",
-               "tasa_contagios","casos_confirmados",
-               "dias_primerContagio","dias_primerMuerte","dias_cuarentena",
-               "tasa_camas") ~ "COVID-19",
-    var == "mp25" ~ "MP2.5",
-    var %in% c("cons_lena_cocina_pp","cons_lena_calefactor_pp") ~ "Leña",
-    var %in% c("poblacion","densidad_pob","densidad_pob_censal") ~ "Demografía",
-    var %in% c("ingresoTotal_media", "ingresoAutonomo_media",
-               "ingresoTotal_mediana", "ingresoAutonomo_mediana")  ~ "Socioeconómico",
-    var %in% c("tmed_anual", "hr_anual", 
-               "heating_degree_15_anual", "heating_degree_18_anual")  ~ "Meteorología",
-    T ~ "s/i") %>% 
-      factor(levels=c("COVID-19","MP2.5","Leña","Demografía","Socioeconómico","Meteorología")))
+  mutate(tipo=f_addTypeVar(var))
 
 df_label <- df_label %>% left_join(df_box %>% group_by(var,tipo) %>% 
                                      summarise(count=n())) %>% 

@@ -172,6 +172,47 @@ f_replaceVar <- function(variable_orig){
       T ~ variable_orig))
 }
 
+## Type of  Variables ----------
+# Funcion para incorporar el tipo a la variable
+# Utilizada principalmente para resultados del modelo
+f_addTypeVar <- function(var){
+  return(
+    case_when(
+      var %in% c("tasa_mortalidad_covid", "covid_fallecidos",
+                   "tasa_contagios","casos_confirmados",
+                   "dias_primerContagio","dias_primerMuerte","dias_cuarentena",
+                   "perc_letalidad") ~ 
+        "COVID-19",
+      var %in% c("mp25","mp25_fall","mp25_winter",
+                   "mp25_spring","mp25_summer")~ 
+        "MP2.5",
+      var %in% c("poblacion","densidad_pob","densidad_pob_censal",
+                   "0-14","15-44","45-64","65+","perc_mujer",
+                   "perc_rural","perc_puebloOrig",
+                   "perc_material_irrecuperable","tasa_mortalidad_all") ~ 
+        "Demografía",
+      var %in% c("perc_menor_media","perc_ocupado",
+                   "perc_isapre","perc_FFAA","perc_fonasa_A","perc_fonasa_B",
+                   "perc_fonasa_C", "perc_fonasa_D","perc_fonasa",
+                 "ingresoTotal_media", "ingresoAutonomo_media",
+                 "ingresoTotal_mediana", "ingresoAutonomo_mediana",
+                 "tasa_camas")  ~ 
+        "Socioeconómico",
+      var %in% c("cons_lena_cocina_pp","cons_lena_calefactor_pp",
+                   "perc_lenaCocina","perc_lenaCalefaccion",
+                   "perc_lenaAgua")  ~ 
+        "Leña",
+      var %in% c("hr_anual","hr_fall","hr_winter","hr_spring","hr_summer",
+                 "tmed_anual","tmed_fall","tmed_winter","tmed_spring","tmed_summer",
+                 "heating_degree_15_anual","heating_degree_15_fall","heating_degree_15_winter","heating_degree_15_spring","heating_degree_15_summer",
+                 "heating_degree_18_anual","heating_degree_18_fall","heating_degree_18_winter","heating_degree_18_spring","heating_degree_18_summer") ~ 
+        "Meteorología",
+      T ~ "s/i") %>% 
+      factor(levels=c("COVID-19","MP2.5","Leña","Demografía",
+                          "Socioeconómico","Meteorología")))
+}
+
+
 ## Fuente: https://stackoverflow.com/questions/7508229/how-to-create-a-column-with-a-quartile-rank
 ## Devuelve un vector con la clasificacion de cada valor en su quintil
 qgroup = function(numvec, n = 5){
