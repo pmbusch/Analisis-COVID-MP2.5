@@ -23,14 +23,18 @@ df_anual <- df_conc %>% group_by(site,codigo_comuna, year) %>%
   summarise(valor=mean(valor, na.rm=T),
             disponibilidad=n()/365) %>% ungroup()
 
-df_anual %>% 
+
+df_anual <- df_anual %>% 
   # filter(disponibilidad>0.8) %>%
   group_by(year) %>% 
-  summarise(count=n()) %>% ungroup() %>% 
+  summarise(count=n()) %>% ungroup()
+
+df_anual %>% 
   ggplot(aes(year, count))+
   geom_col(fill="brown")+
+  geom_text(aes(label=count), size=5, vjust=-0.8)+
   scale_x_continuous(breaks=2010:2019)+
-  coord_cartesian(expand = F)+
+  coord_cartesian(ylim=c(0,85), expand=F)+
   labs(x="", y="Numero estaciones con datos")
 f_savePlot(last_plot(), sprintf(file_name,"NSite_anos"))
 
@@ -87,20 +91,24 @@ rm(df_mes)
 # Estacion
 df_avg <- df_conc %>% 
   filter(year %in% 2017:2019) %>% 
-  group_by(site,region,codigo_comuna, year) %>% 
+  group_by(site,region,codigo_comuna,nombre_comuna, year) %>% 
   summarise(valor=mean(valor,na.rm=T),
             disponibilidad=n()/365) %>% ungroup()
 df_avg <- df_avg %>% 
   filter(disponibilidad>0.8) %>%
-  group_by(site, region, codigo_comuna) %>% 
+  group_by(site, region, codigo_comuna,nombre_comuna) %>% 
   summarise(valor=mean(valor, na.rm=T),
             count=n()) %>% ungroup() %>% 
   filter(count==3) %>% select(-count)
 
 df_avg$valor %>% range()
 df_avg %>% 
-  mutate(highlight=if_else(valor>20,"yes","no")) %>%
-  ggplot(aes(x=reorder(site, valor), y=valor, fill=highlight)) +
+  mutate(highlight=if_else(valor>20,"yes","no"),
+         estacion=if_else(
+           str_detect(str_to_lower(site),str_to_lower(nombre_comuna)),
+           paste(site,sep=""), 
+           paste(nombre_comuna,site,sep="-"))) %>%
+  ggplot(aes(x=reorder(estacion, valor), y=valor, fill=highlight)) +
   geom_col()+
   geom_hline(yintercept = 20, col="red", linetype = "dashed", size=1)+
   facet_grid(region~., scales = "free", space="free")+
