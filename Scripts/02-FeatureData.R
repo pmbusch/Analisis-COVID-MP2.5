@@ -18,7 +18,7 @@ df_modelo <- df_modelo %>%
          densidad_pob=poblacion/superficie*1e6,
          densidad_pob_censal=poblacion/superficie_censal*1e6,
          perc_letalidad=covid_fallecidos/casos_confirmados*100,
-         proxy_lena_calefaccion=perc_lenaCalefaccion/100*heating_degree_15_winter) %>% 
+         hdd15_winter_lenaCalefaccion=perc_lenaCalefaccion/100*heating_degree_15_winter) %>% 
   select(-fecha_cuarentena)
 
 ## Relleno NA ----------

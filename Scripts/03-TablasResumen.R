@@ -27,7 +27,7 @@ df <- df %>% rename(
 
 # separo por la condicion de si tiene o no estacion
 df_sep <- df %>% 
-  mutate(tiene_estacion=if_else(!is.na(`MP2.5 [ug/m3]`),"si","no")) %>% 
+  mutate(tiene_estacion=if_else(!is.na(`MP2.5 2017-2019 [ug/m3]`),"si","no")) %>% 
   group_by(tiene_estacion) %>% skim() %>% 
   mutate(indicador=paste(round(numeric.mean,1)," (",
                          round(numeric.sd,1),")", sep="")) %>% 
@@ -62,7 +62,8 @@ rm(foot_note,df_skim, df_sep, n_mp25)
 # Incluyo coeficiente de variacion: ayuda a ver que variables tienen mayor variabilidad entre comunas
 # Nota: Solo es valido para variables con escala de partida en 0 (ratios). T° no aplica
 # https://en.wikipedia.org/wiki/Coefficient_of_variation
-df_skim <- df %>% filter(!is.na(`MP2.5 [ug/m3]`)) %>% skim() %>% 
+df_skim <- df %>% filter(!is.na(`MP2.5 2017-2019 [ug/m3]`)) %>% 
+  skim() %>% 
   mutate(cv=numeric.sd/numeric.mean) %>% 
   select(skim_variable, numeric.mean, cv,
          numeric.p0, numeric.p50, numeric.p100) %>% 
@@ -78,7 +79,7 @@ df_skim %>%
   bold(bold=T, part="header") %>% bold(j=1, bold=T) %>% 
   autofit(add_w = 0.1, add_h = 0.3) %>%
   align(j=1, align = "left", part="all") %>% 
-  footnote(j=4, value=as_paragraph("Coeficiente Variación"), 
+  footnote(j=3, value=as_paragraph("Coeficiente Variación"), 
            part="header", inline=T)
   # print(preview="pptx")
 
