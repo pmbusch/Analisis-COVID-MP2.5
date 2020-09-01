@@ -202,12 +202,16 @@ rm(modelformula, poismodel, nbmodel)
 library(caret)
 
 ## Creo df solo con variables numericas de interes (y fuera de COVID)
+df_modelo %>% names() %>% sort()
 df <-  df_modelo %>% select_if(is.numeric) %>% 
   dplyr::select(
     # -covid_fallecidos, -poblacion,
     -tasa_mortalidad_covid,
-    -tasa_contagios,-casos_confirmados,
-    -pcr_region, -perc_letalidad,-defunciones,-tasa_mortalidad_all) %>% 
+    -tasa_contagios,-casos_confirmados, -camas,
+    -pcr_region, -perc_letalidad,-defunciones,-tasa_mortalidad_all,
+    -cons_lena_calefactor_pp,-consumo_lena_m3,-consumo_lena_pp,-penetracion_lena,
+    -cons_lena_cocina_pp,
+    -superficie, -superficie_censal,-perimetro, -viviendas) %>% 
   na.omit()
 
 # Columnas a remover dado que serian redundantes por su correlacion con otras variables
@@ -216,13 +220,19 @@ cols <- df %>%
   cor() %>% 
   findCorrelation()
 # Columnas fuera
-df[,cols] %>% names()
+df[,cols] %>% names() %>% sort()
+## Keep covid_fallecidos and poblacion
+# cols <- cols[cols!=1]
+# Columnas remanentes
+df[,-cols] %>% names() %>% sort()
 
 df <- df[,-cols]
+
 
 ## Train with ML
 getModelInfo("glmStepAIC")
 modelLookup("glmStepAIC")
+
 
 # AIC estimates the relative amount of information lost by a given model: 
 # the less information a model loses, the higher the quality of that model
@@ -236,6 +246,7 @@ glm_fit <- train(covid_fallecidos~ . +offset(log(poblacion)),
                  na.action = na.omit)
 glm_fit
 summary(glm_fit)
+varImp(glm_fit)
 
 # NOTAS: Algoritmo step funciona con familia Poisson, y sin efectos aleatorios
 
@@ -243,16 +254,53 @@ summary(glm_fit)
 # Poisson GLM peude dar el valor inicial del theta
 # Theta is usually interpreted as a measure of overdispersion with respect to the Poisson distribution
 # https://stats.stackexchange.com/questions/10419/what-is-theta-in-a-negative-binomial-regression-fitted-with-r
-getME(mod,"glmer.nb.theta") #valor del modelo origal
+
+initial_mod <- glm.nb(covid_fallecidos~ . +offset(log(poblacion)),
+                      data=df,
+                      na.action=na.omit)
+summary(initial_mod)
+initial_mod$theta
 # getME(glm_fit,"glmer.nb.theta")
 glm_fit_nb <- train(covid_fallecidos~ . +offset(log(poblacion)),
                  data=df,
                  method="glmStepAIC",
-                 family=negative.binomial(theta=279.9946,link="log"),
+                 preProcess = c("scale"),
+                 # offset=(log(poblacion)),
+                 family=negative.binomial(theta=initial_mod$theta,link="log"),
                  na.action = na.omit)
 glm_fit_nb
 summary(glm_fit_nb)
+f_tableCoef(glm_fit_nb)
+f_tableMRR(glm_fit_nb) 
+# print(preview="pptx")
+f_figMRR(glm_fit_nb)
+f_savePlot(last_plot(), sprintf(file_name,"step"),dpi=150)
+saveRDS(glm_fit_nb, sprintf(file_mod,"step"))
 
+rm(glm_fit_nb, initial_mod)
+
+rm(a)
+
+
+mod <- glm.nb(covid_fallecidos~ scale(`15-44`) + scale(`45-64`) + scale(`65+`)+
+                scale(densidad_pob_manzana_media) + scale(mp25_summer) + 
+                scale(heating_degree_18_winter)  +
+                scale(heating_degree_18_summer)  +
+                scale(hr_winter) + scale(perc_menor_media) + 
+                scale(ingresoAutonomo_media)+
+                scale(perc_FFAA) + scale(perc_fonasa_A) + 
+                scale(perc_fonasa_C) + 
+                scale(perc_lenaCocina) + scale(perc_lenaCalefaccion) + 
+                scale(perc_lenaAgua) + 
+                scale(perc_puebloOrig) + scale(perc_rural) +
+                scale(densidad_pob) +
+                scale(dias_primerMuerte) + scale(dias_primerContagio)+
+                offset(log(poblacion)),
+              data=df,
+              init.theta=initial_mod$theta,
+              na.action = na.omit)
+summary(mod)
+f_tableMRR(mod)
 
 # ## Otra prueba
 # df <-  df_modelo %>% 
@@ -312,17 +360,20 @@ summary(glm_fit_nb)
 ### PRUEBAS OTROS MODELOS -------------------
 file_name <- "Figuras/Analisis_transversal/Otros_Modelos/%s.png"
 df <- df_modelo %>% 
-  dplyr::select(nombre_comuna,region,nombre_provincia,zona, zona_termica,
+  dplyr::select(nombre_comuna,region,nombre_provincia,
+                zona, zona_termica,rm,
                 poblacion,tasa_mortalidad_covid,covid_fallecidos_65,
                 covid_fallecidos,mp25,mp25_winter,
-                densidad_pob, `65+`, `15-44`, perc_puebloOrig, perc_rural,
+                densidad_pob, quintil_dens_pob,
+                `65+`, `15-44`, perc_puebloOrig, perc_rural,
                 dias_primerContagio, dias_cuarentena,tasa_camas,
                 perc_lenaCocina,
                 ingresoTotal_media,perc_menor_media,
                 perc_fonasa_A, perc_fonasa_D, perc_isapre,
                 tmed_summer, tmed_winter, 
                 heating_degree_15_summer, heating_degree_15_winter,
-                heating_degree_18_summer, heating_degree_18_winter)
+                heating_degree_18_summer, heating_degree_18_winter,
+                proxy_lena_calefaccion)
 
 
 ## Sin MP2.5---------
@@ -544,8 +595,10 @@ rm(mod_zonaTermica, df_zonas)
 
 ## Sin Random Intercept---------
 mod_nb <- glm.nb(covid_fallecidos ~ 
-                   mp25 + rm +
-                   scale(densidad_pob) + scale(`15-44`) + scale(`65+`) +
+                   mp25 + rm + 
+                   scale(densidad_pob) +
+                   # quintil_dens_pob +
+                   scale(`15-44`) + scale(`65+`) +
                    scale(perc_puebloOrig) + scale(perc_rural) +
                    scale(dias_primerContagio) +  scale(dias_cuarentena) + 
                    scale(tasa_camas) + 
@@ -555,8 +608,7 @@ mod_nb <- glm.nb(covid_fallecidos ~
                    scale(tmed_summer) + scale(tmed_winter) + 
                    scale(heating_degree_15_summer) + scale(heating_degree_15_winter) +
                    offset(log(poblacion)), 
-                 data = df %>% 
-                   mutate(rm=if_else(region=="M","RM","Resto Chile") %>% factor()),
+                 data = df,
                  na.action=na.omit)
 summary(mod_nb)
 nobs(mod_nb)
@@ -568,6 +620,32 @@ f_figMRR(mod_nb)
 f_savePlot(last_plot(), sprintf(file_name,"sinRandomIntercept"),dpi=150)
 saveRDS(mod_nb, sprintf(file_mod,"sinRandomIntercept"))
 rm(mod_nb)
+
+
+## Proxy Leña---------
+mod_lena <- glm.nb(covid_fallecidos ~ 
+                   mp25 + rm +
+                   scale(densidad_pob) + scale(`15-44`) + scale(`65+`) +
+                   scale(perc_puebloOrig) + scale(perc_rural) +
+                   scale(dias_primerContagio) +  scale(dias_cuarentena) + 
+                   scale(tasa_camas) + 
+                   scale(log(ingresoTotal_media)) + scale(perc_menor_media) + 
+                   scale(perc_fonasa_A) + scale(perc_fonasa_D) +
+                   scale(tmed_summer) + scale(tmed_winter) + 
+                   scale(hdd15_winter_lenaCalefaccion) +
+                   offset(log(poblacion)), 
+                 data = df,
+                 na.action=na.omit)
+summary(mod_lena)
+nobs(mod_lena)
+exp(summary(mod_lena)$coefficients[2,1]) # exponencial coeficiente MP2.5
+f_tableCoef(mod_lena)
+f_tableMRR(mod_RM)
+# print(preview="pptx")
+f_figMRR(mod_lena)
+f_savePlot(last_plot(), sprintf(file_name,"proxyLena"),dpi=150)
+saveRDS(mod_lena, sprintf(file_mod,"proxyLena"))
+rm(mod_lena)
 
 
 ## Fallecidos 65+---------
@@ -614,10 +692,10 @@ mod_65 <- read_rds(sprintf(file_mod,"fallecidos65"))
 df_mrr <- data.frame(
   method = c("Principal","MP2.5 Invierno", "Sin RM", "Solo RM",
              "Random Zona","Random Zona Termica","Sin Random", 
-             "Fallecidos 65+"),
-  RR = c(0.98,0.99, 0.98, 0.97, 0.97,1.01, 0.98, 0.98),
-  lower_CI = c(0.95,0.98,0.95,0.89,0.95,0.98,0.95,0.95),
-  upper_CI = c(1.01,1.01,1.01,1.06,1.00,1.05,1,1.01))
+             "Proxy Leña","Fallecidos 65+"),
+  RR = c(0.98,0.99, 0.98, 0.97, 0.97,1.01, 0.98,0.96, 0.98),
+  lower_CI = c(0.95,0.98,0.95,0.89,0.95,0.98,0.95,0.94,0.95),
+  upper_CI = c(1.01,1.01,1.01,1.06,1.00,1.05,1,0.99,1.01))
 
 ## Figure MRR
 df_mrr %>% 
