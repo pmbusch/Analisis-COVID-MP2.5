@@ -54,10 +54,10 @@ library(geofacet)
 df_muertes_tiempo <- df_muertes %>% 
   left_join(df_poblacion) %>% 
   mutate(tasa_mortalidad_covid=casos_fallecidos/poblacion*1e5,
-         code=as.numeric(codigo_comuna)) %>% 
-  right_join(cl_santiago_prov_grid1, by=c("code"))
+         code=as.numeric(codigo_comuna))
   
 df_muertes_tiempo %>%  
+  right_join(cl_santiago_prov_grid1, by=c("code")) %>% 
   ggplot(aes(x=fecha, y=tasa_mortalidad_covid))+
   geom_line()+
   facet_geo(~ name, grid="cl_santiago_prov_grid1")+
@@ -70,6 +70,35 @@ df_muertes_tiempo %>%
 ggsave(sprintf(file_name,"MuertesSantiago"),
        last_plot(),dpi=600,
        width = 14.87, height = 9.30, units = "in")
+
+
+## Serie tiempo region -----
+df_muertes_nacional <- df_muertes_tiempo %>%
+  group_by(fecha) %>% 
+  summarise(tasa_mortalidad_covid=sum(casos_fallecidos,na.rm=T)/
+              sum(poblacion,na.rm=T)*1e5) %>% ungroup() %>% 
+  mutate(region="Nacional")
+
+# Añado promedio nacional
+df_muertes_region <- df_muertes_tiempo %>%
+  select(codigo_comuna, fecha, casos_fallecidos, poblacion) %>% 
+  left_join(mapa_comuna) %>% 
+  group_by(region, fecha) %>% 
+  summarise(tasa_mortalidad_covid=sum(casos_fallecidos,na.rm=T)/
+              sum(poblacion,na.rm=T)*1e5) %>% ungroup() %>% 
+  rbind(df_muertes_nacional)
+  
+df_muertes_region %>% 
+  filter(!is.na(region)) %>% 
+  ggplot(aes(x=fecha, y=tasa_mortalidad_covid))+
+  geom_line()+
+  # facet_grid(region~., scales = "free", space="free")
+  facet_wrap(~region)+
+  labs(x="", y="Tasa mortalidad COVID [por 100mil]")+
+  theme(axis.text.x = element_text(angle = 90))
+f_savePlot(last_plot(), sprintf(file_name,"SerieTiempoRegion"))
+
+rm(df_muertes_region, df_muertes_nacional)
 
 ## Heatmap -------
 df_muertes_tiempo <- df_muertes %>% 

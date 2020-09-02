@@ -168,7 +168,7 @@ f_replaceVar <- function(variable_orig){
      variable_orig== "heating_degree_18_winter"~ "HDD 18°C Invierno [°C]",
      variable_orig== "heating_degree_18_fall"~ "HDD 18°C Otoño [°C]",
      variable_orig== "heating_degree_18_spring"~ "HDD 18°C Primavera [°C]",
-     variable_orig== "hdd15_winter_lenaCalefaccion"~ "HDD 15° Invierno * % Leña Calefacción ",
+     variable_orig== "hdd15_winter_lenaCalefaccion"~ "HDD 15° Invierno * % Leña Calefacción",
       T ~ variable_orig))
 }
 
