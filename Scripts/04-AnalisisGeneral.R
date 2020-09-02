@@ -611,6 +611,4 @@ df_modelo %>%
   filter(!is.na(mp25)) %>% 
   group_by(region) %>% summarise(count=n()) %>% arrange(desc(count))
 
-
-
 ## EoF

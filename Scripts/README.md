@@ -21,3 +21,4 @@ Códigos
 **Otros códigos de análisis:**
 * [`MapasInteractivos.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/MapasInteractivos.R): Genera mapas interactivos de datos comunales y de estaciones monitoreo.
 * [`DistanciaMonitoreo.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/DistanciaMonitoreo.R): Análisis para expandir datos de MP2.5 y meteorología. Calcula la distancia entre centroides de comunas (zonas urbanas) y estaciones de monitoreo.
+* [`PDF_resumen.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/PDF_resumen.R): Genera un PDF resumen de análisis comunal para cada variable númerica. Se genera una tabla resumen, dispersión, densidad y curva de densidad acumulada.

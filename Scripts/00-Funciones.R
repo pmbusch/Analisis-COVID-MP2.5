@@ -181,7 +181,7 @@ f_addTypeVar <- function(var){
       var %in% c("tasa_mortalidad_covid", "covid_fallecidos",
                    "tasa_contagios","casos_confirmados",
                    "dias_primerContagio","dias_primerMuerte","dias_cuarentena",
-                   "perc_letalidad") ~ 
+                   "perc_letalidad","pcr_region","covid_fallecidos_65") ~ 
         "COVID-19",
       var %in% c("mp25","mp25_fall","mp25_winter",
                    "mp25_spring","mp25_summer")~ 
@@ -189,18 +189,22 @@ f_addTypeVar <- function(var){
       var %in% c("poblacion","densidad_pob","densidad_pob_censal",
                    "0-14","15-44","45-64","65+","perc_mujer",
                    "perc_rural","perc_puebloOrig",
-                   "perc_material_irrecuperable","tasa_mortalidad_all") ~ 
+                   "perc_material_irrecuperable","tasa_mortalidad_all","defunciones",
+                 "superficie","perimetro","superficie_censal",
+                 "densidad_pob_manzana_media","densidad_pob_manzana_mediana",
+                 "densidad_pob_manzana_p90","viviendas") ~ 
         "Demografía",
       var %in% c("perc_menor_media","perc_ocupado",
                    "perc_isapre","perc_FFAA","perc_fonasa_A","perc_fonasa_B",
                    "perc_fonasa_C", "perc_fonasa_D","perc_fonasa",
                  "ingresoTotal_media", "ingresoAutonomo_media",
                  "ingresoTotal_mediana", "ingresoAutonomo_mediana",
-                 "tasa_camas")  ~ 
+                 "tasa_camas","camas")  ~ 
         "Socioeconómico",
       var %in% c("cons_lena_cocina_pp","cons_lena_calefactor_pp",
                    "perc_lenaCocina","perc_lenaCalefaccion",
-                   "perc_lenaAgua")  ~ 
+                   "perc_lenaAgua","consumo_lena_m3","penetracion_lena",
+                 "consumo_lena_pp","hdd15_winter_lenaCalefaccion")  ~ 
         "Leña",
       var %in% c("hr_anual","hr_fall","hr_winter","hr_spring","hr_summer",
                  "tmed_anual","tmed_fall","tmed_winter","tmed_spring","tmed_summer",
