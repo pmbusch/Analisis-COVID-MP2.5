@@ -15,6 +15,21 @@ library(cowplot)
 library(grid)
 library(rlang)
 
+
+# Data frame para generar los pdf ------
+df_pdf <- df_modelo %>%
+  mutate(centroide=st_centroid(geometry),
+         cent_lon=map_dbl(geometry, ~st_centroid(.x)[[1]]),
+         cent_lat=map_dbl(geometry, ~st_centroid(.x)[[2]]))
+df_pdf <- mapa_comunas %>% 
+  mutate(centroide=st_centroid(geometry),
+         longitud=map_dbl(geometry, ~st_centroid(.x)[[1]]),
+         latitud=map_dbl(geometry, ~st_centroid(.x)[[2]])) %>% 
+  select(codigo_comuna,longitud, latitud) %>% 
+  right_join(df_modelo, by=c("codigo_comuna")) %>% 
+  filter(!is.na(latitud)) %>% arrange(desc(latitud))
+
+
 ## Funcion que genera figura resumen ---------
 f_generaFiguraResumen <- function(df, var){
   # Tabla resumen
@@ -48,12 +63,25 @@ f_generaFiguraResumen <- function(df, var){
   rm(tabla)
   
   # Grafico dispersion jitter
-  p_jitter <- ggplot(df, aes(x="",y=(!!sym(var))))+
-    geom_jitter(alpha=.5)+
-    scale_y_continuous(
-      labels=function(x) format(x,big.mark = " ", decimal.mark = ".", scientific = F))+
-    coord_flip(expand = F)+
-    labs(x="",y="")
+  comuna_label <- df_pdf %>%
+    mutate(comuna_label=case_when(
+      # nombre_comuna=="General Lagos" ~ "Norte",
+      # nombre_comuna=="Cabo de Hornos" ~ "Sur",
+      nombre_comuna %in% c("Antofagasta"," La Serena","Santiago",
+                           "Talca","Concepcion","Temuco","Puerto Montt",
+                           "Punta Arenas") ~ nombre_comuna,
+      T ~ "")) %>% pull(comuna_label)
+  comuna_label <- rev(comuna_label)  
+  
+  p_jitter <- df_pdf %>% 
+    ggplot(aes(x=reorder(nombre_comuna,latitud),y=(!!sym(var))))+
+    geom_point(alpha=.3)+
+    scale_y_continuous(labels=function(x) format(x,big.mark = " ", decimal.mark = ".", scientific = F))+
+    scale_x_discrete(labels=comuna_label)+
+    coord_flip(expand = T)+
+    labs(x="",y="")+
+    theme(axis.title.y=element_blank(),
+          axis.ticks.y=element_blank())
   
   # Grafico densidad
   p_dens <- ggplot(df, aes((!!sym(var))))+
@@ -78,20 +106,22 @@ f_generaFiguraResumen <- function(df, var){
   p <- plot_grid(title,p, ncol=1, rel_heights=c(0.1, 1))
   return(p)
 }
-# p_prueba <- f_generaFiguraResumen(df_modelo, "perc_isapre")
-# p_prueba
-# rm(p_prueba)
+# f_generaFiguraResumen(df_modelo, "perc_isapre")
+# f_generaFiguraResumen(df_modelo, "perc_lenaCalefaccion")
+
 
 ## Iteracion por columnas numericas --------------
 options(warn=-1) # supress warnings
-col_names <- names(df_modelo %>% select_if(is.numeric))
+col_names <- df_pdf %>% select_if(is.numeric) %>% 
+  select(-latitud,-longitud) %>% names()
 # Ordenar por tipo variable
 col_names <- tibble(tipo=f_addTypeVar(col_names),
                    nombre=col_names) %>% arrange(tipo) %>% pull(nombre)
 pdf(sprintf(file_name, "Resumen_Var"),
-    paper="a4r")
+    # paper="a4r",
+    width = 14.87, height = 9.30)
 for (c in col_names){
-  f_generaFiguraResumen(df_modelo, c) %>% print()
+  f_generaFiguraResumen(df_pdf, c) %>% print()
 }
 dev.off()
 options(warn=0) # activate warnings
