@@ -67,8 +67,9 @@ f_generaFiguraResumen <- function(df, var){
     mutate(comuna_label=case_when(
       # nombre_comuna=="General Lagos" ~ "Norte",
       # nombre_comuna=="Cabo de Hornos" ~ "Sur",
-      nombre_comuna %in% c("Antofagasta"," La Serena","Santiago",
-                           "Talca","Concepcion","Temuco","Puerto Montt",
+      nombre_comuna %in% c("Arica"," La Serena","Santiago",
+                           "Talca","Concepcion","Temuco",
+                           "Puerto Montt",
                            "Punta Arenas") ~ nombre_comuna,
       T ~ "")) %>% pull(comuna_label)
   comuna_label <- rev(comuna_label)  
@@ -108,21 +109,23 @@ f_generaFiguraResumen <- function(df, var){
 }
 # f_generaFiguraResumen(df_modelo, "perc_isapre")
 # f_generaFiguraResumen(df_modelo, "perc_lenaCalefaccion")
+# f_generaFiguraResumen(df_pdf, "perc_lenaCalefaccion")
 
 
 ## Iteracion por columnas numericas --------------
+# df_pdf <- df_pdf %>% filter(!is.na(mp25)) # Filtro MP2.5
 options(warn=-1) # supress warnings
 col_names <- df_pdf %>% select_if(is.numeric) %>% 
   select(-latitud,-longitud) %>% names()
 # Ordenar por tipo variable
 col_names <- tibble(tipo=f_addTypeVar(col_names),
-                   nombre=col_names) %>% arrange(tipo) %>% pull(nombre)
-pdf(sprintf(file_name, "Resumen_Var"),
-    # paper="a4r",
-    width = 14.87, height = 9.30)
+                    nombre=col_names) %>% arrange(tipo) %>% pull(nombre)
+pdf(sprintf(file_name, "Resumen_Var"), width = 14.87, height = 9.30)
+# pdf(sprintf(file_name, "Resumen_Var_mp25"), width = 14.87, height = 9.30)
 for (c in col_names){
   f_generaFiguraResumen(df_pdf, c) %>% print()
 }
 dev.off()
 options(warn=0) # activate warnings
-  
+
+## EoF
