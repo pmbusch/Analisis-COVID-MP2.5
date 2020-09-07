@@ -56,6 +56,34 @@ f_savePlot(last_plot(),
            sprintf(file_name, "Muertes_vs_MP25_name"), dpi=150)
 rm(p1)
 
+
+## Boxplot MP2.5 Quintiles ------------
+# Nota: Grafico inspirado en presentacion CR2: http://www.cr2.cl/contaminacion
+df_cuartil <- df_modelo %>% 
+  filter(!is.na(mp25)) %>% 
+  mutate(cuartil_mp25=qgroup(mp25, 4))
+df_cuartil %>% group_by(cuartil_mp25) %>% 
+  summarise(count=n(), mp25=mean(mp25,na.rm=T))
+
+# Label de comunas incluidas en cada cuartil,ordenadas por contaminacion
+comuna_label <- df_cuartil %>% group_by(cuartil_mp25) %>% 
+  arrange(mp25) %>% 
+  summarise(comunas=toString(nombre_comuna)) %>% ungroup() %>% 
+  mutate(comunas=paste(cuartil_mp25,": ", comunas,"\n", sep=""))
+
+
+df_cuartil %>% 
+  ggplot(aes(cuartil_mp25, tasa_mortalidad_covid))+
+  geom_boxplot()+
+  geom_point(data=comuna_label,y=0, aes(col=str_wrap(comunas,40)),alpha=0)+ ##labels as legend
+  labs(y="Tasa Mortalidad COVID-19 [por 100mil]", x="Cuartil MP2.5", col="")+
+  coord_cartesian(expand = T)+
+  theme(legend.text = element_text(size=8),
+        legend.key.height = unit(6, 'lines'))
+f_savePlot(last_plot(), sprintf(file_name,"Boxplot_Cuartil"))
+rm(df_cuartil, comuna_label)
+
+
 ## CORRELACIONES ------------
 library(corrplot)
 
