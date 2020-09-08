@@ -373,7 +373,7 @@ df <- df_modelo %>%
                 tmed_summer, tmed_winter, 
                 heating_degree_15_summer, heating_degree_15_winter,
                 heating_degree_18_summer, heating_degree_18_winter,
-                proxy_lena_calefaccion)
+                hdd15_winter_lenaCalefaccion)
 
 
 ## Sin MP2.5---------
@@ -620,6 +620,31 @@ f_figMRR(mod_nb)
 f_savePlot(last_plot(), sprintf(file_name,"sinRandomIntercept"),dpi=150)
 saveRDS(mod_nb, sprintf(file_mod,"sinRandomIntercept"))
 rm(mod_nb)
+
+## Sin Random Solo Significativas---------
+mod_nb_sig <- glm.nb(covid_fallecidos ~ 
+                   mp25 + rm + 
+                   scale(densidad_pob) +
+                   scale(`65+`) +
+                   scale(perc_puebloOrig) +
+                   scale(tasa_camas) +
+                   scale(log(ingresoTotal_media)) +
+                   scale(tmed_winter) + 
+                   scale(heating_degree_15_winter) +
+                   offset(log(poblacion)), 
+                 data = df,
+                 na.action=na.omit)
+summary(mod_nb_sig)
+nobs(mod_nb_sig)
+exp(summary(mod_nb_sig)$coefficients[2,1]) # exponencial coeficiente MP2.5
+f_tableCoef(mod_nb_sig)
+f_tableMRR(mod_nb_sig)
+# print(preview="pptx")
+f_figMRR(mod_nb_sig)
+f_savePlot(last_plot(), sprintf(file_name,"sinRandomInterceptSign"),dpi=150)
+saveRDS(mod_nb_sig, sprintf(file_mod,"sinRandomInterceptSign"))
+rm(mod_nb_sig)
+
 
 
 ## Proxy Leña---------
