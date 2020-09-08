@@ -14,13 +14,9 @@ file_name <- "Figuras/%s.pdf"
 library(cowplot)
 library(grid)
 library(rlang)
-
+library(officer)
 
 # Data frame para generar los pdf ------
-df_pdf <- df_modelo %>%
-  mutate(centroide=st_centroid(geometry),
-         cent_lon=map_dbl(geometry, ~st_centroid(.x)[[1]]),
-         cent_lat=map_dbl(geometry, ~st_centroid(.x)[[2]]))
 df_pdf <- mapa_comunas %>% 
   mutate(centroide=st_centroid(geometry),
          longitud=map_dbl(geometry, ~st_centroid(.x)[[1]]),
@@ -54,8 +50,8 @@ f_generaFiguraResumen <- function(df, var){
     autofit(add_w = 0.1, add_h = 0.2) %>%
     align(j=1, align = "left") %>% 
     delete_part(part = "header") %>% 
-    border(j=1:2,i=1, part="body",
-           border.top = officer::fp_border(style = "solid", width=2))
+    flextable::border(j=1:2,i=1, part="body",
+           border.top = fp_border(style = "solid", width=2))
   
   tabla_fig <- ggplot()+theme_void()+
     annotation_custom(rasterGrob(as_raster(tabla)), 
@@ -107,9 +103,10 @@ f_generaFiguraResumen <- function(df, var){
   p <- plot_grid(title,p, ncol=1, rel_heights=c(0.1, 1))
   return(p)
 }
-# f_generaFiguraResumen(df_modelo, "perc_isapre")
-# f_generaFiguraResumen(df_modelo, "perc_lenaCalefaccion")
+# f_generaFiguraResumen(df_pdf, "perc_isapre")
 # f_generaFiguraResumen(df_pdf, "perc_lenaCalefaccion")
+f_generaFiguraResumen(df_pdf, "perc_salud")
+f_generaFiguraResumen(df_pdf, "cons_lena_kg")
 
 
 ## Iteracion por columnas numericas --------------

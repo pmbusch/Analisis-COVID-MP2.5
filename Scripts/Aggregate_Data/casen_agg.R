@@ -40,6 +40,16 @@ df_prevision <-  df_prevision %>%
   ungroup() %>% select(-hab) %>% 
   spread(prev, perc, fill=0) %>% select(-otro)
 
+## Salud Tratamiento medico ---------
+df_salud$s28 %>% unique()
+# 22: No ha estado en tratamiento por ninguna condicion de salud anteriores
+df_salud <-  df_salud %>% 
+  filter(s28!=99) %>% # filtro respuesta no sabe
+  group_by(codigo_comuna, s28) %>% 
+  summarise(hab=sum(hab,na.rm=T)) %>% 
+  mutate(perc_salud=hab/sum(hab)*100) %>% 
+  ungroup() %>% 
+  filter(s28==22) %>% select(-hab, -s28)
 
 ## Leña ---------
 df_lena_casen <- df_lena_casen %>% 
@@ -48,20 +58,22 @@ df_lena_casen <- df_lena_casen %>%
          perc_lenaAgua=lena_agua/hab*100) %>% 
   select(codigo_comuna, perc_lenaCocina, perc_lenaCalefaccion, perc_lenaAgua)
 
-
+  
 
 ## AGRUPAR TODO -------
 df_casen <- left_join(df_ingreso, 
                       df_ocupacion %>% select(codigo_comuna, perc_ocupado)) %>% 
   left_join(df_educacion) %>% 
   left_join(df_prevision) %>% 
+  left_join(df_salud) %>% 
   left_join(df_lena_casen) %>% 
+  left_join(df_lena_casen2013) %>% 
   select(-nombre_comuna,-codigo_provincia,-nombre_provincia,
          -codigo_region,-nombre_region)
 
 
 rm(df_codigoSalud, df_codigoEducacion, df_ingreso, df_prevision, df_educacion,
-   df_ocupacion, df_lena_casen)
+   df_ocupacion, df_lena_casen, df_salud, df_lena_casen2013)
 
 
 ## EoF

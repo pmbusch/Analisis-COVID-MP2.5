@@ -140,9 +140,11 @@ f_replaceVar <- function(variable_orig){
      variable_orig== "perc_fonasa_C"~ "% Fonasa-C",
      variable_orig== "perc_fonasa_D"~ "% Fonasa-D",
      variable_orig== "perc_FFAA" ~ "% Previsión Salud FF.AA.",
+     variable_orig== "perc_salud" ~ "% Sin tratamientos médicos en último año",
      variable_orig== "perc_menor_media"~ "% Educación menor a media",
      variable_orig== "perc_ocupado"~ "% Ocupado laboral",
      variable_orig=="consumo_lena_m3" ~" Consumo regional leña CDT",
+     variable_orig=="cons_lena_kg" ~" Consumo anual leña Casen 2013 [kg]",
      variable_orig== "cons_lena_calefactor_pp"~ "Consumo anual leña calefactor [kWh per cápita]",
      variable_orig== "cons_lena_cocina_pp"~ "Consumo anual leña cocina [kWh per cápita]",
      variable_orig== "perc_lenaCocina"~ "% Uso leña cocina",
@@ -196,7 +198,7 @@ f_addTypeVar <- function(var){
         "Demografía",
       var %in% c("perc_menor_media","perc_ocupado",
                    "perc_isapre","perc_FFAA","perc_fonasa_A","perc_fonasa_B",
-                   "perc_fonasa_C", "perc_fonasa_D","perc_fonasa",
+                   "perc_fonasa_C", "perc_fonasa_D","perc_fonasa","perc_salud",
                  "ingresoTotal_media", "ingresoAutonomo_media",
                  "ingresoTotal_mediana", "ingresoAutonomo_mediana",
                  "tasa_camas","camas")  ~ 
@@ -204,7 +206,8 @@ f_addTypeVar <- function(var){
       var %in% c("cons_lena_cocina_pp","cons_lena_calefactor_pp",
                    "perc_lenaCocina","perc_lenaCalefaccion",
                    "perc_lenaAgua","consumo_lena_m3","penetracion_lena",
-                 "consumo_lena_pp","hdd15_winter_lenaCalefaccion")  ~ 
+                 "consumo_lena_pp","hdd15_winter_lenaCalefaccion",
+                 "cons_lena_kg")  ~ 
         "Leña",
       var %in% c("hr_anual","hr_fall","hr_winter","hr_spring","hr_summer",
                  "tmed_anual","tmed_fall","tmed_winter","tmed_spring","tmed_summer",

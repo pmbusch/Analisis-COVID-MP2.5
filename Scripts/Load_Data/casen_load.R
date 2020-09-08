@@ -6,7 +6,7 @@ library(casen)
 library(spatstat) #weighted median
 
 # Ejecutar solo para descargar datos
-# casen::descargar_casen_github(anios=2015, carpeta = "Data/Data_Original/Casen")
+# casen::descargar_casen_github(anios=2013, carpeta = "Data/Data_Original/Casen")
 df_casen <- read_rds("Data/Data_Original/Casen/2017.rds")
 df_casen %>% names()
 
@@ -58,6 +58,17 @@ df_prevision <- df_casen %>%
   left_join(codigos_territoriales, by = c("comuna"="codigo_comuna")) %>% 
   rename(codigo_comuna=comuna)
 
+## SALUD TRATAMIENTO MEDICO -------
+# s28: Durante los últimos 12 meses, ¿ha estado en tratamiento médico por..?
+# 22: No ha estado en tratamiento por ninguna condicion de salud anteriores
+df_salud <- df_casen %>% 
+  group_by(comuna,s28) %>% 
+  summarise(hab=sum(expc,na.rm=T)) %>% 
+  mutate(perc=hab/sum(hab)) %>% 
+  ungroup() %>% 
+  left_join(codigos_territoriales, by = c("comuna"="codigo_comuna")) %>% 
+  rename(codigo_comuna=comuna)
+
 
 ## OCUPADOS -----------
 # o9a: o9a. ¿Cuál es su ocupación u oficio?
@@ -92,6 +103,41 @@ df_lena_casen <- df_casen %>%
   left_join(codigos_territoriales, by = c("comuna"="codigo_comuna")) %>% 
   rename(codigo_comuna=comuna)
 
+
+## Leña 2013 ----------------
+# # Obtenidos de la casen 2013
+df_casen2013 <- read_rds("Data/Data_Original/Casen/2013.rds")
+df_casen2013 %>% names()
+
+# # Pasar a codigos subdere_2017
+# Dejo un la tupla validoHasta-Codigo_casen mas reciente
+codigos_casen_recientes <- codigos_casen %>%
+  group_by(codigo_casen) %>% summarise(valido_hasta=max(valido_hasta, na.rm=T)) %>%
+  ungroup() %>%
+  left_join(codigos_casen, by=c("valido_hasta","codigo_casen")) %>%
+  rename(comuna=codigo_casen, codigo_comuna=codigo_subdere_2017)
+
+df_casen2013 <- df_casen2013 %>%
+  left_join(codigos_casen_recientes, by=c("comuna"))
+
+# # Factor expansion
+df_casen2013$expc %>% sum(na.rm=T)
+df_casen2013$expr %>% sum(na.rm=T)
+
+## Datos leña
+# v36: En el último año, ¿ha utilizado leña en su hogar? 1:Si, 2: No
+# v37: En el último año, ¿cuántos kilos de leña? 9: No Sabe/NR
+# Nota: v36==2 es igual a consumo de 0 kilos
+df_lena_casen2013 <- df_casen2013 %>%
+  mutate(consumo=if_else(v36==2,0, as.numeric(v37))) %>% 
+  filter(consumo!=9) %>%  # NS/NR
+  group_by(codigo_comuna) %>%
+  summarise(cons_lena_kg=weighted.mean(consumo,w = expc,na.rm=T)) %>% 
+  ungroup() 
+  # left_join(codigos_territoriales, by = c("codigo_comuna"))
+# df_lena_casen %>% skim()
+
+rm(codigos_casen_recientes, df_casen2013)
 
 # ## LEÑA 2015 -----------
 ## OLD: 2017 TAMBIEN TIENE LEÑA, SE USA ESA POR ESTAR MAS ACTUALIZADA
