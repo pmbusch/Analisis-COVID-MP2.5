@@ -5,6 +5,8 @@ Códigos
 * [`Load_Data`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/Load_Data): Carga de datos necesarios
 * [`Analisis_Exploratorios`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/Analisis_Exploratorios): Análisis exploratorio datos recopilados 
 * [`Aggregate_Data`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/Aggregate_Data): Resume datos a nivel comunal 
+* [`Analisis_General`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/Analisis_General): Análisis generales de los datos comunales: Scatter plot, Correlaciones, Densidades, PDF resumen.
+
 
 **Códigos de análisis principal:**
 * [`00-CargaLibrerias.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/00-CargaLibrerias.R): Carga de librerias requeridas 
@@ -13,7 +15,6 @@ Códigos
 	* [`01-UpdateCovidData.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/01-UpdateCovidData.R): Actualiza datos COVID-19 (alternativa más rápida que cargar todo nuevamente).
 * [`02-FeatureData.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/02-FeatureData.R): Trabaja información levantada y genera nuevas feature para el modelo.
 * [`03-TablasResumen.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/03-TablasResumen.R): Genera tablas resumen de los datos levantados.
-* [`04-AnalisisGeneral.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/04-AnalisisGeneral.R): Análisis generales de los datos comunales: Indicadores, Scatter plot, Correlaciones y Densidades.
 * [`05-AnalisisTransversal.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/05-AnalisisTransversal.R): Modelo Transversal *(cross-sectional analysis)*
 	* [`05-FuncionesAnalisisTransversal.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/05-FuncionesAnalisisTransversal.R): Funciones para analizar resultados del Modelo Transversal
 
