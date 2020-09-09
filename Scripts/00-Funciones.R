@@ -129,6 +129,9 @@ f_replaceVar <- function(variable_orig){
      variable_orig== "perc_rural"~ "% Rural",
      variable_orig== "perc_puebloOrig"~ "% Pueblo Originario",
      variable_orig== "perc_material_irrecuperable"~ "% Vivienda con Material irrecuperable",
+     variable_orig== "perc_vivSinHac" ~ "% Viviendas sin Hacinamiento (menos de 2.5 hab por dormitorio)",
+     variable_orig== "perc_vivHacMedio" ~ "% Viviendas Hacinamiento medio (entre 2.5 y 5 hab por dormitorio)",
+     variable_orig== "perc_vivHacCritico", ~ "% Viviendas Hacinamiento crítico (más de 5 hab por dormitorio)",
      variable_orig== "dias_primerContagio" ~ "Dias desde primer contagio",
      variable_orig== "dias_primerMuerte"~ "Dias desde primera muerte",
      variable_orig== "dias_cuarentena"~ "Dias desde cuarentena",
@@ -199,7 +202,8 @@ f_addTypeVar <- function(var){
                    "perc_material_irrecuperable","tasa_mortalidad_all","defunciones",
                  "superficie","perimetro","superficie_censal",
                  "densidad_pob_manzana_media","densidad_pob_manzana_mediana",
-                 "densidad_pob_manzana_p90","viviendas") ~ 
+                 "densidad_pob_manzana_p90","viviendas",
+                 "perc_vivSinHac","perc_vivHacMedio","perc_vivHacCritico") ~ 
         "Demografía",
       var %in% c("perc_menor_media","perc_ocupado",
                    "perc_isapre","perc_FFAA","perc_fonasa_A","perc_fonasa_B",
