@@ -8,7 +8,8 @@
 # source("Scripts/01-LoadAllData", encoding = "UTF-8") 
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
 theme_set(theme_bw(16)+theme(panel.grid.major = element_blank()))
-file_name <- "Figuras/%s.pdf"
+file_name <- "Scripts/Analisis_General/Figuras/%s.pdf"
+
 
 # Librerias especiales
 library(cowplot)

@@ -3,6 +3,22 @@
 ## PBH Julio 2020
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
 
+
+## Indicadores relevantes ------------
+# Poblacion en comunas con datos MP2.5
+df_modelo %>% filter(!is.na(mp25)) %>% nrow()
+total_pob <- df_modelo$poblacion %>% sum()
+pob_mp25 <- df_modelo %>% filter(!is.na(mp25)) %>% pull(poblacion) %>% sum()
+cat(round(pob_mp25/total_pob*100,1),
+    "% de poblacion en comunas con monitoreo de MP2.5")
+# Poblacion en comunas con muertes ---------
+total_comunas <- nrow(df_modelo)
+comunas_muerte <- df_modelo %>% filter(covid_fallecidos>0) %>% nrow()
+cat(round(comunas_muerte/346*100,1),
+    "% de comunas con muertes COVID")
+rm(total_pob, pob_mp25, total_comunas, comunas_muerte)
+
+
 # Tablas Resumen general Promedio (sd) ---------------
 df_modelo %>% names()
 df <- df_modelo %>% 
