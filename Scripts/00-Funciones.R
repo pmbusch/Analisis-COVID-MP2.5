@@ -104,6 +104,10 @@ f_replaceVar <- function(variable_orig){
      variable_orig== "mp25_winter" ~ "MP2.5 2017-2019 Invierno",
      variable_orig== "mp25_spring" ~ "MP2.5 2017-2019 Primavera",
      variable_orig== "mp25_summer" ~ "MP2.5 2017-2019 Verano",
+     variable_orig== "mp25_2017" ~ "MP2.5 2017 [ug/m3]",
+     variable_orig== "mp25_2018" ~ "MP2.5 2018 [ug/m3]",
+     variable_orig== "mp25_2019" ~ "MP2.5 2019 [ug/m3]",
+     variable_orig== "mp25_2020" ~ "MP2.5 2020 [ug/m3]",
      variable_orig== "densidad_pob" ~ "Densidad [hab/km2]",
      variable_orig== "densidad_pob_censal" ~ "Densidad urbana",
      variable_orig== "quintil_dens_pob" ~ "Quintil densidad poblacion",
@@ -186,7 +190,8 @@ f_addTypeVar <- function(var){
                    "perc_letalidad","pcr_region","covid_fallecidos_65") ~ 
         "COVID-19",
       var %in% c("mp25","mp25_fall","mp25_winter",
-                   "mp25_spring","mp25_summer")~ 
+                   "mp25_spring","mp25_summer",
+                 "mp25_2017", "mp25_2018","mp25_2019", "mp25_2020")~ 
         "MP2.5",
       var %in% c("poblacion","densidad_pob","densidad_pob_censal",
                    "0-14","15-44","45-64","65+","perc_mujer",

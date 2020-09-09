@@ -7,16 +7,30 @@
 source("Scripts/Analisis_Exploratorios/f_figuras.R", encoding = "UTF-8")
 df <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
 
-## Añadir Season
-df %>% names() %>% sort()
-df <- df %>% mutate(season=getSeason(date))
-df <- df %>% mutate(season="anual") %>% rbind(df)
+
+## Expandir a otros años y season ---------
+## Añadir Año especial (promedio 2017-2019 y años por separado)
+df <- df %>%
+  filter(year %in% 2017:2020 & pollutant=="mp2.5") %>%
+  mutate(season=as.character(year))
 df$season %>% unique()
 
+# Df con promedios por años
+df_anos <- df
+df <- df %>% filter( year %in% 2017:2019) %>% mutate(season=NULL)
 
-# Periodo 2017-2019
+## Añadir Season (promedio 2017-2019)
+df %>% names() %>% sort()
+df <- df %>% mutate(season=getSeason(date))
+## Add anual: promedio 2017-2019
+df <- df %>% mutate(season="anual") %>% rbind(df)
+# Add other years as season
+df <- df %>% rbind(df_anos)
+df$season %>% unique(); df$pollutant %>% unique()
+rm(df_anos)
+
+# Concentracion promedio en periodos seleccionados (season)
 df_conc <- df %>% 
-  filter(year %in% 2017:2019 & pollutant=="mp2.5") %>% 
   group_by(codigo_comuna, pollutant, unidad, site,year,season) %>% 
   summarise(valor=mean(valor, na.rm=T),
             disponibilidad=n()/365) %>% ungroup()
@@ -35,14 +49,13 @@ df_conc <- df_conc %>%
   group_by(codigo_comuna, site, season) %>% 
   summarise(valor=mean(valor, na.rm=T)) %>% ungroup()
 rm(sitios_validos)
+df_conc$site %>% unique()
 
 
-df_conc %>% n_distinct("site")
-
+## Cruze con datos distancia: Fixed Radius
 ## Cargar datos distancia
 df_dist <- read_rds("Data/Data_Modelo/distanciacomunaEstacionsinca.rsd")
 df_dist_zona <- read_rds("Data/Data_Modelo/distanciazonaEstacionsinca.rsd")
-
 
 # Cruzo con estaciones dentro del rango del centroide de cada comuna
 # Nota: centroide debe ser estimado mediante zonas censales
@@ -104,12 +117,13 @@ m1 <- mapview(df_mp %>% st_as_sf(),
       na.color="white",
       col.regions=brewer.pal(9, "YlOrRd"))
 m1
-mapshot(m1, "Figuras/ConcentracionMP25.html")
+mapshot(m1, "Figuras/ConcentracionMP25.html", selfContained=F)
 rm(m1)
 
 # Guarda datos ----------
 df_conc <- df_mp %>% 
-  select(codigo_comuna, mp25, mp25_fall, mp25_winter, mp25_spring, mp25_summer) %>% 
+  select(codigo_comuna, mp25, mp25_fall, mp25_winter, mp25_spring, mp25_summer,
+         mp25_2017, mp25_2018, mp25_2019, mp25_2020) %>% 
   filter(!is.na(mp25))
 saveRDS(df_conc, "Data/Data_Modelo/Datos_Concentraciones.rsd")
 
@@ -127,6 +141,7 @@ df_mp %>%
   filter(mapa_rm==1) %>% 
   fig_mapa(mp25,limites = c(0,50), titulo="Promedio 2017-2019 \n MP2.5 [ug/m3]")
 f_savePlot(last_plot(), sprintf(file_name,"MapaSantiagoMP25_Exp"))
+
 
 
 ## METODO 2: Asignacion comuna donde se encuentra el monitor ------------
