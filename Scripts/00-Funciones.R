@@ -114,6 +114,7 @@ f_replaceVar <- function(variable_orig){
      variable_orig== "densidad_pob_manzana_mediana" ~ "Mediana densidad manzana",
      variable_orig== "densidad_pob_manzana_p90" ~ "Percentil 90 densidad manzana",
      variable_orig== "densidad_pob_manzana_media" ~ "Media densidad manzana",
+     variable_orig== "movilidad" ~ "Indice de Movilidad"
      variable_orig== "`0-14`" ~ "% Edad 0-14",
      variable_orig== "0-14" ~ "% Edad 0-14",
      variable_orig== "`15-44`" ~ "% Edad 15-44",
@@ -131,7 +132,7 @@ f_replaceVar <- function(variable_orig){
      variable_orig== "perc_material_irrecuperable"~ "% Vivienda con Material irrecuperable",
      variable_orig== "perc_vivSinHac" ~ "% Viviendas sin Hacinamiento (menos de 2.5 hab por dormitorio)",
      variable_orig== "perc_vivHacMedio" ~ "% Viviendas Hacinamiento medio (entre 2.5 y 5 hab por dormitorio)",
-     variable_orig== "perc_vivHacCritico", ~ "% Viviendas Hacinamiento crítico (más de 5 hab por dormitorio)",
+     variable_orig== "perc_vivHacCritico" ~ "% Viviendas Hacinamiento crítico (más de 5 hab por dormitorio)",
      variable_orig== "dias_primerContagio" ~ "Dias desde primer contagio",
      variable_orig== "dias_primerMuerte"~ "Dias desde primera muerte",
      variable_orig== "dias_cuarentena"~ "Dias desde cuarentena",
@@ -210,7 +211,7 @@ f_addTypeVar <- function(var){
                    "perc_fonasa_C", "perc_fonasa_D","perc_fonasa","perc_salud",
                  "ingresoTotal_media", "ingresoAutonomo_media",
                  "ingresoTotal_mediana", "ingresoAutonomo_mediana",
-                 "tasa_camas","camas")  ~ 
+                 "tasa_camas","camas","movilidad")  ~ 
         "Socioeconómico",
       var %in% c("cons_lena_cocina_pp","cons_lena_calefactor_pp",
                    "perc_lenaCocina","perc_lenaCalefaccion",
