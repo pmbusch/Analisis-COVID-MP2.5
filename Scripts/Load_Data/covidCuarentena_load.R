@@ -10,7 +10,7 @@ url <- "https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output
 # Nota: Archivos _std vienen aplanados
 df_cuarentena <- read_csv(paste(url,"producto29","Cuarentenas-Totales.csv", sep="/"))
 names(df_cuarentena) <- names(df_cuarentena) %>% str_to_lower() %>% str_replace_all(" ","_")
-df_cuarentena <- df_cuarentena %>% na.omit() # limpio NA
+# df_cuarentena <- df_cuarentena %>% na.omit() # limpio NA
 
 # Para homologar codigos comunales, debo agregar un 0 a las regiones (ej: 01)
 df_cuarentena <- df_cuarentena %>% 
@@ -22,10 +22,14 @@ df_cuarentena <- df_cuarentena %>%
 df_cuarentena %>% group_by(alcance) %>% summarise(count=n()) %>% arrange(desc(count))
 # df_cuarentena <- df_cuarentena %>% arrange(alcance)
 
+# Date format
+df_cuarentena <- df_cuarentena %>% 
+  mutate(date = fecha_de_inicio %>% strptime("%m/%d/%Y") %>% as_date())
+
 ## Fecha inicio cuarentena por comuna --------
 df_cuarentena <- df_cuarentena %>% 
   group_by(codigo_comuna) %>% 
-  summarise(fecha_cuarentena=min(fecha_de_inicio)) %>% ungroup() %>% 
+  summarise(fecha_cuarentena=min(date)) %>% ungroup() %>% 
   mutate(fecha_cuarentena=fecha_cuarentena %>% as_date())
 
 rm(url)
