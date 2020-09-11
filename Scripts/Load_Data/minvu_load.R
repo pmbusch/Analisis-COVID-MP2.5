@@ -2,9 +2,12 @@
 ## Carga Datos MINVU
 ## https://www.observatoriourbano.cl/estadisticas-habitacionales/
 ## Demanda y Deficit Habitacional. Índice de hacinamiento (viviendas, hogares, personas), por comuna y zona (Censo 2017)
+## Permisos de Edificacion. Viviendas unidades y superficie según año y comuna
 ## PBH Septiembre 2020
 
 
+
+## HACINAMIENTO ---------------
 ## Carga Datos --------------
 ## Categorias:
 # "Viviendas sin Hacinamiento (menos de 2,5 personas por dormitorio)"	
@@ -29,6 +32,35 @@ df_minvu <- df_minvu %>%
                       codigo_comuna,sep=""))
 
 
+## PERMISOS EDIFICACION ----------------
+## Carga Datos --------------
+source("Scripts/00-Funciones.R", encoding = "UTF-8")
+df_permisos <- read_excel("Data/Data_Original/Censo2017_16R_ManzanaEntidad_CSV/PE_Viviendas.xlsx",
+                          sheet="número_total",
+                          range = "A27:T393",
+                          col_names = c("region","comuna",2002:2019))
+
+# Ajusto cruce por comuna
+# Hay comunas que se repite por la serie temporal (cmabio de region)
+# Al sumar por la totalidad de años no hay problema
+df_permisos <- df_permisos %>% 
+  mutate(comuna=f_remover_acentos(comuna) %>% 
+           str_replace("Padre Las Casas","Padre las Casas") %>% 
+           str_replace("Coyhaique","Coihaique") %>% 
+           str_replace("Aysen","Aisen") %>% 
+           str_replace("Ollagüe","Ollague") %>% 
+           str_replace("O’Higgins","OHiggins") %>% 
+           str_replace("Cabo de Hornos \\(Ex - Navarino\\)","Cabo de Hornos")) %>% 
+  rename(nombre_comuna=comuna) %>% 
+  left_join(codigos_territoriales, by=c("nombre_comuna")) 
+
+
+## Aplano tabla
+df_permisos <- df_permisos %>% 
+  select(-codigo_region,-nombre_region,-codigo_provincia,-nombre_provincia,
+         -nombre_comuna,-region) %>% 
+  pivot_longer(-codigo_comuna,
+               names_to="year", values_to="permisos")
 
 
 ## EoF

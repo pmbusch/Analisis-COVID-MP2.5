@@ -114,7 +114,7 @@ f_replaceVar <- function(variable_orig){
      variable_orig== "densidad_pob_manzana_mediana" ~ "Mediana densidad manzana",
      variable_orig== "densidad_pob_manzana_p90" ~ "Percentil 90 densidad manzana",
      variable_orig== "densidad_pob_manzana_media" ~ "Media densidad manzana",
-     variable_orig== "movilidad" ~ "Indice de Movilidad"
+     variable_orig== "movilidad" ~ "Indice de Movilidad",
      variable_orig== "`0-14`" ~ "% Edad 0-14",
      variable_orig== "0-14" ~ "% Edad 0-14",
      variable_orig== "`15-44`" ~ "% Edad 15-44",
@@ -133,6 +133,7 @@ f_replaceVar <- function(variable_orig){
      variable_orig== "perc_vivSinHac" ~ "% Viviendas sin Hacinamiento (menos de 2.5 hab por dormitorio)",
      variable_orig== "perc_vivHacMedio" ~ "% Viviendas Hacinamiento medio (entre 2.5 y 5 hab por dormitorio)",
      variable_orig== "perc_vivHacCritico" ~ "% Viviendas Hacinamiento crítico (más de 5 hab por dormitorio)",
+     variable_orig== "perc_vivAntes2002" ~ "% Viviendas construidas antes del 2002",
      variable_orig== "dias_primerContagio" ~ "Dias desde primer contagio",
      variable_orig== "dias_primerMuerte"~ "Dias desde primera muerte",
      variable_orig== "dias_cuarentena"~ "Dias desde cuarentena",
@@ -204,7 +205,8 @@ f_addTypeVar <- function(var){
                  "superficie","perimetro","superficie_censal",
                  "densidad_pob_manzana_media","densidad_pob_manzana_mediana",
                  "densidad_pob_manzana_p90","viviendas",
-                 "perc_vivSinHac","perc_vivHacMedio","perc_vivHacCritico") ~ 
+                 "perc_vivSinHac","perc_vivHacMedio","perc_vivHacCritico",
+                 "perc_vivAntes2002") ~ 
         "Demografía",
       var %in% c("perc_menor_media","perc_ocupado",
                    "perc_isapre","perc_FFAA","perc_fonasa_A","perc_fonasa_B",
