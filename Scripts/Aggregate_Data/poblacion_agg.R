@@ -15,6 +15,11 @@ df_poblacion <- df_poblacion %>%
     edad %in% c("45 a 49","50 a 54","55 a 59","60 a 64") ~ "45-64",
     T ~ "65+"))
 
+# Para uso en data covid
+df_grupoEdad <- df_poblacion %>% 
+  group_by(codigo_comuna, grupo_edad) %>% 
+  summarise(poblacion=sum(poblacion,na.rm=T))
+
 df_edad <- df_poblacion %>% 
   group_by(codigo_comuna, grupo_edad) %>% 
   summarise(pob=sum(poblacion,na.rm=T)) %>% 

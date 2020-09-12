@@ -12,6 +12,8 @@ url <- "https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output
 df_casos <- read_csv(paste(url,"producto1","Covid-19_std.csv", sep="/"))
 names(df_casos) <- names(df_casos) %>% str_to_lower() %>% str_replace_all(" ","_")
 df_casos <- df_casos %>% na.omit() # limpio NA
+df_casos_tiempo <- df_casos
+
 
 ## Dia primer contagio por comuna ---------------
 # Limitado por fecha de primer reporte 30-03-2020
