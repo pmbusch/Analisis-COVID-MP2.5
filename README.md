@@ -21,6 +21,7 @@ El proyecto se subdivide en las siguientes secciones:
 	* Casos totales por comuna incremental *(producto 1)*
 	* Exámenes PCR por región *(producto 7)*
 	* Cuarentenas Activas e Históricas *(producto 29)*
+	* Indice de Movilidad (viajes comuna por habitante) *(producto 33)*
 * Concentración ambiental (2017-2019): SINCA (https://sinca.mma.gob.cl/)
 	* MP2.5
 * Tasa de Mortalidad (2017): CENSO 2017 y DEIS (compilado por MinCiencia)
@@ -34,6 +35,9 @@ El proyecto se subdivide en las siguientes secciones:
 	* Población originaria
 	* Viviendas
 	* Materialidad Viviendas
+* Demografía Viviendas: Observatorio Urbano MINVU (https://www.observatoriourbano.cl/estadisticas-habitacionales/)
+	* Indice de Hacinamiento en Viviendas
+	* Permisos Edificación 2002-2017
 * Mapas de Chile: librería de R *chilemapas* (https://cran.r-project.org/web/packages/chilemapas/index.html)
 * Meteorología (2017-2019): Dirección Meteorológica de Chile (https://climatologia.meteochile.gob.cl/)
 	* Temperatura (media, mínima y máxima diaria)
@@ -42,6 +46,7 @@ El proyecto se subdivide en las siguientes secciones:
 	* Ingreso total e ingreso autónomo: *ytotcor* e *yautcor*
 	* Nivel educacional: *e6a* 
 	* Previsión de Salud: *s12* 
+	* Tratamiento médico: *s28*
 	* Ocupado: *o1*
 	* Factor expansión: *expc*
 * Consumo de Leña (2018): 
@@ -50,3 +55,5 @@ El proyecto se subdivide en las siguientes secciones:
 		* Base de datos disponible en: https://www.energia.gob.cl/documentos/bbdd-estudio-caracterizacion-residencial-2018
 	* CASEN 2017
 		* Combustible principal utilizado para cocinar, calefacción, agua caliente: *v36a*, *v36b*, *v36c*, *expc*
+	* CASEN 2013
+		* Kilogramos consumidos anualmente: *v37*
