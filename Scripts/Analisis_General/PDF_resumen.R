@@ -2,14 +2,11 @@
 ## PDF Resumen datos numericos de variables a nivel comunal
 ## PBH Septiembre 2020
 
-
-
 ## Carga Datos a nivel de comuna-----
 # source("Scripts/01-LoadAllData", encoding = "UTF-8") 
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
 theme_set(theme_bw(16)+theme(panel.grid.major = element_blank()))
 file_name <- "Scripts/Analisis_General/Figuras/%s.pdf"
-
 
 # Librerias especiales
 library(cowplot)
@@ -106,9 +103,11 @@ f_generaFiguraResumen <- function(df, var){
 }
 # f_generaFiguraResumen(df_pdf, "perc_isapre")
 # f_generaFiguraResumen(df_pdf, "perc_lenaCalefaccion")
-f_generaFiguraResumen(df_pdf, "perc_salud")
-f_generaFiguraResumen(df_pdf, "cons_lena_kg")
-
+# f_generaFiguraResumen(df_pdf, "perc_salud")
+# f_generaFiguraResumen(df_pdf, "cons_lena_kg")
+# f_generaFiguraResumen(df_pdf, "perc_vivHacMedio")
+# f_generaFiguraResumen(df_pdf, "perc_vivAntes2002")
+# f_generaFiguraResumen(df_pdf, "movilidad")
 
 ## Iteracion por columnas numericas --------------
 # df_pdf <- df_pdf %>% filter(!is.na(mp25)) # Filtro MP2.5

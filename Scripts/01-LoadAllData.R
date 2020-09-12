@@ -29,13 +29,6 @@ source("Scripts/Load_Data/covidCasos_load.R", encoding = "UTF-8")
 source("Scripts/Load_Data/covidPCR_load.R", encoding = "UTF-8")
 source("Scripts/Load_Data/covidCuarentena_load.R", encoding = "UTF-8")
 
-
-## Cargar nuevamente ------
-# Solamente ejecutar para actualizar datos
-# source("Scripts/Load Data/sinca_scrap.R", encoding = "UTF-8") # SINCA
-# source("Scripts/Load Data/meteo_scrap.R", encoding = "UTF-8") # MeteoChile
-
-
 ## Join all data ----------------
 # Todas las comunas se unen por "codigo_comuna"
 df_modelo <- df_poblacion %>% 
@@ -55,6 +48,6 @@ df_modelo <- df_poblacion %>%
 
 rm(df_poblacion, df_muertes, df_conc, df_camas, df_casos, df_cuarentena,
    df_meteo, df_casen, df_censo,df_minvu, df_pcr, df_lena, df_tasaMortalidad,
-   df_movilidad)
+   df_movilidad, df_grupoEdad)
 
 ## EoF

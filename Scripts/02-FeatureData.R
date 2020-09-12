@@ -84,8 +84,10 @@ write.table(df_modelo_std,"Data/Data_Modelo/Datos_Modelo_std.csv",
 rm(df_modelo_std)
 
 ## Diccionario variables
-dicc_variables <- tibble(variable=names(df_modelo),
-                         descripcion=names(df_modelo) %>% f_replaceVar())
+dicc_variables <- tibble(
+  tipo=names(df_modelo) %>% f_addTypeVar(),
+  descripcion=names(df_modelo) %>% f_replaceVar(),
+  variable=names(df_modelo)) %>% arrange(tipo)
 
 cat('sep=; \n',file = "Data/Data_Modelo/Diccionario_variables.csv")
 write.table(dicc_variables,"Data/Data_Modelo/Diccionario_variables.csv",

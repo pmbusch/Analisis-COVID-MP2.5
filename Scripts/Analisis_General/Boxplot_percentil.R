@@ -32,7 +32,6 @@ comuna_label <- df_cuartil %>% group_by(cuartil_mp25, cuartil_label) %>%
   summarise(comunas=toString(nombre_comuna)) %>% ungroup() %>% 
   mutate(comunas=paste(cuartil_mp25,": ", comunas,"\n", sep=""))
 
-
 df_cuartil %>% 
   ggplot(aes(cuartil_label, tasa_mortalidad_covid))+
   geom_boxplot()+

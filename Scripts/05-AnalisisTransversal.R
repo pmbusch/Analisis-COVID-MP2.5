@@ -373,7 +373,8 @@ df <- df_modelo %>%
                 tmed_summer, tmed_winter, 
                 heating_degree_15_summer, heating_degree_15_winter,
                 heating_degree_18_summer, heating_degree_18_winter,
-                hdd15_winter_lenaCalefaccion)
+                hdd15_winter_lenaCalefaccion,
+                perc_salud,perc_vivAntes2002,perc_vivHacMedio,movilidad,hr_anual)
 
 
 ## Sin MP2.5---------
@@ -645,6 +646,30 @@ f_savePlot(last_plot(), sprintf(file_name,"sinRandomInterceptSign"),dpi=150)
 saveRDS(mod_nb_sig, sprintf(file_mod,"sinRandomInterceptSign"))
 rm(mod_nb_sig)
 
+
+## Modelo CR2---------
+mod_nb_cr2 <- glm.nb(covid_fallecidos ~ 
+                       mp25 + 
+                       # rm +
+                       scale(`65+`) +
+                       scale(perc_vivHacMedio) +
+                       scale(perc_salud) +
+                       scale(perc_vivAntes2002) +
+                       scale(hr_anual) + 
+                       scale(movilidad) +
+                       offset(log(poblacion)), 
+                     data = df,
+                     na.action=na.omit)
+summary(mod_nb_cr2)
+nobs(mod_nb_cr2)
+exp(summary(mod_nb_cr2)$coefficients[2,1]) # exponencial coeficiente MP2.5
+f_tableCoef(mod_nb_cr2)
+f_tableMRR(mod_nb_cr2)
+# print(preview="pptx")
+f_figMRR(mod_nb_cr2)
+f_savePlot(last_plot(), sprintf(file_name,"CR2"),dpi=150)
+saveRDS(mod_nb_cr2, sprintf(file_mod,"CR2"))
+rm(mod_nb_cr2)
 
 
 ## Proxy Leña---------

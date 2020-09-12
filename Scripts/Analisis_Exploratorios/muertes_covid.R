@@ -210,7 +210,7 @@ f_savePlot(last_plot(), sprintf(file_name,"nuevosContagios",dpi=900))
 df_deis <- df_deis %>% select(-region) %>% left_join(codigos_territoriales) %>% 
   left_join(mapa_regiones %>% select(-geometry))
 
-## SANKEY Diagram
+## SANKEY Diagram ---------
 library(ggforce)
 data <- df_deis %>% group_by(sexo, grupo_edad, tipo,region) %>% 
   summarise(value=n()) %>% arrange(desc(value))
