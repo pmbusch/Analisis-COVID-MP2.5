@@ -11,6 +11,7 @@ url <- "https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output
 df_pcr <- read_csv(paste(url,"producto7","PCR_std.csv", sep="/"))
 names(df_pcr) <- names(df_pcr) %>% str_to_lower() %>% str_replace_all(" ","_")
 df_pcr <- df_pcr %>% na.omit() # limpio NA
+df_pcr_tiempo <- df_pcr
 
 ## PCR totales a la fecha -----------
 # Sumo los totales
