@@ -43,7 +43,7 @@ rm(url)
 #       exdir = "Data/Data_Original/DEIS")
 
 # lectura
-df_deis <- read_delim("Data/Data_Original/DEIS/DEFUNCIONES_FUENTE_DEIS_2016_2020_03092020.csv",
+df_deis <- read_delim("Data/Data_Original/DEIS/DEFUNCIONES_FUENTE_DEIS_2016_2020_10092020.csv",
                  delim = ";",col_names = F,
                  col_types = "dDcddccccccccccccccccccccc",
                  locale = locale(encoding = "windows-1252"))

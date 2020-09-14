@@ -17,8 +17,9 @@ df_poblacion <- df_poblacion %>%
 
 # Para uso en data covid
 df_grupoEdad <- df_poblacion %>% 
-  group_by(codigo_comuna, grupo_edad) %>% 
-  summarise(poblacion=sum(poblacion,na.rm=T))
+  group_by(codigo_comuna, grupo_edad,sexo) %>% 
+  summarise(poblacion=sum(poblacion,na.rm=T)) %>% ungroup() %>% 
+  mutate(sexo=if_else(sexo %in% c("Mujer","mujer"),"mujer","hombre"))
 
 df_edad <- df_poblacion %>% 
   group_by(codigo_comuna, grupo_edad) %>% 

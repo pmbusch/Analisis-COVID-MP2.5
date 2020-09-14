@@ -25,7 +25,7 @@ df_meteo <- read_rds("Data/Data_Modelo/Datos_Meteorologia.rsd")
 ## Data Covid -----------
 # No agrego datos aca, los obtengo directo a nivel de comuna
 source("Scripts/Aggregate_Data/covidMuertes_agg.R", encoding = "UTF-8")
-source("Scripts/Load_Data/covidCasos_load.R", encoding = "UTF-8")
+source("Scripts/Aggregate_Data/covidCasos_agg.R", encoding = "UTF-8")
 source("Scripts/Load_Data/covidPCR_load.R", encoding = "UTF-8")
 source("Scripts/Load_Data/covidCuarentena_load.R", encoding = "UTF-8")
 

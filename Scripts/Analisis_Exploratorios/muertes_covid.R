@@ -6,8 +6,10 @@ theme_set(theme_bw(16)+theme(panel.grid.major = element_blank()))
 file_name <- "Scripts/Analisis_Exploratorios/Figuras/COVID/%s.png"
 source("Scripts/Analisis_Exploratorios/f_figuras.R", encoding = "UTF-8")
 
-# Carga datos brutos --------
-source("Scripts/Load_Data/covidMuertes_load.R", encoding = "UTF-8")
+
+## DATOS GITHUB ------------------------
+# Carga datos ------------
+source("Scripts/Aggregate_Data/covidMuertes_agg.R", encoding = "UTF-8")
 
 # Poblacion en comunas con muertes ---------
 total_comunas <- nrow(df_muertes)
@@ -32,7 +34,6 @@ df_muertes %>% left_join(mapa_comuna) %>%
                       titulo="Tasa Mortalidad Covid \n [muertes/100mil hab]")
 f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaChileCOVIDFacet"),dpi = 300)
 
-
 # Santiago
 df_muertes %>% left_join(mapa_comuna) %>% 
   left_join(codigos_territoriales) %>% 
@@ -42,55 +43,87 @@ df_muertes %>% left_join(mapa_comuna) %>%
 f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaSantiagoCOVID"), dpi=100)
 
 
+
+
+
+## DATOS DEIS ----------
+df_deis <- df_deis %>% select(-region) %>% left_join(codigos_territoriales) %>% 
+  left_join(mapa_regiones %>% select(-geometry))
+
+## Sankey Diagram ---------
+library(ggforce)
+data <- df_deis %>% group_by(sexo, grupo_edad, tipo,region) %>% 
+  summarise(value=n()) %>% arrange(desc(value))
+
+## Function para preparar datos para la funcion
+data <- gather_set_data(data, 1:4)
+data %>% names()
+# Orden
+data$x <- factor(data$x, levels = c("tipo", "sexo", "grupo_edad","region"))
+
+ggplot(data, aes(x, id = id, split = y, value = value)) +
+  geom_parallel_sets(aes(fill = tipo), alpha = 0.3, axis.width = 0.1, sep=0.01) +
+  geom_parallel_sets_axes(axis.width = 0.1, fill = "grey80", color = "grey80",sep=0.01) +
+  geom_parallel_sets_labels(color = 'black', size = 14/.pt, angle = 90,sep=0.01) +
+  scale_x_discrete(name = NULL, expand = c(0, 0.2), 
+                   labels=c("Tipo","Sexo"," Grupo etario","Region"))+
+  scale_y_continuous(breaks = NULL, expand = c(0, 0))+
+  theme(axis.line = element_blank(), axis.ticks = element_blank(),
+        text = element_text(size=20),
+        legend.position = "none", plot.margin = margin(14, 1.5, 2, 1.5))
+
+f_savePlot(last_plot(), 
+           sprintf(file_name,"SankeyMuertesCovid"), dpi=100)
+rm(data)
+
 ## Geo Facet Santiago ---------------
-url <- "https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output"
-
-# Nota: Archivos _std vienen aplanados
-df_muertes <- read_csv(paste(url,"producto38","CasosFallecidosPorComuna_std.csv", sep="/"))
-names(df_muertes) <- names(df_muertes) %>% str_to_lower() %>% str_replace_all(" ","_")
-df_muertes <- df_muertes %>% na.omit() # limpio NA
-
 library(geofacet)
-df_muertes_tiempo <- df_muertes %>% 
-  left_join(df_poblacion) %>% 
-  mutate(tasa_mortalidad_covid=casos_fallecidos/poblacion*1e5,
+
+# Agrupo datos a nivel de comuna y fecha
+df_muertes_tiempo <- df_deis_tiempo %>% 
+  group_by(date,codigo_comuna) %>% 
+  summarise(muertes_acc=sum(muertes_acc,na.rm=T),
+            muertes=sum(muertes, na.rm=T),
+            poblacion=sum(poblacion, na.rm=T)) %>% ungroup() %>% 
+  mutate(tasa_mortalidad_covid=muertes_acc/poblacion*1e5,
          code=as.numeric(codigo_comuna))
-  
+
+# Grafico facet
 df_muertes_tiempo %>%  
   right_join(cl_santiago_prov_grid1, by=c("code")) %>% 
-  ggplot(aes(x=fecha, y=tasa_mortalidad_covid))+
+  ggplot(aes(x=date, y=tasa_mortalidad_covid))+
   geom_line()+
   facet_geo(~ name, grid="cl_santiago_prov_grid1")+
   labs(x="", y="")+
   ggtitle("Tasa mortalidad COVID [por 100mil]")+
-    theme(plot.title = element_text(hjust = 0.5),
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank())
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 ggsave(sprintf(file_name,"MuertesSantiago"),
        last_plot(),dpi=600,
        width = 14.87, height = 9.30, units = "in")
 
-
-## Serie tiempo region -----
+## Serie tiempo region -------------
+# Añado promedio nacional
 df_muertes_nacional <- df_muertes_tiempo %>%
-  group_by(fecha) %>% 
-  summarise(tasa_mortalidad_covid=sum(casos_fallecidos,na.rm=T)/
+  group_by(date) %>% 
+  summarise(tasa_mortalidad_covid=sum(muertes_acc,na.rm=T)/
               sum(poblacion,na.rm=T)*1e5) %>% ungroup() %>% 
   mutate(region="Nacional")
 
-# Añado promedio nacional
 df_muertes_region <- df_muertes_tiempo %>%
-  select(codigo_comuna, fecha, casos_fallecidos, poblacion) %>% 
+  select(codigo_comuna, date, muertes_acc, poblacion) %>% 
   left_join(mapa_comuna) %>% 
-  group_by(region, fecha) %>% 
-  summarise(tasa_mortalidad_covid=sum(casos_fallecidos,na.rm=T)/
+  group_by(region, date) %>% 
+  summarise(tasa_mortalidad_covid=sum(muertes_acc,na.rm=T)/
               sum(poblacion,na.rm=T)*1e5) %>% ungroup() %>% 
   rbind(df_muertes_nacional)
-  
+
 df_muertes_region %>% 
   filter(!is.na(region)) %>% 
-  ggplot(aes(x=fecha, y=tasa_mortalidad_covid))+
+  ggplot(aes(x=date, y=tasa_mortalidad_covid))+
   geom_line()+
   # facet_grid(region~., scales = "free", space="free")
   facet_wrap(~region)+
@@ -100,21 +133,43 @@ f_savePlot(last_plot(), sprintf(file_name,"SerieTiempoRegion"))
 
 rm(df_muertes_region, df_muertes_nacional)
 
-## Heatmap -------
-df_muertes_tiempo <- df_muertes %>% 
-  left_join(df_poblacion) %>% 
-  mutate(tasa_mortalidad_covid=casos_fallecidos/poblacion*1e5,
-         code=as.numeric(codigo_comuna),
-         region=NULL) %>% 
-  left_join(mapa_comuna, by=c("codigo_comuna")) %>% 
-  filter(!is.na(region))
 
+## Serie tiempo Region por edad -----
+df_muertes_nacional_edad <- df_deis_tiempo %>%
+  group_by(date, grupo_edad) %>%
+  summarise(tasa_mortalidad_covid=sum(muertes_acc,na.rm=T)/
+              sum(poblacion,na.rm=T)*1e5) %>% ungroup() %>%
+  mutate(region="Nacional")
+
+# Añado promedio nacional
+df_muertes_region_edad <- df_deis_tiempo %>%
+  select(codigo_comuna, date,grupo_edad, muertes_acc, poblacion) %>%
+  left_join(mapa_comuna) %>%
+  group_by(region, date,grupo_edad) %>%
+  summarise(tasa_mortalidad_covid=sum(muertes_acc,na.rm=T)/
+              sum(poblacion,na.rm=T)*1e5) %>% ungroup() %>%
+  rbind(df_muertes_nacional_edad)
+
+df_muertes_region_edad %>%
+  filter(!is.na(region)) %>%
+  ggplot(aes(x=date, y=tasa_mortalidad_covid,col=grupo_edad))+
+  geom_line()+
+  # facet_grid(region~., scales = "free", space="free")
+  facet_wrap(~region)+
+  labs(x="", y="Tasa mortalidad COVID [por 100mil]")+
+  theme(axis.text.x = element_text(angle = 90))
+f_savePlot(last_plot(), sprintf(file_name,"SerieTiempoRegion"))
+rm(df_muertes_region_edad, df_muertes_nacional_edad)
+
+## Heatmap Serie tiempo -------
+## Muertes Acumuladas
 df_muertes_tiempo %>% 
-  group_by(region,fecha) %>% 
+  left_join(mapa_comuna) %>%
+  group_by(region,date) %>% 
   summarise(poblacion=sum(poblacion,na.rm=T),
-            casos_fallecidos=sum(casos_fallecidos, na.rm=T)) %>% ungroup() %>% 
-  mutate(tasa_mortalidad_covid=casos_fallecidos/poblacion*1e5) %>% 
-  ggplot(aes(x=fecha, y=reorder(region,desc(region)), fill=tasa_mortalidad_covid))+
+            muertes_acc=sum(muertes_acc, na.rm=T)) %>% ungroup() %>% 
+  mutate(tasa_mortalidad_covid=muertes_acc/poblacion*1e5) %>% 
+  ggplot(aes(x=date, y=reorder(region,desc(region)), fill=tasa_mortalidad_covid))+
   geom_tile()+
   scale_fill_distiller(palette = "YlOrRd", type = 'seq', 
                        na.value = "white", direction = 1,
@@ -122,21 +177,17 @@ df_muertes_tiempo %>%
   scale_x_date(name="", date_breaks = "1 weeks",date_labels = "%d-%m")+
   scale_y_discrete(name=NULL)+
   coord_cartesian(expand = F)+
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom",
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 ## Muertes nuevas
-df_muertes_tiempo <- df_muertes_tiempo %>% 
-  arrange(comuna, fecha) %>% 
-  group_by(comuna) %>% 
-  mutate(fallecidos=casos_fallecidos-lag(casos_fallecidos,default = 0)) %>% 
-  ungroup()
-
 df_muertes_tiempo %>% 
-  group_by(region,fecha) %>% 
+  left_join(mapa_comuna) %>%
+  group_by(region,date) %>% 
   summarise(poblacion=sum(poblacion,na.rm=T),
-            fallecidos=sum(fallecidos, na.rm=T)) %>% ungroup() %>% 
-  mutate(tasa_mortalidad_covid=fallecidos/poblacion*1e5) %>% 
-  ggplot(aes(x=fecha, y=reorder(region,desc(region)), fill=tasa_mortalidad_covid))+
+            muertes=sum(muertes, na.rm=T)) %>% ungroup() %>% 
+  mutate(tasa_mortalidad_covid=muertes/poblacion*1e5) %>% 
+  ggplot(aes(x=date, y=reorder(region,desc(region)), fill=tasa_mortalidad_covid))+
   geom_tile()+
   scale_fill_distiller(palette = "YlOrRd", type = 'seq', 
                        na.value = "white", direction = 1,
@@ -144,9 +195,12 @@ df_muertes_tiempo %>%
   scale_x_date(name="", date_breaks = "1 weeks",date_labels = "%d-%m")+
   scale_y_discrete(name=NULL)+
   coord_cartesian(expand = F)+
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom",
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
 f_savePlot(last_plot(), sprintf(file_name,"nuevasMuertes",dpi=300))
 
+rm(df_muertes_tiempo)
 
 # Idem contagios nuevos -----------
 df_casos <- read_csv(paste(url,"producto1","Covid-19_std.csv", sep="/"))
@@ -205,34 +259,5 @@ df_casos_tiempo %>%
         axis.text.y = element_text(size=4))
 f_savePlot(last_plot(), sprintf(file_name,"nuevosContagios",dpi=900))
 
-
-## DEIS ----------
-df_deis <- df_deis %>% select(-region) %>% left_join(codigos_territoriales) %>% 
-  left_join(mapa_regiones %>% select(-geometry))
-
-## SANKEY Diagram ---------
-library(ggforce)
-data <- df_deis %>% group_by(sexo, grupo_edad, tipo,region) %>% 
-  summarise(value=n()) %>% arrange(desc(value))
-
-## Function para preparar datos para la funcion
-data <- gather_set_data(data, 1:4)
-data %>% names()
-# Orden
-data$x <- factor(data$x, levels = c("tipo", "sexo", "grupo_edad","region"))
-
-ggplot(data, aes(x, id = id, split = y, value = value)) +
-  geom_parallel_sets(aes(fill = tipo), alpha = 0.3, axis.width = 0.1, sep=0.01) +
-  geom_parallel_sets_axes(axis.width = 0.1, fill = "grey80", color = "grey80",sep=0.01) +
-  geom_parallel_sets_labels(color = 'black', size = 14/.pt, angle = 90,sep=0.01) +
-  scale_x_discrete(name = NULL, expand = c(0, 0.2), 
-                   labels=c("Tipo","Sexo"," Grupo etario","Region"))+
-  scale_y_continuous(breaks = NULL, expand = c(0, 0))+
-  theme(axis.line = element_blank(), axis.ticks = element_blank(),
-        text = element_text(size=20),
-        legend.position = "none", plot.margin = margin(14, 1.5, 2, 1.5))
-
-f_savePlot(last_plot(), 
-           sprintf(file_name,"SankeyMuertesCovid"), dpi=100)
 
 ## EoF

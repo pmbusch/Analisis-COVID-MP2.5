@@ -4,7 +4,7 @@
 
 # Carga datos ---------
 source("Scripts/Load_Data/covidMuertes_load.R", encoding = "UTF-8")
-source("Scripts/Aggregate_Data/poblacion_agg.R", encoding = "UTF-8")
+# source("Scripts/Aggregate_Data/poblacion_agg.R", encoding = "UTF-8")
 
 
 # Add Poblacion -----
@@ -32,25 +32,42 @@ df_muertes <- df_muertes %>%
          dias_primerMuerte)
 rm(df_muerteZero)
 
-## Serie Temporal DEIS ------------
 
+## Muertes COVID DEIS ------------
+## Muertes grupo etario 65
+df_65 <- df_deis %>% 
+  group_by(codigo_comuna,grupo_edad,tipo) %>% 
+  summarise(covid_fallecidos_deis=n()) %>% ungroup()
+
+df_65 <- df_65 %>% 
+  filter(tipo=="confirmado" & grupo_edad=="65+") %>%
+  select(-tipo, -grupo_edad) %>% 
+  rename(covid_fallecidos_65=covid_fallecidos_deis)
+
+# Add to df_muertes
+df_muertes <- df_muertes %>% 
+  left_join(df_65, by=c("codigo_comuna"))
+rm(df_65)
+
+
+## Serie Temporal DEIS ------------
 ## Cumulate over Date
 df_deis %>% names()
 df_deis_tiempo <- df_deis %>%
-  group_by(codigo_comuna,grupo_edad, tipo,date) %>%
+  group_by(codigo_comuna,grupo_edad,sexo, tipo,date) %>%
   summarise(muertes=n()) %>% spread(tipo,muertes,fill = 0) %>%
   rename(muertes=confirmado, muertes_sospechoso=sospechoso)
 
 df_deis_tiempo <- df_deis_tiempo %>%
-  arrange(codigo_comuna,grupo_edad, date) %>%
+  arrange(codigo_comuna,grupo_edad,sexo, date) %>%
   mutate(muertes_acc=cumsum(muertes),
          muertes_sospechoso_acc=cumsum(muertes_sospechoso)) %>% ungroup() %>%
-  select(codigo_comuna,grupo_edad,date,muertes,muertes_acc,
+  select(codigo_comuna,grupo_edad,sexo,date,muertes,muertes_acc,
          muertes_sospechoso,muertes_sospechoso_acc)
 
 # Chequeo totales (fechas mas reciente)
 df_aux <- df_deis_tiempo %>%
-  group_by(codigo_comuna, grupo_edad) %>%
+  group_by(codigo_comuna, grupo_edad,sexo) %>%
   mutate(fecha_muertes=max(date,na.rm=T),
          ultima=fecha_muertes==date) %>%
   filter(ultima==1)
@@ -63,11 +80,11 @@ rm(df_aux)
 # https://blog.exploratory.io/populating-missing-dates-with-complete-and-fill-functions-in-r-and-exploratory-79f2a321e6b5
 library(zoo)
 df_deis_tiempo <- df_deis_tiempo %>%
-  group_by(codigo_comuna, grupo_edad) %>%
+  group_by(codigo_comuna, grupo_edad, sexo) %>%
   complete(date = seq.Date(min(df_deis_tiempo$date), ## Completa con todos los dias en mis fechas limites
                            max(df_deis_tiempo$date),
                            by = "day"),codigo_comuna) %>%
-  arrange(codigo_comuna,grupo_edad, date) %>%
+  arrange(codigo_comuna,grupo_edad,sexo, date) %>%
   fill(muertes_acc, muertes_sospechoso_acc) %>%  ## Completo con el acumulado anterior
   replace_na(list(muertes=0,muertes_sospechoso=0, ## NA es valor cero
                   muertes_acc=0,muertes_sospechoso_acc=0))
@@ -81,45 +98,9 @@ df_deis_tiempo <- df_deis_tiempo %>%
   left_join(df_grupoEdad)
 # rm(df_grupoEdad)
 
+df_deis_tiempo <- df_deis_tiempo %>% 
+  mutate(sexo=if_else(sexo %in% c("Mujer","mujer"),"mujer","hombre"))
 
-## Serie tiempo nacional -----------
-df_muertes_nacional <- df_deis_tiempo %>%
-  group_by(date) %>%
-  summarise(muertes_acc=sum(muertes_acc,na.rm=T),
-            poblacion=sum(poblacion,na.rm=T),
-            muertes=sum(muertes, na.rm=T),
-            tasa_mortalidad_covid=muertes_acc/poblacion*1e5) %>% ungroup()
-df_muertes_nacional$muertes %>% sum()
-
-
-## Grafico Serie tiempo Region -----
-df_muertes_nacional <- df_deis_tiempo %>%
-  group_by(date, grupo_edad) %>%
-  summarise(tasa_mortalidad_covid=sum(muertes_acc,na.rm=T)/
-              sum(poblacion,na.rm=T)*1e5) %>% ungroup() %>%
-  mutate(region="Nacional")
-
-# Añado promedio nacional
-df_muertes_region <- df_deis_tiempo %>%
-  select(codigo_comuna, date,grupo_edad, muertes_acc, poblacion) %>%
-  left_join(mapa_comuna) %>%
-  group_by(region, date,grupo_edad) %>%
-  summarise(tasa_mortalidad_covid=sum(muertes_acc,na.rm=T)/
-              sum(poblacion,na.rm=T)*1e5) %>% ungroup() %>%
-  rbind(df_muertes_nacional)
-
-df_muertes_region %>%
-  filter(!is.na(region)) %>%
-  ggplot(aes(x=date, y=tasa_mortalidad_covid,col=grupo_edad))+
-  geom_line()+
-  # facet_grid(region~., scales = "free", space="free")
-  facet_wrap(~region)+
-  labs(x="", y="Tasa mortalidad COVID [por 100mil]")+
-  theme(axis.text.x = element_text(angle = 90))
-f_savePlot(last_plot(), sprintf(file_name,"SerieTiempoRegion"))
-
-
-rm(df_muertes_region, df_muertes_nacional)
 
 
 ## EoF

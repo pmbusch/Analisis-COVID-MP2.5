@@ -31,7 +31,8 @@ df_modelo <- df_modelo %>%
          dias_primerMuerte=if_else(is.na(dias_primerMuerte),0, dias_primerMuerte),
          dias_primerContagio=if_else(is.na(dias_primerContagio),0, dias_primerContagio),
          tasa_camas=if_else(is.na(tasa_camas),0,tasa_camas),
-         tasa_mortalidad_all=if_else(is.na(tasa_mortalidad_all),0,tasa_mortalidad_all))
+         tasa_mortalidad_all=if_else(is.na(tasa_mortalidad_all),0,tasa_mortalidad_all),
+         covid_fallecidos_65=if_else(is.na(covid_fallecidos_65),0,covid_fallecidos_65))
 
 ## Add RM Factor
 df_modelo <- df_modelo %>% 
@@ -45,23 +46,6 @@ df_modelo <- df_modelo %>% mutate(quintil_dens_pob=qgroup(densidad_pob, 5))
 df_modelo %>% group_by(quintil_dens_pob) %>% 
   summarise(count=n()) %>% arrange(desc(count))
 
-
-## Muertes COVID DEIS ------------
-## Muertes grupo etario 65
-df_65 <- df_deis %>% 
-  group_by(codigo_comuna,grupo_edad,tipo) %>% 
-  summarise(covid_fallecidos_deis=n()) %>% ungroup()
-
-df_65 <- df_65 %>% 
-  filter(tipo=="confirmado" & grupo_edad=="65+") %>%
-  select(-tipo, -grupo_edad) %>% 
-  rename(covid_fallecidos_65=covid_fallecidos_deis)
-
-# Add to df_modelo
-df_modelo <- df_modelo %>% 
-  mutate(covid_fallecidos_65=NULL) %>%  # Para actualizaciones sin duplicados
-  left_join(df_65, by=c("codigo_comuna"))
-rm(df_65)
 
 ## Guardar datos -------
 cat('sep=; \n',file = "Data/Data_Modelo/Datos_Modelo.csv")
