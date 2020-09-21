@@ -28,6 +28,8 @@ source("Scripts/Aggregate_Data/covidMuertes_agg.R", encoding = "UTF-8")
 source("Scripts/Aggregate_Data/covidCasos_agg.R", encoding = "UTF-8")
 source("Scripts/Load_Data/covidPCR_load.R", encoding = "UTF-8")
 source("Scripts/Load_Data/covidCuarentena_load.R", encoding = "UTF-8")
+source("Scripts/Aggregate_Data/covid_CFR.R", encoding = "UTF-8")
+
 
 ## Join all data ----------------
 # Todas las comunas se unen por "codigo_comuna"
@@ -36,6 +38,7 @@ df_modelo <- df_poblacion %>%
   left_join(df_conc, by=c("codigo_comuna")) %>% 
   left_join(df_camas, by=c("codigo_comuna")) %>% 
   left_join(df_casos ,by=c("codigo_comuna")) %>% 
+  left_join(cfr_comunas ,by=c("codigo_comuna")) %>% 
   left_join(df_cuarentena, by=c("codigo_comuna")) %>% 
   left_join(df_meteo, by=c("codigo_comuna")) %>% 
   left_join(df_casen, by=c("codigo_comuna")) %>% 
@@ -47,7 +50,7 @@ df_modelo <- df_poblacion %>%
   left_join(df_tasaMortalidad, by=c("codigo_comuna"))
 
 rm(df_poblacion, df_muertes, df_conc, df_camas, df_casos, df_cuarentena,
-   df_meteo, df_casen, df_censo,df_minvu, df_pcr, df_lena, df_tasaMortalidad,
-   df_movilidad, df_grupoEdad)
+   df_meteo, df_casen, df_censo,df_minvu, df_pcr, df_pcr_tiempo, df_lena, df_tasaMortalidad,
+   df_movilidad, df_grupoEdad, cfr_comunas)
 
 ## EoF

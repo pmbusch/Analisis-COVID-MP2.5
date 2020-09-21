@@ -360,7 +360,7 @@ f_tableMRR(mod)
 ### PRUEBAS OTROS MODELOS -------------------
 file_name <- "Figuras/Analisis_transversal/Otros_Modelos/%s.png"
 df <- df_modelo %>% 
-  dplyr::select(nombre_comuna,region,nombre_provincia,
+  dplyr::select(nombre_comuna, region,nombre_provincia,
                 zona, zona_termica,rm,
                 poblacion,tasa_mortalidad_covid,covid_fallecidos_65,
                 covid_fallecidos,mp25,mp25_winter,
@@ -374,7 +374,8 @@ df <- df_modelo %>%
                 heating_degree_15_summer, heating_degree_15_winter,
                 heating_degree_18_summer, heating_degree_18_winter,
                 hdd15_winter_lenaCalefaccion,
-                perc_salud,perc_vivAntes2002,perc_vivHacMedio,movilidad,hr_anual)
+                perc_salud,perc_vivAntes2002,perc_vivHacMedio,movilidad,hr_anual,
+                cfr_0_20)
 
 
 ## Sin MP2.5---------
@@ -596,21 +597,24 @@ rm(mod_zonaTermica, df_zonas)
 
 ## Sin Random Intercept---------
 mod_nb <- glm.nb(covid_fallecidos ~ 
-                   mp25 + rm + 
+                   mp25 + rm +
                    scale(densidad_pob) +
                    # quintil_dens_pob +
                    scale(`15-44`) + scale(`65+`) +
                    scale(perc_puebloOrig) + scale(perc_rural) +
-                   scale(dias_primerContagio) +  scale(dias_cuarentena) + 
-                   scale(tasa_camas) + 
-                   scale(perc_lenaCocina) + 
-                   scale(log(ingresoTotal_media)) + scale(perc_menor_media) + 
+                   scale(dias_primerContagio) +  scale(dias_cuarentena) +
+                   scale(tasa_camas) +
+                   scale(perc_lenaCocina) +
+                   scale(log(ingresoTotal_media)) + scale(perc_menor_media) +
                    scale(perc_fonasa_A) + scale(perc_fonasa_D) +
-                   scale(tmed_summer) + scale(tmed_winter) + 
+                   scale(tmed_summer) + scale(tmed_winter) +
                    scale(heating_degree_15_summer) + scale(heating_degree_15_winter) +
                    offset(log(poblacion)), 
                  data = df,
                  na.action=na.omit)
+
+
+
 summary(mod_nb)
 nobs(mod_nb)
 exp(summary(mod_nb)$coefficients[2,1]) # exponencial coeficiente MP2.5
@@ -723,6 +727,39 @@ f_figMRR(mod_65)
 f_savePlot(last_plot(), sprintf(file_name,"fallecidos65"),dpi=150)
 saveRDS(mod_65, sprintf(file_mod,"fallecidos65"))
 rm(mod_65)
+
+
+## CFR Lag 0-20---------
+data_mod <- df %>% filter(cfr_0_20>0 & covid_fallecidos>0) %>% 
+  mutate(contagios=covid_fallecidos/cfr_0_20*100)
+mod_cfr_0_20 <- glm.nb(covid_fallecidos ~ 
+                   mp25 + rm + 
+                   scale(densidad_pob) +
+                   # quintil_dens_pob +
+                   scale(`15-44`) + scale(`65+`) +
+                   scale(perc_puebloOrig) + scale(perc_rural) +
+                   scale(dias_primerContagio) + 
+                   scale(tasa_camas) + 
+                   scale(perc_lenaCocina) + 
+                   scale(log(ingresoTotal_media)) + scale(perc_menor_media) + 
+                   scale(perc_fonasa_A) + scale(perc_fonasa_D) +
+                   scale(tmed_summer) + scale(tmed_winter) + 
+                   scale(heating_degree_15_summer) + scale(heating_degree_15_winter) +
+                   offset(log(contagios)),
+                 data = data_mod,
+                 na.action=na.omit)
+summary(mod_cfr_0_20)
+nobs(mod_cfr_0_20)
+exp(summary(mod_cfr_0_20)$coefficients[2,1]) # exponencial coeficiente MP2.5
+f_tableCoef(mod_cfr_0_20)
+f_tableMRR(mod_cfr_0_20)
+# print(preview="pptx")
+f_figMRR(mod_cfr_0_20)
+f_savePlot(last_plot(), sprintf(file_name,"CFR_0_20"),dpi=150)
+saveRDS(mod_cfr_0_20, sprintf(file_mod,"CFR_0_20"))
+rm(mod_cfr_0_20)
+
+
 
 
 ### Grafico MRR Resumen modelos probados ------------
