@@ -198,10 +198,9 @@ f_addTypeVar <- function(var){
       var %in% c("tasa_mortalidad_covid", "covid_fallecidos",
                    "tasa_contagios","casos_confirmados",
                    "dias_primerContagio","dias_primerMuerte","dias_cuarentena",
-                   "perc_letalidad","pcr_region","covid_fallecidos_65",
-                 "cfr_0_20","cfr_10_20","cfr_0_30",
-                 "cfr_raw_0", "cfr_raw_10", "cfr_raw_20") ~ 
+                   "perc_letalidad","pcr_region","covid_fallecidos_65") ~ 
         "COVID-19",
+      str_detect(var, "cfr") ~ "COVID-19",
       var %in% c("mp25","mp25_fall","mp25_winter",
                    "mp25_spring","mp25_summer",
                  "mp25_2017", "mp25_2018","mp25_2019", "mp25_2020")~ 
