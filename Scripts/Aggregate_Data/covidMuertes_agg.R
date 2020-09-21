@@ -42,7 +42,8 @@ df_65 <- df_deis %>%
 df_65 <- df_65 %>% 
   filter(tipo=="confirmado" & grupo_edad=="65+") %>%
   select(-tipo, -grupo_edad) %>% 
-  rename(covid_fallecidos_65=covid_fallecidos_deis)
+  mutate(covid_fallecidos_65=as.numeric(covid_fallecidos_deis),
+         covid_fallecidos_deis=NULL)
 
 # Add to df_muertes
 df_muertes <- df_muertes %>% 
