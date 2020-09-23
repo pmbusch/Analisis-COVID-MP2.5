@@ -1,5 +1,6 @@
 ### Analisis-COVID-MP2.5
 ## Agregacion a nivel Comunal de Datos de muertes COVID
+## Dato de Muertes COVID proviene del DEIS
 ## PBH Julio 2020
 
 # Carga datos ---------
@@ -7,14 +8,22 @@ source("Scripts/Load_Data/covidMuertes_load.R", encoding = "UTF-8")
 # source("Scripts/Aggregate_Data/poblacion_agg.R", encoding = "UTF-8")
 
 
+## Compilo Muertes desde el DEIS -----------
+df_muertes <- df_deis %>% 
+  group_by(codigo_comuna, tipo) %>% 
+  summarise(casos_fallecidos=n()) %>% 
+  spread(tipo, casos_fallecidos) %>% 
+  replace_na(list(confirmado=0, sospechoso=0)) %>% 
+  rename(covid_fallecidos=confirmado, covid_fallecidos_sospechoso=sospechoso) %>% 
+  mutate(fecha=fecha_deis %>% strptime("%d-%m-%Y") %>% as_date())
+
 # Add Poblacion -----
-df_muertes <- df_muertes %>% select(-poblacion) %>% 
+df_muertes <- df_muertes %>%
   left_join(df_poblacion %>% select(codigo_comuna,poblacion))
 df_muertes$poblacion %>% sum()
 
 ## Tasa Mortalidad --------
 df_muertes <- df_muertes %>% 
-  rename(covid_fallecidos=casos_fallecidos) %>% 
   mutate(tasa_mortalidad_covid=covid_fallecidos/poblacion*1e5)
 
 ## Dias primer muerte confirmada DEIS ------ 
@@ -49,6 +58,26 @@ df_65 <- df_65 %>%
 df_muertes <- df_muertes %>% 
   left_join(df_65, by=c("codigo_comuna"))
 rm(df_65)
+
+## Muertes grupo etario 75
+df_75 <- df_deis %>% 
+  filter(edad>=75) %>% 
+  group_by(codigo_comuna,tipo) %>% 
+  summarise(covid_fallecidos_deis=n()) %>% ungroup()
+
+df_75 <- df_75 %>% 
+  filter(tipo=="confirmado") %>% select(-tipo) %>% 
+  mutate(covid_fallecidos_75=as.numeric(covid_fallecidos_deis),
+         covid_fallecidos_deis=NULL)
+
+# Add to df_muertes
+df_muertes <- df_muertes %>% 
+  left_join(df_75, by=c("codigo_comuna"))
+rm(df_75)
+
+## Replance NA in deaths
+df_muertes <- df_muertes %>% 
+  replace_na(list(covid_fallecidos_65=0, covid_fallecidos_75=0)) 
 
 
 ## Serie Temporal DEIS ------------
@@ -101,7 +130,5 @@ df_deis_tiempo <- df_deis_tiempo %>%
 
 df_deis_tiempo <- df_deis_tiempo %>% 
   mutate(sexo=if_else(sexo %in% c("Mujer","mujer"),"mujer","hombre"))
-
-
 
 ## EoF

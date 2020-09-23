@@ -16,8 +16,9 @@ El proyecto se subdivide en las siguientes secciones:
 **Nota:** Si se desea explorar los scripts por separado se recomienda ejecutar el siguiente código para cargar todas las librerías necesarias: *source("Scripts/00-CargaLibrerias.R", encoding = "UTF-8")*
 
 # Fuente Datos
+* Muertes COVID-19: DEIS (https://deis.minsal.cl/#datosabiertos)
+	* Defunciones por causa de muerte 2016-2020
 * Datos COVID-19: MinCiencia (https://github.com/MinCiencia/Datos-COVID19/)
-	* Casos fallecidos por comuna *(producto 38)*
 	* Casos totales por comuna incremental *(producto 1)*
 	* Exámenes PCR por región *(producto 7)*
 	* Cuarentenas Activas e Históricas *(producto 29)*
