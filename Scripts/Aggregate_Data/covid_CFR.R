@@ -4,12 +4,12 @@
 ## PBH Septiembre 2020
 
 theme_set(theme_bw(16)+theme(panel.grid.major = element_blank()))
-# source("Scripts/Aggregate_Data/poblacion_agg.R", encoding = "UTF-8")
+source("Scripts/Aggregate_Data/poblacion_agg.R", encoding = "UTF-8")
 print_ggplot <- F
 
 ## Load Data ------------
 # Muertes -----
-# source("Scripts/Aggregate_Data/covidMuertes_agg.R", encoding = "UTF-8") 
+source("Scripts/Aggregate_Data/covidMuertes_agg.R", encoding = "UTF-8")
 
 # Remuevo edad y sexo
 df_deis_edad <- df_deis_tiempo %>% 
@@ -53,7 +53,7 @@ if (print_ggplot) ggplot(df_muertes_region, aes(date, muertes))+geom_line()+
 
 
 # Contagios -----
-# source("Scripts/Aggregate_Data/covidCasos_agg.R", encoding = "UTF-8") 
+source("Scripts/Aggregate_Data/covidCasos_agg.R", encoding = "UTF-8")
 
 ## Calculo a nivel nacional
 df_casos_nacional <- df_casos_tiempo %>% group_by(fecha) %>% 
@@ -288,12 +288,12 @@ CFR.lags.F <-  function(data, dof=5, lags=c(10,20), add=T, detail=F, out=F,
 #            detail = F, gg=T, geo="Las Condes")
 
 ## Lags brutos??
-CFR.lags.F(df_covid_tiempo_nacional,dof = 5, lags = c(0,0),
-           detail = F, gg=T, geo="Nacional", cfr=T, out=F)
-CFR.lags.F(df_covid_tiempo_nacional,dof = 5, lags = c(10,10),
-           detail = F, gg=T, geo="Nacional", cfr=T, out=F)
-CFR.lags.F(df_covid_tiempo_nacional,dof = 5, lags = c(20,20),
-           detail = F, gg=T, geo="Nacional", cfr=T, out=F)
+# CFR.lags.F(df_covid_tiempo_nacional,dof = 5, lags = c(0,0),
+#            detail = F, gg=T, geo="Nacional", cfr=T, out=F)
+# CFR.lags.F(df_covid_tiempo_nacional,dof = 5, lags = c(10,10),
+#            detail = F, gg=T, geo="Nacional", cfr=T, out=F)
+# CFR.lags.F(df_covid_tiempo_nacional,dof = 5, lags = c(20,20),
+#            detail = F, gg=T, geo="Nacional", cfr=T, out=F)
 
 
 ## Obtencion CFR comunas -----------------
@@ -311,6 +311,7 @@ comunas <- df_covid_tiempo %>%
   pull(nombre_comuna) %>% unique()
 df_covid_tiempo_c <- df_covid_tiempo %>% left_join(codigos_territoriales)
 cfr_comunas <- data.frame()
+
 for (c in comunas){
   # cat("Comuna ",c, " \n", sep = "")
   data_com <- df_covid_tiempo_c %>% filter(nombre_comuna==c)

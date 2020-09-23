@@ -4,12 +4,9 @@
 ## PBH Septiembre 2020
 
 theme_set(theme_bw(16)+theme(panel.grid.major = element_blank()))
-source("Scripts/Aggregate_Data/poblacion_agg.R", encoding = "UTF-8")
-print_ggplot <- F
-
 
 ## Load Data ------------
-source("Scripts/Aggregate_Data/covid_CFR.R", encoding = "UTF-8") 
+# source("Scripts/Aggregate_Data/covid_CFR.R", encoding = "UTF-8") 
 
 
 ### Impresion PDF Resumen ---------------
@@ -21,7 +18,6 @@ library(officer)
 ## Funcion para generar pagina resumen. Recibe el dataframe con la 
 ## serie de tiempo de casos y muertes
 f_resumenCFR <- function(df, nivel="Nacional", zona="Nacional",cfr=T){
-  
   if (cfr==F){
     df <- df %>% mutate(muertes=muertes+muertes_sospechoso,
                         muertes_acc=muertes_acc+muertes_sospechoso_acc,
@@ -39,18 +35,28 @@ f_resumenCFR <- function(df, nivel="Nacional", zona="Nacional",cfr=T){
           panel.grid.minor = element_blank())
   
   # Tabla datos Brutos
+  cfr_1 <- CFR.lags.F(df,dof = 5, lags = c(0,0),
+                      detail = F, gg=T, geo=zona, cfr = cfr, out = T)
+  cfr_2 <- CFR.lags.F(df,dof = 5, lags = c(10,10),
+                      detail = F, gg=T, geo=zona, cfr = cfr, out = T)
+  cfr_3 <- CFR.lags.F(df,dof = 5, lags = c(20,20),
+                      detail = F, gg=T, geo=zona, cfr = cfr, out = T)
+  
   tabla <- df %>% 
     summarise(Poblacion=max(poblacion, na.rm=T),
               `Contagios acumulados`=max(casos_acc, na.rm = T),
               `Muertes acumuladas`=max(muertes_acc, na.rm = T)) %>% 
-    mutate(`% Letalidad`=`Muertes acumuladas`/`Contagios acumulados`*100 %>% round(2)) %>% 
+    mutate(`% Letalidad`=`Muertes acumuladas`/`Contagios acumulados`*100 %>% round(2),
+           `% CFR Bruto Lag 0`=cfr_1$fit*100 %>% round(2),
+           `% CFR Bruto Lag 10`=cfr_2$fit*100 %>% round(2),
+           `% CFR Bruto Lag 20`=cfr_3$fit*100 %>% round(2)) %>% 
     t() %>% as.data.frame() %>% rownames_to_column() %>% 
     rename(`Datos Brutos`=rowname, `Valor`=V1)
   
   tabla <- tabla %>%
     flextable() %>% 
     colformat_num(big.mark=" ", digits=0,i=1:3, j=2, na_str="s/i") %>%
-    colformat_num(big.mark=" ", digits=2,i=4, j=2, na_str="s/i") %>%
+    colformat_num(big.mark=" ", digits=2,i=4:7, j=2, na_str="s/i") %>%
     autofit(add_w = 0.1, add_h = 0.2) %>%
     align(j=1, align = "left")
   
@@ -59,20 +65,17 @@ f_resumenCFR <- function(df, nivel="Nacional", zona="Nacional",cfr=T){
                       xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf)
   
   
-  ## Combinaciones CFR = Lag: 10-20, DOF: 5; Lag: 10-20, DOF: 3; 
-  ## Lag: 0-30, DOF: 5; Lag: 0-30, DOF: 3
-  cfr_1 <- CFR.lags.F(df,dof = 5, lags = c(0,20),
+  ## Combinaciones CFR DOF 5 y Lag: 0-20, 10-20, 0-30
+  cfr_4 <- CFR.lags.F(df,dof = 5, lags = c(0,20),
                       detail = F, gg=T, geo=zona, cfr = cfr)
-  cfr_2 <- CFR.lags.F(df,dof = 5, lags = c(10,20),
+  cfr_5 <- CFR.lags.F(df,dof = 5, lags = c(10,20),
                       detail = F, gg=T, geo=zona, cfr = cfr)
-  cfr_3 <- CFR.lags.F(df,dof = 5, lags = c(5,15),
-                      detail = F, gg=T, geo=zona, cfr = cfr)
-  cfr_4 <- CFR.lags.F(df,dof = 5, lags = c(0,30),
+  cfr_6 <- CFR.lags.F(df,dof = 5, lags = c(0,30),
                       detail = F, gg=T, geo=zona, cfr = cfr)
   
   ## Plot conjunto
-  p_sup <- plot_grid(tabla_fig, serie_tiempo,ncol=2,rel_widths = c(1,4))
-  p_cfr <- plot_grid(cfr_1,cfr_2,cfr_3,cfr_4, ncol=2)
+  p_sup <- plot_grid(tabla_fig, serie_tiempo,ncol=2,rel_widths = c(1,3))
+  p_cfr <- plot_grid(cfr_4,cfr_5,cfr_6, ncol=3)
   p <- plot_grid(p_sup, p_cfr, ncol=1, rel_heights = c(1,1.5))
   
   # Title
@@ -83,29 +86,28 @@ f_resumenCFR <- function(df, nivel="Nacional", zona="Nacional",cfr=T){
   
   return(p)
 }
-
 # Pruebas
-f_resumenCFR(df_covid_tiempo_nacional)
-f_resumenCFR(df_covid_tiempo_nacional, cfr = F)
-f_resumenCFR(df_covid_tiempo_region %>% filter(region=="M"),
-             nivel = "Regional", zona = "M")
-f_resumenCFR(df_covid_tiempo_region %>% filter(region=="IX"),
-             nivel = "Regional", zona = "IX")
-f_resumenCFR(df_covid_tiempo %>% filter(codigo_comuna=="13114"),
-             nivel = "Comunal", zona = "Las Condes")
-f_resumenCFR(df_covid_tiempo %>% filter(codigo_comuna=="13201"),
-             nivel = "Comunal", zona = "Puente Alto")
-f_resumenCFR(df_covid_edad %>% filter(sexo=="hombre" & grupo_edad=="65+"),
-             nivel = "Nacional", zona = "hombre-65+")
+# f_resumenCFR(df_covid_tiempo_nacional)
+# f_resumenCFR(df_covid_tiempo_nacional, cfr = F)
+# f_resumenCFR(df_covid_tiempo_region %>% filter(region=="M"),
+#              nivel = "Regional", zona = "M")
+# f_resumenCFR(df_covid_tiempo_region %>% filter(region=="IX"),
+#              nivel = "Regional", zona = "IX")
+# f_resumenCFR(df_covid_tiempo %>% filter(codigo_comuna=="13114"),
+#              nivel = "Comunal", zona = "Las Condes")
+# f_resumenCFR(df_covid_tiempo %>% filter(codigo_comuna=="13201"),
+#              nivel = "Comunal", zona = "Puente Alto")
+# f_resumenCFR(df_covid_edad %>% filter(sexo=="hombre" & grupo_edad=="65+"),
+#              nivel = "Nacional", zona = "hombre-65+")
 
 
 ## Iteracion para generar PDF Resumen ----------
 ## Itero por las distintas df, en pos de generar resumens
 options(warn=-1) # supress warnings
 file_name <- "Figuras/%s.pdf"
-# pdf(sprintf(file_name, "CFR_lag"), width = 14.87, height = 9.30)
-pdf(sprintf(file_name, "IFR_lag"), width = 14.87, height = 9.30)
-cfr_pdf <- F
+pdf(sprintf(file_name, "CFR_lag"), width = 14.87, height = 9.30)
+# pdf(sprintf(file_name, "IFR_lag"), width = 14.87, height = 9.30)
+cfr_pdf <- T
 
 # Nacional
 f_resumenCFR(df_covid_tiempo_nacional, cfr = cfr_pdf) %>% print()
@@ -160,7 +162,8 @@ comunas <- df_covid_tiempo %>%
   left_join(mapa_comuna) %>% 
   left_join(codigos_territoriales) %>% 
   arrange(region, nombre_comuna) %>% 
-  filter(!(nombre_comuna %in% c("Chile Chico"))) %>% # Comunas con error
+  filter(!(nombre_comuna %in% c("Chile Chico", "Vichuquen",
+                                "Chonchi","Futaleufu"))) %>% # Comunas con error
   pull(nombre_comuna) %>% unique()
 df_covid_tiempo_c <- df_covid_tiempo %>% left_join(codigos_territoriales)
 for (c in comunas){
