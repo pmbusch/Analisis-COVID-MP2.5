@@ -13,21 +13,37 @@ df_poblacion <- df_poblacion %>%
     edad %in% c("15 a 19","20 a 24","25 a 29",
                 "30 a 34","35 a 39","40 a 44") ~ "15-44",
     edad %in% c("45 a 49","50 a 54","55 a 59","60 a 64") ~ "45-64",
-    T ~ "65+"))
+    edad %in% c("65 a 69", "70 a 74") ~ "65-74",
+    T ~ "75+"))
+
 
 # Para uso en data covid
 df_grupoEdad <- df_poblacion %>% 
   group_by(codigo_comuna, grupo_edad,sexo) %>% 
   summarise(poblacion=sum(poblacion,na.rm=T)) %>% ungroup() %>% 
   mutate(sexo=if_else(sexo %in% c("Mujer","mujer"),"mujer","hombre"))
+# Add 65+ and remove 75+
+df_grupoEdad_65 <- df_grupoEdad %>% 
+  filter(grupo_edad %in% c("65-74", "75+")) %>% 
+  mutate(grupo_edad="65+") %>% 
+  group_by(codigo_comuna, grupo_edad, sexo) %>% 
+  summarise(poblacion=sum(poblacion, na.rm=T))
+df_grupoEdad <- df_grupoEdad %>% 
+  filter(!(grupo_edad %in% c("65-74", "75+"))) %>% 
+  rbind(df_grupoEdad_65) %>% 
+  arrange(codigo_comuna, grupo_edad, sexo)
+df_grupoEdad$poblacion %>% sum()
+rm(df_grupoEdad_65)
 
 df_edad <- df_poblacion %>% 
   group_by(codigo_comuna, grupo_edad) %>% 
   summarise(pob=sum(poblacion,na.rm=T)) %>% 
   mutate(perc_edad=pob/sum(pob)*100,
          pob=NULL) %>% ungroup() %>% 
-  filter(grupo_edad!="0-14") %>% spread(grupo_edad,perc_edad)
+  filter(grupo_edad!="0-14") %>% spread(grupo_edad,perc_edad) %>% 
+  mutate(`65+`=`65-74`+`75+`)
 
+  
 ## Dividir por sexo
 df_sexo <- df_poblacion %>% 
   group_by(codigo_comuna, sexo) %>% 
