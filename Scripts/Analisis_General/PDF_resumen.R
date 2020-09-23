@@ -108,6 +108,7 @@ f_generaFiguraResumen <- function(df, var){
 # f_generaFiguraResumen(df_pdf, "perc_vivHacMedio")
 # f_generaFiguraResumen(df_pdf, "perc_vivAntes2002")
 # f_generaFiguraResumen(df_pdf, "movilidad")
+# f_generaFiguraResumen(df_pdf, "cfr_0_20")
 
 ## Iteracion por columnas numericas --------------
 # df_pdf <- df_pdf %>% filter(!is.na(mp25)) # Filtro MP2.5
