@@ -5,10 +5,11 @@
 ## Funciona en base a informacion comunal ya cargada en el WS
 
 ## Data Covid -----------
-source("Scripts/Load_Data/covidMuertes_load.R", encoding = "UTF-8")
-source("Scripts/Load_Data/covidCasos_load.R", encoding = "UTF-8")
+source("Scripts/Aggregate_Data/covidMuertes_agg.R", encoding = "UTF-8")
+source("Scripts/Aggregate_Data/covidCasos_agg.R", encoding = "UTF-8")
 source("Scripts/Load_Data/covidPCR_load.R", encoding = "UTF-8")
 source("Scripts/Load_Data/covidCuarentena_load.R", encoding = "UTF-8")
+source("Scripts/Aggregate_Data/covid_CFR.R", encoding = "UTF-8")
 
 
 ## Join data to existing DF --------

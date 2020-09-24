@@ -104,6 +104,12 @@ f_replaceVar <- function(variable_orig){
       variable_orig== "cfr_raw_0" ~ "% CFR Bruta Lag 0",
       variable_orig== "cfr_raw_10" ~ "% CFR Bruta Lag 10",
       variable_orig== "cfr_raw_20" ~ "% CFR Bruta Lag 20",
+      variable_orig== "ifr_0_20" ~ "% IFR Lag 0-20",
+      variable_orig== "ifr_10_20" ~ "% IFR Lag 10-20",
+      variable_orig== "ifr_0_30" ~ "% IFR Lag 0-30",
+      variable_orig== "ifr_raw_0" ~ "% IFR Bruta Lag 0",
+      variable_orig== "ifr_raw_10" ~ "% IFR Bruta Lag 10",
+      variable_orig== "ifr_raw_20" ~ "% IFR Bruta Lag 20",
       variable_orig== "tasa_mortalidad_all" ~ "Tasa Mortalidad Total [por 100mil]",
       variable_orig== "defunciones" ~ "Número fallecidos todas las causas",
      variable_orig== "mp25" ~ "MP2.5 2017-2019 [ug/m3]",
@@ -206,7 +212,7 @@ f_addTypeVar <- function(var){
                    "perc_letalidad","pcr_region","covid_fallecidos_65",
                  "covid_fallecidos_75") ~ 
         "COVID-19",
-      str_detect(var, "cfr") ~ "COVID-19",
+      str_detect(var, "cfr|ifr") ~ "COVID-19",
       var %in% c("mp25","mp25_fall","mp25_winter",
                    "mp25_spring","mp25_summer",
                  "mp25_2017", "mp25_2018","mp25_2019", "mp25_2020")~ 
