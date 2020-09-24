@@ -58,7 +58,9 @@ source("Scripts/Aggregate_Data/covidCasos_agg.R", encoding = "UTF-8")
 ## Calculo a nivel nacional
 df_casos_nacional <- df_casos_tiempo %>% group_by(fecha) %>% 
   summarise(casos_acc=sum(casos_acc, na.rm=T),
-            casos=sum(casos, na.rm = T)) %>% ungroup()
+            casos=sum(casos, na.rm = T),
+            casos_aplanados_acc=sum(casos_aplanados_acc, na.rm=T),
+            casos_aplanados=sum(casos_aplanados, na.rm = T)) %>% ungroup()
 
 if (print_ggplot) ggplot(df_casos_nacional, aes(fecha, casos))+geom_line()+
   scale_y_continuous(labels = function(x) format(x, big.mark = " ",scientific = FALSE))+
@@ -70,7 +72,9 @@ df_casos_region <- df_casos_tiempo %>%
   filter(!is.na(region)) %>% ## comunas de antartica y otras
   group_by(region,fecha) %>% 
   summarise(casos_acc=sum(casos_acc, na.rm=T),
-            casos=sum(casos, na.rm = T)) %>% ungroup()
+            casos=sum(casos, na.rm = T),
+            casos_aplanados_acc=sum(casos_aplanados_acc, na.rm=T),
+            casos_aplanados=sum(casos_aplanados, na.rm = T)) %>% ungroup()
 
 if (print_ggplot) ggplot(df_casos_region, aes(fecha, casos))+geom_line()+
   facet_wrap(~region, scales="free")+
@@ -101,6 +105,8 @@ df_covid_tiempo_nacional <- df_covid_tiempo %>%
   group_by(date) %>% 
   summarise(casos=sum(casos, na.rm = T),
             casos_acc=sum(casos_acc, na.rm = T),
+            casos_aplanados_acc=sum(casos_aplanados_acc, na.rm=T),
+            casos_aplanados=sum(casos_aplanados, na.rm = T),
             muertes=sum(muertes, na.rm=T),
             muertes_acc=sum(muertes_acc, na.rm = T),
             muertes_sospechoso= sum(muertes_sospechoso, na.rm = T),
@@ -133,6 +139,8 @@ df_covid_tiempo_region <- df_covid_tiempo %>%
   group_by(date, region) %>% 
   summarise(casos=sum(casos, na.rm = T),
             casos_acc=sum(casos_acc, na.rm = T),
+            casos_aplanados_acc=sum(casos_aplanados_acc, na.rm=T),
+            casos_aplanados=sum(casos_aplanados, na.rm = T),
             muertes=sum(muertes, na.rm=T),
             muertes_acc=sum(muertes_acc, na.rm = T),
             muertes_sospechoso= sum(muertes_sospechoso, na.rm = T),
@@ -170,6 +178,8 @@ df_covid_sexo <- df_covid_edadSexo %>%
   group_by(date,sexo) %>% 
   summarise(casos=sum(casos, na.rm = T),
             casos_acc=sum(casos_acc, na.rm = T),
+            casos_aplanados_acc=sum(casos_aplanados_acc, na.rm=T),
+            casos_aplanados=sum(casos_aplanados, na.rm = T),
             muertes=sum(muertes, na.rm=T),
             muertes_acc=sum(muertes_acc, na.rm = T),
             muertes_sospechoso= sum(muertes_sospechoso, na.rm = T),
@@ -181,6 +191,8 @@ df_covid_edad <- df_covid_edadSexo %>%
   group_by(date,grupo_edad) %>% 
   summarise(casos=sum(casos, na.rm = T),
             casos_acc=sum(casos_acc, na.rm = T),
+            casos_aplanados_acc=sum(casos_aplanados_acc, na.rm=T),
+            casos_aplanados=sum(casos_aplanados, na.rm = T),
             muertes=sum(muertes, na.rm=T),
             muertes_acc=sum(muertes_acc, na.rm = T),
             muertes_sospechoso= sum(muertes_sospechoso, na.rm = T),
@@ -279,6 +291,9 @@ CFR.lags.F <-  function(data, dof=5, lags=c(10,20), add=T, detail=F, out=F,
 #            detail = F, gg=T, geo="Nacional", cfr=T, out=F)
 # CFR.lags.F(df_covid_tiempo_nacional,dof = 5, lags = c(10,20),
 #            detail = F, gg=T, geo="Nacional", cfr = F)
+# CFR.lags.F(df_covid_tiempo_nacional %>% mutate(casos=casos_aplanados),
+#            dof = 5, lags = c(10,20),
+#            detail = F, gg=T, geo="Nacional", cfr=T, out=F)
 # CFR.lags.F(df_covid_tiempo_region %>% filter(region=="M"),
 #            dof = 5, lags = c(10,20),
 #            detail = F, gg=T, geo="Metropolitana")
@@ -306,7 +321,7 @@ comunas <- df_covid_tiempo %>%
   left_join(codigos_territoriales) %>% 
   arrange(region, nombre_comuna) %>% 
   filter(!(nombre_comuna %in% c("Chile Chico","Vichuquen",
-                                "Chonchi","Futaleufu"))) %>% # Comunas con error
+                                "Chonchi","Futaleufu", "Antuco"))) %>% # Comunas con error
   pull(nombre_comuna) %>% unique()
 df_covid_tiempo_c <- df_covid_tiempo %>% left_join(codigos_territoriales)
 
@@ -315,6 +330,8 @@ cfr_array <- c("cfr", "ifr")
 ## Lags a probar mediante iteracion
 lags_array <- data.frame(c(0,0), c(10,10), c(20,20), c(0,20), c(10,20), c(0,30)) %>% 
   t() %>% as.data.frame() %>% rename(lag_low=V1, lag_upper=V2)
+# Itero por casos observados vs casos aplanados (corregidos)
+casos_aplanados_array <- c(F,T)
 # DF para guardar todo
 cfr_comunas <- data.frame()
 for (c in comunas){
@@ -324,20 +341,27 @@ for (c in comunas){
   fecha_max <- data_com %>% filter(casos!=0) %>% pull(date) %>% max()
   data_com <- data_com %>% filter(date>=fecha_min & date<=fecha_max)
   
-  # Obtiene CFR e IFR. Itero ademas por intervalos de lags
   cfr_com <- data.frame()
-  for (z in cfr_array){
-    for( l in 1:nrow(lags_array)){
-      lag_aux <- c(lags_array[l,1],lags_array[l,2])
-      df_cfr_aux <- CFR.lags.F(data_com,dof = 5, lags = lag_aux,
-                               detail = F, gg=F, out=T,
-                               cfr=(z=="cfr")) %>% 
-        mutate_if(is.numeric, function(x) x*100) %>% 
-        mutate(modelo=z,
-               lag_low=lags_array[l,1],
-               lag_upper=lags_array[l,2])
-      cfr_com <- rbind(cfr_com, df_cfr_aux)
-      rm(lag_aux, df_cfr_aux)
+  ## Itero segun casos aplanados o no
+  for (x in casos_aplanados_array){
+    if (x){
+      data_com <- data_com %>% mutate(casos=casos_aplanados) #modifico mi variable de casos
+    }
+    # Obtiene CFR e IFR. Itero ademas por intervalos de lags
+    for (z in cfr_array){
+      for( l in 1:nrow(lags_array)){
+        lag_aux <- c(lags_array[l,1],lags_array[l,2])
+        df_cfr_aux <- CFR.lags.F(data_com,dof = 5, lags = lag_aux,
+                                 detail = F, gg=F, out=T,
+                                 cfr=(z=="cfr")) %>% 
+          mutate_if(is.numeric, function(x) x*100) %>% 
+          mutate(modelo=z,
+                 lag_low=lags_array[l,1],
+                 lag_upper=lags_array[l,2],
+                 casos_orig=if_else(x,"aplanados","original"))
+        cfr_com <- rbind(cfr_com, df_cfr_aux)
+        rm(lag_aux, df_cfr_aux)
+      }
     }
   }
   
@@ -349,22 +373,21 @@ for (c in comunas){
   # Clean
   rm(data_com, fecha_min, fecha_max,cfr_com)
 }
-rm(comunas, c,l,z, df_covid_tiempo_c, lags_array, cfr_array)
+rm(comunas, c,l,z,x, df_covid_tiempo_c, lags_array, cfr_array)
 
 ## Expando dataframe para crear multiples columnas
 # genera nombre columnas
 cfr_comunas <- cfr_comunas %>% 
   mutate(lag_low=if_else(lag_low==lag_upper,"raw",as.character(lag_low)),
-         key=paste(modelo,lag_low,lag_upper,sep="_"))
+         key=paste(modelo,lag_low,lag_upper,casos_orig,sep="_") %>% 
+           str_remove("_original"))
 # expande
 cfr_comunas <- cfr_comunas %>% select(codigo_comuna, key, fit) %>% 
   spread(key,fit)
   
-
 rm(print_ggplot, df_muertes_nacional, df_muertes_region, df_casos_nacional, 
    df_casos_region, df_deis_tiempo, df_casos_tiempo, df_covid_tiempo_nacional,
    df_covid_tiempo_region, df_deis_edad, df_casos_edad, df_covid_edadSexo,
    df_covid_sexo, df_covid_edad, df_covid_tiempo)
-
 
 ## EoF

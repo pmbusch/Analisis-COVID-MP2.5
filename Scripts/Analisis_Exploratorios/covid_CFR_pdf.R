@@ -88,6 +88,7 @@ f_resumenCFR <- function(df, nivel="Nacional", zona="Nacional",cfr=T){
 }
 # Pruebas
 # f_resumenCFR(df_covid_tiempo_nacional)
+# f_resumenCFR(df_covid_tiempo_nacional %>% mutate(casos=casos_aplanados))
 # f_resumenCFR(df_covid_tiempo_nacional, cfr = F)
 # f_resumenCFR(df_covid_tiempo_region %>% filter(region=="M"),
 #              nivel = "Regional", zona = "M")
@@ -105,6 +106,20 @@ f_resumenCFR <- function(df, nivel="Nacional", zona="Nacional",cfr=T){
 ## Itero por las distintas df, en pos de generar resumens
 options(warn=-1) # supress warnings
 file_name <- "Figuras/%s.pdf"
+
+## MODIFICAR AQUI PARA CALCULAR CON CASOS APLANADOS O ORIGINALES
+bool_casos_aplanados <- T
+if (bool_casos_aplanados){
+  file_name <- "Figuras/%s_casos_aplan.pdf"
+  df_covid_tiempo_nacional <- df_covid_tiempo_nacional %>% mutate(casos=casos_aplanados)
+  df_covid_sexo <- df_covid_sexo %>% mutate(casos=casos_aplanados)
+  df_covid_edad <- df_covid_edad %>% mutate(casos=casos_aplanados)
+  df_covid_edadSexo <- df_covid_edadSexo %>% mutate(casos=casos_aplanados)
+  df_covid_tiempo_region <- df_covid_tiempo_region %>% mutate(casos=casos_aplanados)
+  df_covid_tiempo <- df_covid_tiempo %>% mutate(casos=casos_aplanados) 
+}
+
+## MODIFICAR AQUI PARA OBTENER CFR O IFR
 pdf(sprintf(file_name, "CFR_lag"), width = 14.87, height = 9.30)
 # pdf(sprintf(file_name, "IFR_lag"), width = 14.87, height = 9.30)
 cfr_pdf <- T
@@ -163,7 +178,7 @@ comunas <- df_covid_tiempo %>%
   left_join(codigos_territoriales) %>% 
   arrange(region, nombre_comuna) %>% 
   filter(!(nombre_comuna %in% c("Chile Chico", "Vichuquen",
-                                "Chonchi","Futaleufu"))) %>% # Comunas con error
+                                "Chonchi","Futaleufu","Antuco"))) %>% # Comunas con error
   pull(nombre_comuna) %>% unique()
 df_covid_tiempo_c <- df_covid_tiempo %>% left_join(codigos_territoriales)
 for (c in comunas){
@@ -173,7 +188,7 @@ for (c in comunas){
   data_com <- data_com %>% filter(date>=fecha_min & date<=fecha_max)
   f_resumenCFR(data_com, nivel = "Comunal",zona=c, cfr = cfr_pdf) %>% print()
 }
-rm(comunas, data_com, fecha_min, fecha_max, c, df_covid_tiempo_c)
+rm(comunas, data_com, fecha_min, fecha_max, c, df_covid_tiempo_c, bool_casos_aplanados)
 
 # Cierro pdf
 dev.off()
