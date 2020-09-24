@@ -116,15 +116,15 @@ f_generaFiguraResumen <- function(df, var){
 # f_generaFiguraResumen(df_pdf, "cfr_0_20")
 
 ## Iteracion por columnas numericas --------------
-# df_pdf <- df_pdf %>% filter(!is.na(mp25)) # Filtro MP2.5
+df_pdf <- df_pdf %>% filter(!is.na(mp25)) # Filtro MP2.5
 options(warn=-1) # supress warnings
 col_names <- df_pdf %>% select_if(is.numeric) %>% 
   select(-latitud,-longitud) %>% names()
 # Ordenar por tipo variable
 col_names <- tibble(tipo=f_addTypeVar(col_names),
                     nombre=col_names) %>% arrange(tipo) %>% pull(nombre)
-pdf(sprintf(file_name, "Resumen_Var"), width = 14.87, height = 9.30)
-# pdf(sprintf(file_name, "Resumen_Var_mp25"), width = 14.87, height = 9.30)
+# pdf(sprintf(file_name, "Resumen_Var"), width = 14.87, height = 9.30)
+pdf(sprintf(file_name, "Resumen_Var_mp25"), width = 14.87, height = 9.30)
 for (c in col_names){
   f_generaFiguraResumen(df_pdf, c) %>% print()
 }

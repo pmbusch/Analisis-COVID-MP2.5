@@ -25,7 +25,9 @@ df_modelo %>% na.omit() %>%
 
 # Con variables de interes
 df_cor <- df_modelo %>% 
-  dplyr::select(tasa_mortalidad_covid, mp25, `65+`,perc_mujer, 
+  dplyr::select(tasa_mortalidad_covid,cfr_raw_0,cfr_raw_0_aplanados,
+                cfr_0_20,cfr_0_20_aplanados,
+                mp25, `65+`,`75+`,perc_mujer, 
                 densidad_pob, perc_rural, 
                 tasa_contagios,
                 dias_primerContagio,dias_primerMuerte, dias_cuarentena, tasa_camas,
@@ -118,7 +120,7 @@ rm(df_cor, p.mat, cor.mtest)
 ## GGPAIRS ------
 df_pairs <- df_modelo %>% 
   mutate(rm=if_else(region=="M","RM","Resto Chile") %>% factor()) %>% 
-  select(rm,tasa_mortalidad_covid, mp25, densidad_pob_censal,
+  select(rm,tasa_mortalidad_covid, cfr_raw_0, mp25, densidad_pob_censal,
          perc_fonasa_B, perc_lenaCalefaccion, tmed_winter)
 names(df_pairs) <- names(df_pairs) %>% f_replaceVar()
 p <- GGally::ggpairs(df_pairs, aes(col=rm, alpha=0.5),
