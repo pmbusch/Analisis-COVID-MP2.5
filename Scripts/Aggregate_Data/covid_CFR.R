@@ -78,7 +78,6 @@ if (print_ggplot) ggplot(df_casos_region, aes(fecha, casos))+geom_line()+
   labs(x="",y="Casos contagios COVID confirmados")
 
 ## Juntar casos con  muertes ------------
-
 ## Filtro por rango de interseccion de fechas
 df_deis_tiempo$date %>% range()
 df_casos_tiempo$fecha %>% range()
@@ -296,7 +295,7 @@ CFR.lags.F <-  function(data, dof=5, lags=c(10,20), add=T, detail=F, out=F,
 #            detail = F, gg=T, geo="Nacional", cfr=T, out=F)
 
 
-## Obtencion CFR comunas -----------------
+## Obtencion CFR/IFR comunas -----------------
 ## Iteracion para obtener el CFR a nivel de comuna
 ## CFR Obtenidos:
 ## Brutos (lags en un solo dia): 0, 10, 20 (modelo funciona igual, predice a partir de estos efectos rezagos, pero solo de un dia)
@@ -310,55 +309,57 @@ comunas <- df_covid_tiempo %>%
                                 "Chonchi","Futaleufu"))) %>% # Comunas con error
   pull(nombre_comuna) %>% unique()
 df_covid_tiempo_c <- df_covid_tiempo %>% left_join(codigos_territoriales)
-cfr_comunas <- data.frame()
 
+## CFR a probar mediante iteracion
+cfr_array <- c("cfr", "ifr")
+## Lags a probar mediante iteracion
+lags_array <- data.frame(c(0,0), c(10,10), c(20,20), c(0,20), c(10,20), c(0,30)) %>% 
+  t() %>% as.data.frame() %>% rename(lag_low=V1, lag_upper=V2)
+# DF para guardar todo
+cfr_comunas <- data.frame()
 for (c in comunas){
-  # cat("Comuna ",c, " \n", sep = "")
+  cat("Comuna ",c, " \n", sep = "")
   data_com <- df_covid_tiempo_c %>% filter(nombre_comuna==c)
   fecha_min <- data_com %>% filter(casos!=0) %>% pull(date) %>% min()
   fecha_max <- data_com %>% filter(casos!=0) %>% pull(date) %>% max()
   data_com <- data_com %>% filter(date>=fecha_min & date<=fecha_max)
   
-  # Obtiene CFRs, con sus intervalos de confianza
-  # brutos
-  cfr_0 <- CFR.lags.F(data_com,dof = 5, lags = c(0,0),
-                         detail = F, gg=F, cfr=T, out=T) %>% 
-    rename(cfr_raw_0=fit, cfr_raw_0_lower=lwr, cfr_raw_0_upper=upr) %>% 
-    mutate_if(is.numeric, function(x) x*100)
+  # Obtiene CFR e IFR. Itero ademas por intervalos de lags
+  cfr_com <- data.frame()
+  for (z in cfr_array){
+    for( l in 1:nrow(lags_array)){
+      lag_aux <- c(lags_array[l,1],lags_array[l,2])
+      df_cfr_aux <- CFR.lags.F(data_com,dof = 5, lags = lag_aux,
+                               detail = F, gg=F, out=T,
+                               cfr=(z=="cfr")) %>% 
+        mutate_if(is.numeric, function(x) x*100) %>% 
+        mutate(modelo=z,
+               lag_low=lags_array[l,1],
+               lag_upper=lags_array[l,2])
+      cfr_com <- rbind(cfr_com, df_cfr_aux)
+      rm(lag_aux, df_cfr_aux)
+    }
+  }
   
-  cfr_10 <- CFR.lags.F(data_com,dof = 5, lags = c(10,10),
-                          detail = F, gg=F, cfr=T, out=T) %>% 
-    rename(cfr_raw_10=fit, cfr_raw_10_lower=lwr, cfr_raw_10_upper=upr) %>% 
-    mutate_if(is.numeric, function(x) x*100)
-  
-  cfr_20 <- CFR.lags.F(data_com,dof = 5, lags = c(20,20),
-                         detail = F, gg=F, cfr=T, out=T) %>% 
-    rename(cfr_raw_20=fit, cfr_raw_20_lower=lwr, cfr_raw_20_upper=upr) %>% 
-    mutate_if(is.numeric, function(x) x*100)
-  # periodo temporal extenso
-  cfr_0_20 <- CFR.lags.F(data_com,dof = 5, lags = c(0,20),
-                        detail = F, gg=F, cfr=T, out=T) %>% 
-    rename(cfr_0_20=fit, cfr_0_20_lower=lwr, cfr_0_20_upper=upr) %>% 
-    mutate_if(is.numeric, function(x) x*100)
-  
-  cfr_10_20 <- CFR.lags.F(data_com,dof = 5, lags = c(10,20),
-                         detail = F, gg=F, cfr=T, out=T) %>% 
-    rename(cfr_10_20=fit, cfr_10_20_lower=lwr, cfr_10_20_upper=upr) %>% 
-    mutate_if(is.numeric, function(x) x*100)
-  
-  cfr_0_30 <- CFR.lags.F(data_com,dof = 5, lags = c(0,30),
-                         detail = F, gg=F, cfr=T, out=T) %>% 
-    rename(cfr_0_30=fit, cfr_0_30_lower=lwr, cfr_0_30_upper=upr) %>% 
-    mutate_if(is.numeric, function(x) x*100)
-  
-  cfr_com <- cbind(cfr_0, cfr_10, cfr_20, cfr_0_20, cfr_10_20, cfr_0_30) %>% 
+  # Asigno comuna
+  cfr_com <- cfr_com %>% 
     mutate(codigo_comuna=data_com$codigo_comuna[1])
-  
+  # Uno todo
   cfr_comunas <- rbind(cfr_comunas, cfr_com)
-  rm(data_com, fecha_min, fecha_max, cfr_0, cfr_10, cfr_20, 
-     cfr_0_20,cfr_10_20,cfr_0_30,cfr_com)
+  # Clean
+  rm(data_com, fecha_min, fecha_max,cfr_com)
 }
-rm(comunas, c, df_covid_tiempo_c)
+rm(comunas, c,l,z, df_covid_tiempo_c, lags_array, cfr_array)
+
+## Expando dataframe para crear multiples columnas
+# genera nombre columnas
+cfr_comunas <- cfr_comunas %>% 
+  mutate(lag_low=if_else(lag_low==lag_upper,"raw",as.character(lag_low)),
+         key=paste(modelo,lag_low,lag_upper,sep="_"))
+# expande
+cfr_comunas <- cfr_comunas %>% select(codigo_comuna, key, fit) %>% 
+  spread(key,fit)
+  
 
 rm(print_ggplot, df_muertes_nacional, df_muertes_region, df_casos_nacional, 
    df_casos_region, df_deis_tiempo, df_casos_tiempo, df_covid_tiempo_nacional,
