@@ -3,7 +3,6 @@
 ## PBH Septiembre 2020
 
 ## Carga Datos a nivel de comuna-----
-# source("Scripts/01-LoadAllData", encoding = "UTF-8") 
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
 theme_set(theme_bw(16)+theme(panel.grid.major = element_blank()))
 file_name <- "Scripts/Analisis_General/Figuras/%s.pdf"
@@ -76,21 +75,27 @@ f_generaFiguraResumen <- function(df, var){
     coord_flip(expand = T)+
     labs(x="",y="")+
     theme(axis.title.y=element_blank(),
-          axis.ticks.y=element_blank())
+          axis.ticks.y=element_blank(),
+          plot.title = element_text(hjust = 0.5, size=14))+
+    ggtitle("Dispersión para cada comuna de Norte a Sur")
   
   # Grafico densidad
   p_dens <- ggplot(df, aes((!!sym(var))))+
     geom_density(fill="brown", alpha=.5)+
     scale_x_continuous(labels=function(x) format(x,big.mark = " ", decimal.mark = ".", scientific = F))+
     coord_cartesian(expand = F)+
-    labs(y="",x="")
+    labs(y="",x="")+
+    theme(plot.title = element_text(hjust = 0.5, size=14))+
+    ggtitle("Densidad (distribución)")
   
   # Grafico ECDF
   p_ecdf <- ggplot(df, aes((!!sym(var))))+
     stat_ecdf(col="black", size=1)+
     scale_x_continuous(labels=function(x) format(x,big.mark = " ", decimal.mark = ".", scientific = F))+
     coord_cartesian(expand = F)+
-    labs(y="",x="")
+    labs(y="",x="")+
+    theme(plot.title = element_text(hjust = 0.5, size=14))+
+    ggtitle("Curva densidad acumulada (ECDF)")
   
   ## Gather plots
   p <- plot_grid(tabla_fig, p_jitter, p_dens, p_ecdf, ncol=2)
