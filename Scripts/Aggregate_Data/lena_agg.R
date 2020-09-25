@@ -48,7 +48,7 @@ rm(df_poblacionZona, df_poblacionRegion)
 
 ## Energia lena CDT ------------
 # Zonas termicas a region
-df_zonificacion <- read_excel("Data/Data_Original/Zonificacion_Termica.xlsx") %>% 
+df_zonificacion <- read_excel("Data/Data_Original/Lena/Zonificacion_Termica.xlsx") %>% 
   mutate(zt=as.numeric(zona_principal),
          codigo_comuna=paste(if_else(str_length(codigo_comuna)==4,"0",""),
                              codigo_comuna, sep=""))

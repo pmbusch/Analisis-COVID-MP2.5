@@ -27,12 +27,10 @@ df_modelo <- df_modelo %>%
 # tasa_mortalidadAll: no hubo muertes en el periodo temporal elegido: defecto=0
 # Superficie: faltan islas de Chile: pascua, juan fernandez y antartica
 df_modelo <- df_modelo %>% 
-  mutate(dias_cuarentena=if_else(is.na(dias_cuarentena),0, dias_cuarentena),
-         dias_primerMuerte=if_else(is.na(dias_primerMuerte),0, dias_primerMuerte),
-         dias_primerContagio=if_else(is.na(dias_primerContagio),0, dias_primerContagio),
-         tasa_camas=if_else(is.na(tasa_camas),0,tasa_camas),
-         tasa_mortalidad_all=if_else(is.na(tasa_mortalidad_all),0,tasa_mortalidad_all),
-         covid_fallecidos_65=if_else(is.na(covid_fallecidos_65),0,covid_fallecidos_65))
+  replace_na(list(dias_cuarentena=0, dias_primerMuerte=0, dias_primerContagio=0,
+                  tasa_camas=0, tasa_mortalidad_all=0, covid_fallecidos_65=0,
+                  pda=0))
+
 
 ## Add RM Factor
 df_modelo <- df_modelo %>% 

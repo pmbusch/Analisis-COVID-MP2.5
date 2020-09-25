@@ -45,11 +45,12 @@ df_modelo <- df_poblacion %>%
   left_join(df_minvu, by=c("codigo_comuna")) %>% 
   left_join(df_pcr, by=c("codigo_region")) %>% 
   left_join(df_lena, by=c("codigo_comuna")) %>% 
+  left_join(df_lena_urbana, by=c("codigo_comuna")) %>% 
   left_join(df_movilidad, by=c("codigo_comuna")) %>% 
   left_join(df_tasaMortalidad, by=c("codigo_comuna"))
 
 rm(df_poblacion, df_muertes, df_conc, df_camas, df_casos, df_cuarentena,
    df_meteo, df_casen, df_censo,df_minvu, df_pcr, df_pcr_tiempo, df_lena, df_tasaMortalidad,
-   df_movilidad, df_grupoEdad, cfr_comunas)
+   df_movilidad, df_grupoEdad, cfr_comunas, df_lena_urbana)
 
 ## EoF

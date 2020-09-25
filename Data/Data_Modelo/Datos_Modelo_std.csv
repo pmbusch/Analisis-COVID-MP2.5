@@ -41174,3 +41174,695 @@ sep=;
 "16303";"Niquen";"163";"Punilla";"16";"Nuble";"VIII";"quintil_dens_pob";"Q3"
 "16304";"San Fabian";"163";"Punilla";"16";"Nuble";"VIII";"quintil_dens_pob";"Q1"
 "16305";"San Nicolas";"163";"Punilla";"16";"Nuble";"VIII";"quintil_dens_pob";"Q3"
+"01101";"Iquique";"011";"Iquique";"01";"Tarapaca";"I";"cons_lena_urbana";NA
+"01107";"Alto Hospicio";"011";"Iquique";"01";"Tarapaca";"I";"cons_lena_urbana";NA
+"01401";"Pozo Almonte";"014";"Tamarugal";"01";"Tarapaca";"I";"cons_lena_urbana";NA
+"01402";"Camina";"014";"Tamarugal";"01";"Tarapaca";"I";"cons_lena_urbana";NA
+"01403";"Colchane";"014";"Tamarugal";"01";"Tarapaca";"I";"cons_lena_urbana";NA
+"01404";"Huara";"014";"Tamarugal";"01";"Tarapaca";"I";"cons_lena_urbana";NA
+"01405";"Pica";"014";"Tamarugal";"01";"Tarapaca";"I";"cons_lena_urbana";NA
+"02101";"Antofagasta";"021";"Antofagasta";"02";"Antofagasta";"II";"cons_lena_urbana";NA
+"02102";"Mejillones";"021";"Antofagasta";"02";"Antofagasta";"II";"cons_lena_urbana";NA
+"02103";"Sierra Gorda";"021";"Antofagasta";"02";"Antofagasta";"II";"cons_lena_urbana";NA
+"02104";"Taltal";"021";"Antofagasta";"02";"Antofagasta";"II";"cons_lena_urbana";NA
+"02201";"Calama";"022";"El Loa";"02";"Antofagasta";"II";"cons_lena_urbana";NA
+"02202";"Ollague";"022";"El Loa";"02";"Antofagasta";"II";"cons_lena_urbana";NA
+"02203";"San Pedro de Atacama";"022";"El Loa";"02";"Antofagasta";"II";"cons_lena_urbana";NA
+"02301";"Tocopilla";"023";"Tocopilla";"02";"Antofagasta";"II";"cons_lena_urbana";NA
+"02302";"Maria Elena";"023";"Tocopilla";"02";"Antofagasta";"II";"cons_lena_urbana";NA
+"03101";"Copiapo";"031";"Copiapo";"03";"Atacama";"III";"cons_lena_urbana";NA
+"03102";"Caldera";"031";"Copiapo";"03";"Atacama";"III";"cons_lena_urbana";NA
+"03103";"Tierra Amarilla";"031";"Copiapo";"03";"Atacama";"III";"cons_lena_urbana";NA
+"03201";"Chanaral";"032";"Chanaral";"03";"Atacama";"III";"cons_lena_urbana";NA
+"03202";"Diego de Almagro";"032";"Chanaral";"03";"Atacama";"III";"cons_lena_urbana";NA
+"03301";"Vallenar";"033";"Huasco";"03";"Atacama";"III";"cons_lena_urbana";NA
+"03302";"Alto del Carmen";"033";"Huasco";"03";"Atacama";"III";"cons_lena_urbana";NA
+"03303";"Freirina";"033";"Huasco";"03";"Atacama";"III";"cons_lena_urbana";NA
+"03304";"Huasco";"033";"Huasco";"03";"Atacama";"III";"cons_lena_urbana";NA
+"04101";"La Serena";"041";"Elqui";"04";"Coquimbo";"IV";"cons_lena_urbana";NA
+"04102";"Coquimbo";"041";"Elqui";"04";"Coquimbo";"IV";"cons_lena_urbana";NA
+"04103";"Andacollo";"041";"Elqui";"04";"Coquimbo";"IV";"cons_lena_urbana";NA
+"04104";"La Higuera";"041";"Elqui";"04";"Coquimbo";"IV";"cons_lena_urbana";NA
+"04105";"Paiguano";"041";"Elqui";"04";"Coquimbo";"IV";"cons_lena_urbana";NA
+"04106";"Vicuna";"041";"Elqui";"04";"Coquimbo";"IV";"cons_lena_urbana";NA
+"04201";"Illapel";"042";"Choapa";"04";"Coquimbo";"IV";"cons_lena_urbana";NA
+"04202";"Canela";"042";"Choapa";"04";"Coquimbo";"IV";"cons_lena_urbana";NA
+"04203";"Los Vilos";"042";"Choapa";"04";"Coquimbo";"IV";"cons_lena_urbana";NA
+"04204";"Salamanca";"042";"Choapa";"04";"Coquimbo";"IV";"cons_lena_urbana";NA
+"04301";"Ovalle";"043";"Limari";"04";"Coquimbo";"IV";"cons_lena_urbana";NA
+"04302";"Combarbala";"043";"Limari";"04";"Coquimbo";"IV";"cons_lena_urbana";NA
+"04303";"Monte Patria";"043";"Limari";"04";"Coquimbo";"IV";"cons_lena_urbana";NA
+"04304";"Punitaqui";"043";"Limari";"04";"Coquimbo";"IV";"cons_lena_urbana";NA
+"04305";"Rio Hurtado";"043";"Limari";"04";"Coquimbo";"IV";"cons_lena_urbana";NA
+"05101";"Valparaiso";"051";"Valparaiso";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05102";"Casablanca";"051";"Valparaiso";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05103";"Concon";"051";"Valparaiso";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05104";"Juan Fernandez";"051";"Valparaiso";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05105";"Puchuncavi";"051";"Valparaiso";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05107";"Quintero";"051";"Valparaiso";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05109";"Vina del Mar";"051";"Valparaiso";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05201";"Isla de Pascua";"052";"Isla de Pascua";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05301";"Los Andes";"053";"Los Andes";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05302";"Calle Larga";"053";"Los Andes";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05303";"Rinconada";"053";"Los Andes";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05304";"San Esteban";"053";"Los Andes";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05401";"La Ligua";"054";"Petorca";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05402";"Cabildo";"054";"Petorca";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05403";"Papudo";"054";"Petorca";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05404";"Petorca";"054";"Petorca";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05405";"Zapallar";"054";"Petorca";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05501";"Quillota";"055";"Quillota";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05502";"Calera";"055";"Quillota";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05503";"Hijuelas";"055";"Quillota";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05504";"La Cruz";"055";"Quillota";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05506";"Nogales";"055";"Quillota";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05601";"San Antonio";"056";"San Antonio";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05602";"Algarrobo";"056";"San Antonio";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05603";"Cartagena";"056";"San Antonio";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05604";"El Quisco";"056";"San Antonio";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05605";"El Tabo";"056";"San Antonio";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05606";"Santo Domingo";"056";"San Antonio";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05701";"San Felipe";"057";"San Felipe de Aconcagua";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05702";"Catemu";"057";"San Felipe de Aconcagua";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05703";"Llaillay";"057";"San Felipe de Aconcagua";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05704";"Panquehue";"057";"San Felipe de Aconcagua";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05705";"Putaendo";"057";"San Felipe de Aconcagua";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05706";"Santa Maria";"057";"San Felipe de Aconcagua";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05801";"Quilpue";"058";"Marga Marga";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05802";"Limache";"058";"Marga Marga";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05803";"Olmue";"058";"Marga Marga";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"05804";"Villa Alemana";"058";"Marga Marga";"05";"Valparaiso";"V";"cons_lena_urbana";NA
+"06101";"Rancagua";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";"59512.0093964542"
+"06102";"Codegua";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";"4257.12765264371"
+"06103";"Coinco";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";"6099.22346979861"
+"06104";"Coltauco";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";"11089.7794392194"
+"06105";"Donihue";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";"11137.4629386235"
+"06106";"Graneros";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";"12524.7090949927"
+"06107";"Las Cabras";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";NA
+"06108";"Machali";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";"28403.9693092779"
+"06109";"Malloa";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";"5844.99978399299"
+"06110";"Mostazal";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";"9000.46182583535"
+"06111";"Olivar";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";"3555.69171386499"
+"06112";"Peumo";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";NA
+"06113";"Pichidegua";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";NA
+"06114";"Quinta de Tilcoco";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";"2964.8704205892"
+"06115";"Rengo";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";"48415.6407674167"
+"06116";"Requinoa";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";"7439.57508095904"
+"06117";"San Vicente";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";"15891.0563421985"
+"06201";"Pichilemu";"062";"Cardenal Caro";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";NA
+"06202";"La Estrella";"062";"Cardenal Caro";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";NA
+"06203";"Litueche";"062";"Cardenal Caro";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";NA
+"06204";"Marchihue";"062";"Cardenal Caro";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";NA
+"06205";"Navidad";"062";"Cardenal Caro";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";NA
+"06206";"Paredones";"062";"Cardenal Caro";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";NA
+"06301";"San Fernando";"063";"Colchagua";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";"32916.0237795273"
+"06302";"Chepica";"063";"Colchagua";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";NA
+"06303";"Chimbarongo";"063";"Colchagua";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";"13797.8044834853"
+"06304";"Lolol";"063";"Colchagua";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";NA
+"06305";"Nancagua";"063";"Colchagua";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";NA
+"06306";"Palmilla";"063";"Colchagua";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";NA
+"06307";"Peralillo";"063";"Colchagua";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";NA
+"06308";"Placilla";"063";"Colchagua";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";"1885.25387397006"
+"06309";"Pumanque";"063";"Colchagua";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";NA
+"06310";"Santa Cruz";"063";"Colchagua";"06";"Libertador General Bernardo OHiggins";"VI";"cons_lena_urbana";NA
+"07101";"Talca";"071";"Talca";"07";"Maule";"VII";"cons_lena_urbana";"183047.459905934"
+"07102";"Constitucion";"071";"Talca";"07";"Maule";"VII";"cons_lena_urbana";NA
+"07103";"Curepto";"071";"Talca";"07";"Maule";"VII";"cons_lena_urbana";NA
+"07104";"Empedrado";"071";"Talca";"07";"Maule";"VII";"cons_lena_urbana";NA
+"07105";"Maule";"071";"Talca";"07";"Maule";"VII";"cons_lena_urbana";"45380.6121504229"
+"07106";"Pelarco";"071";"Talca";"07";"Maule";"VII";"cons_lena_urbana";NA
+"07107";"Pencahue";"071";"Talca";"07";"Maule";"VII";"cons_lena_urbana";NA
+"07108";"Rio Claro";"071";"Talca";"07";"Maule";"VII";"cons_lena_urbana";NA
+"07109";"San Clemente";"071";"Talca";"07";"Maule";"VII";"cons_lena_urbana";NA
+"07110";"San Rafael";"071";"Talca";"07";"Maule";"VII";"cons_lena_urbana";NA
+"07201";"Cauquenes";"072";"Cauquenes";"07";"Maule";"VII";"cons_lena_urbana";NA
+"07202";"Chanco";"072";"Cauquenes";"07";"Maule";"VII";"cons_lena_urbana";NA
+"07203";"Pelluhue";"072";"Cauquenes";"07";"Maule";"VII";"cons_lena_urbana";NA
+"07301";"Curico";"073";"Curico";"07";"Maule";"VII";"cons_lena_urbana";"35193.9637375549"
+"07302";"Hualane";"073";"Curico";"07";"Maule";"VII";"cons_lena_urbana";NA
+"07303";"Licanten";"073";"Curico";"07";"Maule";"VII";"cons_lena_urbana";NA
+"07304";"Molina";"073";"Curico";"07";"Maule";"VII";"cons_lena_urbana";"15778.0082096473"
+"07305";"Rauco";"073";"Curico";"07";"Maule";"VII";"cons_lena_urbana";"2346.0585464076"
+"07306";"Romeral";"073";"Curico";"07";"Maule";"VII";"cons_lena_urbana";"2851.63066011331"
+"07307";"Sagrada Familia";"073";"Curico";"07";"Maule";"VII";"cons_lena_urbana";"3659.88137563987"
+"07308";"Teno";"073";"Curico";"07";"Maule";"VII";"cons_lena_urbana";"8479.12630283261"
+"07309";"Vichuquen";"073";"Curico";"07";"Maule";"VII";"cons_lena_urbana";NA
+"07401";"Linares";"074";"Linares";"07";"Maule";"VII";"cons_lena_urbana";NA
+"07402";"Colbun";"074";"Linares";"07";"Maule";"VII";"cons_lena_urbana";NA
+"07403";"Longavi";"074";"Linares";"07";"Maule";"VII";"cons_lena_urbana";NA
+"07404";"Parral";"074";"Linares";"07";"Maule";"VII";"cons_lena_urbana";NA
+"07405";"Retiro";"074";"Linares";"07";"Maule";"VII";"cons_lena_urbana";NA
+"07406";"San Javier";"074";"Linares";"07";"Maule";"VII";"cons_lena_urbana";NA
+"07407";"Villa Alegre";"074";"Linares";"07";"Maule";"VII";"cons_lena_urbana";NA
+"07408";"Yerbas Buenas";"074";"Linares";"07";"Maule";"VII";"cons_lena_urbana";NA
+"08101";"Concepcion";"081";"Concepcion";"08";"Biobio";"VIII";"cons_lena_urbana";"247641.969973775"
+"08102";"Coronel";"081";"Concepcion";"08";"Biobio";"VIII";"cons_lena_urbana";"176922.943231139"
+"08103";"Chiguayante";"081";"Concepcion";"08";"Biobio";"VIII";"cons_lena_urbana";"115051.112454993"
+"08104";"Florida";"081";"Concepcion";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"08105";"Hualqui";"081";"Concepcion";"08";"Biobio";"VIII";"cons_lena_urbana";"32392.0775904969"
+"08106";"Lota";"081";"Concepcion";"08";"Biobio";"VIII";"cons_lena_urbana";"28761.4898008997"
+"08107";"Penco";"081";"Concepcion";"08";"Biobio";"VIII";"cons_lena_urbana";"64753.721593928"
+"08108";"San Pedro de la Paz";"081";"Concepcion";"08";"Biobio";"VIII";"cons_lena_urbana";"183441.868006618"
+"08109";"Santa Juana";"081";"Concepcion";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"08110";"Talcahuano";"081";"Concepcion";"08";"Biobio";"VIII";"cons_lena_urbana";"208638.420980002"
+"08111";"Tome";"081";"Concepcion";"08";"Biobio";"VIII";"cons_lena_urbana";"85527.022974147"
+"08112";"Hualpen";"081";"Concepcion";"08";"Biobio";"VIII";"cons_lena_urbana";"119338.839527694"
+"08201";"Lebu";"082";"Arauco";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"08202";"Arauco";"082";"Arauco";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"08203";"Canete";"082";"Arauco";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"08204";"Contulmo";"082";"Arauco";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"08205";"Curanilahue";"082";"Arauco";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"08206";"Los Alamos";"082";"Arauco";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"08207";"Tirua";"082";"Arauco";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"08301";"Los Angeles";"083";"Biobio";"08";"Biobio";"VIII";"cons_lena_urbana";"317488.182627976"
+"08302";"Antuco";"083";"Biobio";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"08303";"Cabrero";"083";"Biobio";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"08304";"Laja";"083";"Biobio";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"08305";"Mulchen";"083";"Biobio";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"08306";"Nacimiento";"083";"Biobio";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"08307";"Negrete";"083";"Biobio";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"08308";"Quilaco";"083";"Biobio";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"08309";"Quilleco";"083";"Biobio";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"08310";"San Rosendo";"083";"Biobio";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"08311";"Santa Barbara";"083";"Biobio";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"08312";"Tucapel";"083";"Biobio";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"08313";"Yumbel";"083";"Biobio";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"08314";"Alto Biobio";"083";"Biobio";"08";"Biobio";"VIII";"cons_lena_urbana";NA
+"09101";"Temuco";"091";"Cautin";"09";"La Araucania";"IX";"cons_lena_urbana";"717022.652103483"
+"09102";"Carahue";"091";"Cautin";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09103";"Cunco";"091";"Cautin";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09104";"Curarrehue";"091";"Cautin";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09105";"Freire";"091";"Cautin";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09106";"Galvarino";"091";"Cautin";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09107";"Gorbea";"091";"Cautin";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09108";"Lautaro";"091";"Cautin";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09109";"Loncoche";"091";"Cautin";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09110";"Melipeuco";"091";"Cautin";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09111";"Nueva Imperial";"091";"Cautin";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09112";"Padre las Casas";"091";"Cautin";"09";"La Araucania";"IX";"cons_lena_urbana";"70721.7256041509"
+"09113";"Perquenco";"091";"Cautin";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09114";"Pitrufquen";"091";"Cautin";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09115";"Pucon";"091";"Cautin";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09116";"Saavedra";"091";"Cautin";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09117";"Teodoro Schmidt";"091";"Cautin";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09118";"Tolten";"091";"Cautin";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09119";"Vilcun";"091";"Cautin";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09120";"Villarrica";"091";"Cautin";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09121";"Cholchol";"091";"Cautin";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09201";"Angol";"092";"Malleco";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09202";"Collipulli";"092";"Malleco";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09203";"Curacautin";"092";"Malleco";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09204";"Ercilla";"092";"Malleco";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09205";"Lonquimay";"092";"Malleco";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09206";"Los Sauces";"092";"Malleco";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09207";"Lumaco";"092";"Malleco";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09208";"Puren";"092";"Malleco";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09209";"Renaico";"092";"Malleco";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09210";"Traiguen";"092";"Malleco";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"09211";"Victoria";"092";"Malleco";"09";"La Araucania";"IX";"cons_lena_urbana";NA
+"10101";"Puerto Montt";"101";"Llanquihue";"10";"Los Lagos";"X";"cons_lena_urbana";"1223046.08802933"
+"10102";"Calbuco";"101";"Llanquihue";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10103";"Cochamo";"101";"Llanquihue";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10104";"Fresia";"101";"Llanquihue";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10105";"Frutillar";"101";"Llanquihue";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10106";"Los Muermos";"101";"Llanquihue";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10107";"Llanquihue";"101";"Llanquihue";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10108";"Maullin";"101";"Llanquihue";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10109";"Puerto Varas";"101";"Llanquihue";"10";"Los Lagos";"X";"cons_lena_urbana";"136188.024375842"
+"10201";"Castro";"102";"Chiloe";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10202";"Ancud";"102";"Chiloe";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10203";"Chonchi";"102";"Chiloe";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10204";"Curaco de Velez";"102";"Chiloe";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10205";"Dalcahue";"102";"Chiloe";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10206";"Puqueldon";"102";"Chiloe";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10207";"Queilen";"102";"Chiloe";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10208";"Quellon";"102";"Chiloe";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10209";"Quemchi";"102";"Chiloe";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10210";"Quinchao";"102";"Chiloe";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10301";"Osorno";"103";"Osorno";"10";"Los Lagos";"X";"cons_lena_urbana";"953550.392933727"
+"10302";"Puerto Octay";"103";"Osorno";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10303";"Purranque";"103";"Osorno";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10304";"Puyehue";"103";"Osorno";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10305";"Rio Negro";"103";"Osorno";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10306";"San Juan de la Costa";"103";"Osorno";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10307";"San Pablo";"103";"Osorno";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10401";"Chaiten";"104";"Palena";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10402";"Futaleufu";"104";"Palena";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10403";"Hualaihue";"104";"Palena";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"10404";"Palena";"104";"Palena";"10";"Los Lagos";"X";"cons_lena_urbana";NA
+"11101";"Coihaique";"111";"Coihaique";"11";"Aysen del General Carlos Ibanez del Campo";"XI";"cons_lena_urbana";"573496.797460165"
+"11102";"Lago Verde";"111";"Coihaique";"11";"Aysen del General Carlos Ibanez del Campo";"XI";"cons_lena_urbana";NA
+"11201";"Aisen";"112";"Aisen";"11";"Aysen del General Carlos Ibanez del Campo";"XI";"cons_lena_urbana";NA
+"11202";"Cisnes";"112";"Aisen";"11";"Aysen del General Carlos Ibanez del Campo";"XI";"cons_lena_urbana";NA
+"11203";"Guaitecas";"112";"Aisen";"11";"Aysen del General Carlos Ibanez del Campo";"XI";"cons_lena_urbana";NA
+"11301";"Cochrane";"113";"Capitan Prat";"11";"Aysen del General Carlos Ibanez del Campo";"XI";"cons_lena_urbana";NA
+"11302";"OHiggins";"113";"Capitan Prat";"11";"Aysen del General Carlos Ibanez del Campo";"XI";"cons_lena_urbana";NA
+"11303";"Tortel";"113";"Capitan Prat";"11";"Aysen del General Carlos Ibanez del Campo";"XI";"cons_lena_urbana";NA
+"11401";"Chile Chico";"114";"General Carrera";"11";"Aysen del General Carlos Ibanez del Campo";"XI";"cons_lena_urbana";NA
+"11402";"Rio Ibanez";"114";"General Carrera";"11";"Aysen del General Carlos Ibanez del Campo";"XI";"cons_lena_urbana";NA
+"12101";"Punta Arenas";"121";"Magallanes";"12";"Magallanes y de la Antartica Chilena";"XII";"cons_lena_urbana";NA
+"12102";"Laguna Blanca";"121";"Magallanes";"12";"Magallanes y de la Antartica Chilena";"XII";"cons_lena_urbana";NA
+"12103";"Rio Verde";"121";"Magallanes";"12";"Magallanes y de la Antartica Chilena";"XII";"cons_lena_urbana";NA
+"12104";"San Gregorio";"121";"Magallanes";"12";"Magallanes y de la Antartica Chilena";"XII";"cons_lena_urbana";NA
+"12201";"Cabo de Hornos";"122";"Antartica Chilena";"12";"Magallanes y de la Antartica Chilena";"XII";"cons_lena_urbana";NA
+"12202";"Antartica";"122";"Antartica Chilena";"12";"Magallanes y de la Antartica Chilena";"XII";"cons_lena_urbana";NA
+"12301";"Porvenir";"123";"Tierra del Fuego";"12";"Magallanes y de la Antartica Chilena";"XII";"cons_lena_urbana";NA
+"12302";"Primavera";"123";"Tierra del Fuego";"12";"Magallanes y de la Antartica Chilena";"XII";"cons_lena_urbana";NA
+"12303";"Timaukel";"123";"Tierra del Fuego";"12";"Magallanes y de la Antartica Chilena";"XII";"cons_lena_urbana";NA
+"12401";"Natales";"124";"Ultima Esperanza";"12";"Magallanes y de la Antartica Chilena";"XII";"cons_lena_urbana";NA
+"12402";"Torres del Paine";"124";"Ultima Esperanza";"12";"Magallanes y de la Antartica Chilena";"XII";"cons_lena_urbana";NA
+"13101";"Santiago";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13102";"Cerrillos";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13103";"Cerro Navia";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13104";"Conchali";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13105";"El Bosque";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13106";"Estacion Central";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13107";"Huechuraba";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13108";"Independencia";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13109";"La Cisterna";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13110";"La Florida";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13111";"La Granja";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13112";"La Pintana";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13113";"La Reina";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13114";"Las Condes";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13115";"Lo Barnechea";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13116";"Lo Espejo";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13117";"Lo Prado";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13118";"Macul";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13119";"Maipu";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13120";"Nunoa";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13121";"Pedro Aguirre Cerda";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13122";"Penalolen";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13123";"Providencia";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13124";"Pudahuel";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13125";"Quilicura";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13126";"Quinta Normal";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13127";"Recoleta";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13128";"Renca";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13129";"San Joaquin";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13130";"San Miguel";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13131";"San Ramon";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13132";"Vitacura";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13201";"Puente Alto";"132";"Cordillera";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13202";"Pirque";"132";"Cordillera";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13203";"San Jose de Maipo";"132";"Cordillera";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13301";"Colina";"133";"Chacabuco";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13302";"Lampa";"133";"Chacabuco";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13303";"Tiltil";"133";"Chacabuco";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13401";"San Bernardo";"134";"Maipo";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13402";"Buin";"134";"Maipo";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13403";"Calera de Tango";"134";"Maipo";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13404";"Paine";"134";"Maipo";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13501";"Melipilla";"135";"Melipilla";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13502";"Alhue";"135";"Melipilla";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13503";"Curacavi";"135";"Melipilla";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13504";"Maria Pinto";"135";"Melipilla";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13505";"San Pedro";"135";"Melipilla";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13601";"Talagante";"136";"Talagante";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13602";"El Monte";"136";"Talagante";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13603";"Isla de Maipo";"136";"Talagante";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13604";"Padre Hurtado";"136";"Talagante";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"13605";"Penaflor";"136";"Talagante";"13";"Metropolitana de Santiago";"M";"cons_lena_urbana";NA
+"14101";"Valdivia";"141";"Valdivia";"14";"Los Rios";"XIV";"cons_lena_urbana";"742129.592454138"
+"14102";"Corral";"141";"Valdivia";"14";"Los Rios";"XIV";"cons_lena_urbana";NA
+"14103";"Lanco";"141";"Valdivia";"14";"Los Rios";"XIV";"cons_lena_urbana";NA
+"14104";"Los Lagos";"141";"Valdivia";"14";"Los Rios";"XIV";"cons_lena_urbana";NA
+"14105";"Mafil";"141";"Valdivia";"14";"Los Rios";"XIV";"cons_lena_urbana";NA
+"14106";"Mariquina";"141";"Valdivia";"14";"Los Rios";"XIV";"cons_lena_urbana";NA
+"14107";"Paillaco";"141";"Valdivia";"14";"Los Rios";"XIV";"cons_lena_urbana";NA
+"14108";"Panguipulli";"141";"Valdivia";"14";"Los Rios";"XIV";"cons_lena_urbana";NA
+"14201";"La Union";"142";"Ranco";"14";"Los Rios";"XIV";"cons_lena_urbana";NA
+"14202";"Futrono";"142";"Ranco";"14";"Los Rios";"XIV";"cons_lena_urbana";NA
+"14203";"Lago Ranco";"142";"Ranco";"14";"Los Rios";"XIV";"cons_lena_urbana";NA
+"14204";"Rio Bueno";"142";"Ranco";"14";"Los Rios";"XIV";"cons_lena_urbana";NA
+"15101";"Arica";"151";"Arica";"15";"Arica y Parinacota";"XV";"cons_lena_urbana";NA
+"15102";"Camarones";"151";"Arica";"15";"Arica y Parinacota";"XV";"cons_lena_urbana";NA
+"15201";"Putre";"152";"Parinacota";"15";"Arica y Parinacota";"XV";"cons_lena_urbana";NA
+"15202";"General Lagos";"152";"Parinacota";"15";"Arica y Parinacota";"XV";"cons_lena_urbana";NA
+"16101";"Chillan";"161";"Diguillin";"16";"Nuble";"VIII";"cons_lena_urbana";"393960.323480404"
+"16102";"Bulnes";"161";"Diguillin";"16";"Nuble";"VIII";"cons_lena_urbana";NA
+"16103";"Chillan Viejo";"161";"Diguillin";"16";"Nuble";"VIII";"cons_lena_urbana";"70549.559162968"
+"16104";"El Carmen";"161";"Diguillin";"16";"Nuble";"VIII";"cons_lena_urbana";NA
+"16105";"Pemuco";"161";"Diguillin";"16";"Nuble";"VIII";"cons_lena_urbana";NA
+"16106";"Pinto";"161";"Diguillin";"16";"Nuble";"VIII";"cons_lena_urbana";NA
+"16107";"Quillon";"161";"Diguillin";"16";"Nuble";"VIII";"cons_lena_urbana";NA
+"16108";"San Ignacio";"161";"Diguillin";"16";"Nuble";"VIII";"cons_lena_urbana";NA
+"16109";"Yungay";"161";"Diguillin";"16";"Nuble";"VIII";"cons_lena_urbana";NA
+"16201";"Quirihue";"162";"Itata";"16";"Nuble";"VIII";"cons_lena_urbana";NA
+"16202";"Cobquecura";"162";"Itata";"16";"Nuble";"VIII";"cons_lena_urbana";NA
+"16203";"Coelemu";"162";"Itata";"16";"Nuble";"VIII";"cons_lena_urbana";NA
+"16204";"Ninhue";"162";"Itata";"16";"Nuble";"VIII";"cons_lena_urbana";NA
+"16205";"Portezuelo";"162";"Itata";"16";"Nuble";"VIII";"cons_lena_urbana";NA
+"16206";"Ranquil";"162";"Itata";"16";"Nuble";"VIII";"cons_lena_urbana";NA
+"16207";"Treguaco";"162";"Itata";"16";"Nuble";"VIII";"cons_lena_urbana";NA
+"16301";"San Carlos";"163";"Punilla";"16";"Nuble";"VIII";"cons_lena_urbana";NA
+"16302";"Coihueco";"163";"Punilla";"16";"Nuble";"VIII";"cons_lena_urbana";NA
+"16303";"Niquen";"163";"Punilla";"16";"Nuble";"VIII";"cons_lena_urbana";NA
+"16304";"San Fabian";"163";"Punilla";"16";"Nuble";"VIII";"cons_lena_urbana";NA
+"16305";"San Nicolas";"163";"Punilla";"16";"Nuble";"VIII";"cons_lena_urbana";NA
+"01101";"Iquique";"011";"Iquique";"01";"Tarapaca";"I";"pda";"0"
+"01107";"Alto Hospicio";"011";"Iquique";"01";"Tarapaca";"I";"pda";"0"
+"01401";"Pozo Almonte";"014";"Tamarugal";"01";"Tarapaca";"I";"pda";"0"
+"01402";"Camina";"014";"Tamarugal";"01";"Tarapaca";"I";"pda";"0"
+"01403";"Colchane";"014";"Tamarugal";"01";"Tarapaca";"I";"pda";"0"
+"01404";"Huara";"014";"Tamarugal";"01";"Tarapaca";"I";"pda";"0"
+"01405";"Pica";"014";"Tamarugal";"01";"Tarapaca";"I";"pda";"0"
+"02101";"Antofagasta";"021";"Antofagasta";"02";"Antofagasta";"II";"pda";"0"
+"02102";"Mejillones";"021";"Antofagasta";"02";"Antofagasta";"II";"pda";"0"
+"02103";"Sierra Gorda";"021";"Antofagasta";"02";"Antofagasta";"II";"pda";"0"
+"02104";"Taltal";"021";"Antofagasta";"02";"Antofagasta";"II";"pda";"0"
+"02201";"Calama";"022";"El Loa";"02";"Antofagasta";"II";"pda";"0"
+"02202";"Ollague";"022";"El Loa";"02";"Antofagasta";"II";"pda";"0"
+"02203";"San Pedro de Atacama";"022";"El Loa";"02";"Antofagasta";"II";"pda";"0"
+"02301";"Tocopilla";"023";"Tocopilla";"02";"Antofagasta";"II";"pda";"0"
+"02302";"Maria Elena";"023";"Tocopilla";"02";"Antofagasta";"II";"pda";"0"
+"03101";"Copiapo";"031";"Copiapo";"03";"Atacama";"III";"pda";"0"
+"03102";"Caldera";"031";"Copiapo";"03";"Atacama";"III";"pda";"0"
+"03103";"Tierra Amarilla";"031";"Copiapo";"03";"Atacama";"III";"pda";"0"
+"03201";"Chanaral";"032";"Chanaral";"03";"Atacama";"III";"pda";"0"
+"03202";"Diego de Almagro";"032";"Chanaral";"03";"Atacama";"III";"pda";"0"
+"03301";"Vallenar";"033";"Huasco";"03";"Atacama";"III";"pda";"0"
+"03302";"Alto del Carmen";"033";"Huasco";"03";"Atacama";"III";"pda";"0"
+"03303";"Freirina";"033";"Huasco";"03";"Atacama";"III";"pda";"0"
+"03304";"Huasco";"033";"Huasco";"03";"Atacama";"III";"pda";"0"
+"04101";"La Serena";"041";"Elqui";"04";"Coquimbo";"IV";"pda";"0"
+"04102";"Coquimbo";"041";"Elqui";"04";"Coquimbo";"IV";"pda";"0"
+"04103";"Andacollo";"041";"Elqui";"04";"Coquimbo";"IV";"pda";"0"
+"04104";"La Higuera";"041";"Elqui";"04";"Coquimbo";"IV";"pda";"0"
+"04105";"Paiguano";"041";"Elqui";"04";"Coquimbo";"IV";"pda";"0"
+"04106";"Vicuna";"041";"Elqui";"04";"Coquimbo";"IV";"pda";"0"
+"04201";"Illapel";"042";"Choapa";"04";"Coquimbo";"IV";"pda";"0"
+"04202";"Canela";"042";"Choapa";"04";"Coquimbo";"IV";"pda";"0"
+"04203";"Los Vilos";"042";"Choapa";"04";"Coquimbo";"IV";"pda";"0"
+"04204";"Salamanca";"042";"Choapa";"04";"Coquimbo";"IV";"pda";"0"
+"04301";"Ovalle";"043";"Limari";"04";"Coquimbo";"IV";"pda";"0"
+"04302";"Combarbala";"043";"Limari";"04";"Coquimbo";"IV";"pda";"0"
+"04303";"Monte Patria";"043";"Limari";"04";"Coquimbo";"IV";"pda";"0"
+"04304";"Punitaqui";"043";"Limari";"04";"Coquimbo";"IV";"pda";"0"
+"04305";"Rio Hurtado";"043";"Limari";"04";"Coquimbo";"IV";"pda";"0"
+"05101";"Valparaiso";"051";"Valparaiso";"05";"Valparaiso";"V";"pda";"0"
+"05102";"Casablanca";"051";"Valparaiso";"05";"Valparaiso";"V";"pda";"0"
+"05103";"Concon";"051";"Valparaiso";"05";"Valparaiso";"V";"pda";"0"
+"05104";"Juan Fernandez";"051";"Valparaiso";"05";"Valparaiso";"V";"pda";"0"
+"05105";"Puchuncavi";"051";"Valparaiso";"05";"Valparaiso";"V";"pda";"0"
+"05107";"Quintero";"051";"Valparaiso";"05";"Valparaiso";"V";"pda";"0"
+"05109";"Vina del Mar";"051";"Valparaiso";"05";"Valparaiso";"V";"pda";"0"
+"05201";"Isla de Pascua";"052";"Isla de Pascua";"05";"Valparaiso";"V";"pda";"0"
+"05301";"Los Andes";"053";"Los Andes";"05";"Valparaiso";"V";"pda";"0"
+"05302";"Calle Larga";"053";"Los Andes";"05";"Valparaiso";"V";"pda";"0"
+"05303";"Rinconada";"053";"Los Andes";"05";"Valparaiso";"V";"pda";"0"
+"05304";"San Esteban";"053";"Los Andes";"05";"Valparaiso";"V";"pda";"0"
+"05401";"La Ligua";"054";"Petorca";"05";"Valparaiso";"V";"pda";"0"
+"05402";"Cabildo";"054";"Petorca";"05";"Valparaiso";"V";"pda";"0"
+"05403";"Papudo";"054";"Petorca";"05";"Valparaiso";"V";"pda";"0"
+"05404";"Petorca";"054";"Petorca";"05";"Valparaiso";"V";"pda";"0"
+"05405";"Zapallar";"054";"Petorca";"05";"Valparaiso";"V";"pda";"0"
+"05501";"Quillota";"055";"Quillota";"05";"Valparaiso";"V";"pda";"0"
+"05502";"Calera";"055";"Quillota";"05";"Valparaiso";"V";"pda";"0"
+"05503";"Hijuelas";"055";"Quillota";"05";"Valparaiso";"V";"pda";"0"
+"05504";"La Cruz";"055";"Quillota";"05";"Valparaiso";"V";"pda";"0"
+"05506";"Nogales";"055";"Quillota";"05";"Valparaiso";"V";"pda";"0"
+"05601";"San Antonio";"056";"San Antonio";"05";"Valparaiso";"V";"pda";"0"
+"05602";"Algarrobo";"056";"San Antonio";"05";"Valparaiso";"V";"pda";"0"
+"05603";"Cartagena";"056";"San Antonio";"05";"Valparaiso";"V";"pda";"0"
+"05604";"El Quisco";"056";"San Antonio";"05";"Valparaiso";"V";"pda";"0"
+"05605";"El Tabo";"056";"San Antonio";"05";"Valparaiso";"V";"pda";"0"
+"05606";"Santo Domingo";"056";"San Antonio";"05";"Valparaiso";"V";"pda";"0"
+"05701";"San Felipe";"057";"San Felipe de Aconcagua";"05";"Valparaiso";"V";"pda";"0"
+"05702";"Catemu";"057";"San Felipe de Aconcagua";"05";"Valparaiso";"V";"pda";"0"
+"05703";"Llaillay";"057";"San Felipe de Aconcagua";"05";"Valparaiso";"V";"pda";"0"
+"05704";"Panquehue";"057";"San Felipe de Aconcagua";"05";"Valparaiso";"V";"pda";"0"
+"05705";"Putaendo";"057";"San Felipe de Aconcagua";"05";"Valparaiso";"V";"pda";"0"
+"05706";"Santa Maria";"057";"San Felipe de Aconcagua";"05";"Valparaiso";"V";"pda";"0"
+"05801";"Quilpue";"058";"Marga Marga";"05";"Valparaiso";"V";"pda";"0"
+"05802";"Limache";"058";"Marga Marga";"05";"Valparaiso";"V";"pda";"0"
+"05803";"Olmue";"058";"Marga Marga";"05";"Valparaiso";"V";"pda";"0"
+"05804";"Villa Alemana";"058";"Marga Marga";"05";"Valparaiso";"V";"pda";"0"
+"06101";"Rancagua";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"1"
+"06102";"Codegua";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"1"
+"06103";"Coinco";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"1"
+"06104";"Coltauco";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"1"
+"06105";"Donihue";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"1"
+"06106";"Graneros";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"1"
+"06107";"Las Cabras";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"0"
+"06108";"Machali";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"1"
+"06109";"Malloa";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"1"
+"06110";"Mostazal";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"1"
+"06111";"Olivar";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"1"
+"06112";"Peumo";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"0"
+"06113";"Pichidegua";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"0"
+"06114";"Quinta de Tilcoco";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"1"
+"06115";"Rengo";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"1"
+"06116";"Requinoa";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"1"
+"06117";"San Vicente";"061";"Cachapoal";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"1"
+"06201";"Pichilemu";"062";"Cardenal Caro";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"0"
+"06202";"La Estrella";"062";"Cardenal Caro";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"0"
+"06203";"Litueche";"062";"Cardenal Caro";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"0"
+"06204";"Marchihue";"062";"Cardenal Caro";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"0"
+"06205";"Navidad";"062";"Cardenal Caro";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"0"
+"06206";"Paredones";"062";"Cardenal Caro";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"0"
+"06301";"San Fernando";"063";"Colchagua";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"1"
+"06302";"Chepica";"063";"Colchagua";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"0"
+"06303";"Chimbarongo";"063";"Colchagua";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"1"
+"06304";"Lolol";"063";"Colchagua";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"0"
+"06305";"Nancagua";"063";"Colchagua";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"0"
+"06306";"Palmilla";"063";"Colchagua";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"0"
+"06307";"Peralillo";"063";"Colchagua";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"0"
+"06308";"Placilla";"063";"Colchagua";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"1"
+"06309";"Pumanque";"063";"Colchagua";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"0"
+"06310";"Santa Cruz";"063";"Colchagua";"06";"Libertador General Bernardo OHiggins";"VI";"pda";"0"
+"07101";"Talca";"071";"Talca";"07";"Maule";"VII";"pda";"1"
+"07102";"Constitucion";"071";"Talca";"07";"Maule";"VII";"pda";"0"
+"07103";"Curepto";"071";"Talca";"07";"Maule";"VII";"pda";"0"
+"07104";"Empedrado";"071";"Talca";"07";"Maule";"VII";"pda";"0"
+"07105";"Maule";"071";"Talca";"07";"Maule";"VII";"pda";"1"
+"07106";"Pelarco";"071";"Talca";"07";"Maule";"VII";"pda";"0"
+"07107";"Pencahue";"071";"Talca";"07";"Maule";"VII";"pda";"0"
+"07108";"Rio Claro";"071";"Talca";"07";"Maule";"VII";"pda";"0"
+"07109";"San Clemente";"071";"Talca";"07";"Maule";"VII";"pda";"0"
+"07110";"San Rafael";"071";"Talca";"07";"Maule";"VII";"pda";"0"
+"07201";"Cauquenes";"072";"Cauquenes";"07";"Maule";"VII";"pda";"0"
+"07202";"Chanco";"072";"Cauquenes";"07";"Maule";"VII";"pda";"0"
+"07203";"Pelluhue";"072";"Cauquenes";"07";"Maule";"VII";"pda";"0"
+"07301";"Curico";"073";"Curico";"07";"Maule";"VII";"pda";"1"
+"07302";"Hualane";"073";"Curico";"07";"Maule";"VII";"pda";"0"
+"07303";"Licanten";"073";"Curico";"07";"Maule";"VII";"pda";"0"
+"07304";"Molina";"073";"Curico";"07";"Maule";"VII";"pda";"1"
+"07305";"Rauco";"073";"Curico";"07";"Maule";"VII";"pda";"1"
+"07306";"Romeral";"073";"Curico";"07";"Maule";"VII";"pda";"1"
+"07307";"Sagrada Familia";"073";"Curico";"07";"Maule";"VII";"pda";"1"
+"07308";"Teno";"073";"Curico";"07";"Maule";"VII";"pda";"1"
+"07309";"Vichuquen";"073";"Curico";"07";"Maule";"VII";"pda";"0"
+"07401";"Linares";"074";"Linares";"07";"Maule";"VII";"pda";"0"
+"07402";"Colbun";"074";"Linares";"07";"Maule";"VII";"pda";"0"
+"07403";"Longavi";"074";"Linares";"07";"Maule";"VII";"pda";"0"
+"07404";"Parral";"074";"Linares";"07";"Maule";"VII";"pda";"0"
+"07405";"Retiro";"074";"Linares";"07";"Maule";"VII";"pda";"0"
+"07406";"San Javier";"074";"Linares";"07";"Maule";"VII";"pda";"0"
+"07407";"Villa Alegre";"074";"Linares";"07";"Maule";"VII";"pda";"0"
+"07408";"Yerbas Buenas";"074";"Linares";"07";"Maule";"VII";"pda";"0"
+"08101";"Concepcion";"081";"Concepcion";"08";"Biobio";"VIII";"pda";"1"
+"08102";"Coronel";"081";"Concepcion";"08";"Biobio";"VIII";"pda";"1"
+"08103";"Chiguayante";"081";"Concepcion";"08";"Biobio";"VIII";"pda";"1"
+"08104";"Florida";"081";"Concepcion";"08";"Biobio";"VIII";"pda";"0"
+"08105";"Hualqui";"081";"Concepcion";"08";"Biobio";"VIII";"pda";"1"
+"08106";"Lota";"081";"Concepcion";"08";"Biobio";"VIII";"pda";"1"
+"08107";"Penco";"081";"Concepcion";"08";"Biobio";"VIII";"pda";"1"
+"08108";"San Pedro de la Paz";"081";"Concepcion";"08";"Biobio";"VIII";"pda";"1"
+"08109";"Santa Juana";"081";"Concepcion";"08";"Biobio";"VIII";"pda";"0"
+"08110";"Talcahuano";"081";"Concepcion";"08";"Biobio";"VIII";"pda";"1"
+"08111";"Tome";"081";"Concepcion";"08";"Biobio";"VIII";"pda";"1"
+"08112";"Hualpen";"081";"Concepcion";"08";"Biobio";"VIII";"pda";"1"
+"08201";"Lebu";"082";"Arauco";"08";"Biobio";"VIII";"pda";"0"
+"08202";"Arauco";"082";"Arauco";"08";"Biobio";"VIII";"pda";"0"
+"08203";"Canete";"082";"Arauco";"08";"Biobio";"VIII";"pda";"0"
+"08204";"Contulmo";"082";"Arauco";"08";"Biobio";"VIII";"pda";"0"
+"08205";"Curanilahue";"082";"Arauco";"08";"Biobio";"VIII";"pda";"0"
+"08206";"Los Alamos";"082";"Arauco";"08";"Biobio";"VIII";"pda";"0"
+"08207";"Tirua";"082";"Arauco";"08";"Biobio";"VIII";"pda";"0"
+"08301";"Los Angeles";"083";"Biobio";"08";"Biobio";"VIII";"pda";"1"
+"08302";"Antuco";"083";"Biobio";"08";"Biobio";"VIII";"pda";"0"
+"08303";"Cabrero";"083";"Biobio";"08";"Biobio";"VIII";"pda";"0"
+"08304";"Laja";"083";"Biobio";"08";"Biobio";"VIII";"pda";"0"
+"08305";"Mulchen";"083";"Biobio";"08";"Biobio";"VIII";"pda";"0"
+"08306";"Nacimiento";"083";"Biobio";"08";"Biobio";"VIII";"pda";"0"
+"08307";"Negrete";"083";"Biobio";"08";"Biobio";"VIII";"pda";"0"
+"08308";"Quilaco";"083";"Biobio";"08";"Biobio";"VIII";"pda";"0"
+"08309";"Quilleco";"083";"Biobio";"08";"Biobio";"VIII";"pda";"0"
+"08310";"San Rosendo";"083";"Biobio";"08";"Biobio";"VIII";"pda";"0"
+"08311";"Santa Barbara";"083";"Biobio";"08";"Biobio";"VIII";"pda";"0"
+"08312";"Tucapel";"083";"Biobio";"08";"Biobio";"VIII";"pda";"0"
+"08313";"Yumbel";"083";"Biobio";"08";"Biobio";"VIII";"pda";"0"
+"08314";"Alto Biobio";"083";"Biobio";"08";"Biobio";"VIII";"pda";"0"
+"09101";"Temuco";"091";"Cautin";"09";"La Araucania";"IX";"pda";"1"
+"09102";"Carahue";"091";"Cautin";"09";"La Araucania";"IX";"pda";"0"
+"09103";"Cunco";"091";"Cautin";"09";"La Araucania";"IX";"pda";"0"
+"09104";"Curarrehue";"091";"Cautin";"09";"La Araucania";"IX";"pda";"0"
+"09105";"Freire";"091";"Cautin";"09";"La Araucania";"IX";"pda";"0"
+"09106";"Galvarino";"091";"Cautin";"09";"La Araucania";"IX";"pda";"0"
+"09107";"Gorbea";"091";"Cautin";"09";"La Araucania";"IX";"pda";"0"
+"09108";"Lautaro";"091";"Cautin";"09";"La Araucania";"IX";"pda";"0"
+"09109";"Loncoche";"091";"Cautin";"09";"La Araucania";"IX";"pda";"0"
+"09110";"Melipeuco";"091";"Cautin";"09";"La Araucania";"IX";"pda";"0"
+"09111";"Nueva Imperial";"091";"Cautin";"09";"La Araucania";"IX";"pda";"0"
+"09112";"Padre las Casas";"091";"Cautin";"09";"La Araucania";"IX";"pda";"1"
+"09113";"Perquenco";"091";"Cautin";"09";"La Araucania";"IX";"pda";"0"
+"09114";"Pitrufquen";"091";"Cautin";"09";"La Araucania";"IX";"pda";"0"
+"09115";"Pucon";"091";"Cautin";"09";"La Araucania";"IX";"pda";"0"
+"09116";"Saavedra";"091";"Cautin";"09";"La Araucania";"IX";"pda";"0"
+"09117";"Teodoro Schmidt";"091";"Cautin";"09";"La Araucania";"IX";"pda";"0"
+"09118";"Tolten";"091";"Cautin";"09";"La Araucania";"IX";"pda";"0"
+"09119";"Vilcun";"091";"Cautin";"09";"La Araucania";"IX";"pda";"0"
+"09120";"Villarrica";"091";"Cautin";"09";"La Araucania";"IX";"pda";"0"
+"09121";"Cholchol";"091";"Cautin";"09";"La Araucania";"IX";"pda";"0"
+"09201";"Angol";"092";"Malleco";"09";"La Araucania";"IX";"pda";"0"
+"09202";"Collipulli";"092";"Malleco";"09";"La Araucania";"IX";"pda";"0"
+"09203";"Curacautin";"092";"Malleco";"09";"La Araucania";"IX";"pda";"0"
+"09204";"Ercilla";"092";"Malleco";"09";"La Araucania";"IX";"pda";"0"
+"09205";"Lonquimay";"092";"Malleco";"09";"La Araucania";"IX";"pda";"0"
+"09206";"Los Sauces";"092";"Malleco";"09";"La Araucania";"IX";"pda";"0"
+"09207";"Lumaco";"092";"Malleco";"09";"La Araucania";"IX";"pda";"0"
+"09208";"Puren";"092";"Malleco";"09";"La Araucania";"IX";"pda";"0"
+"09209";"Renaico";"092";"Malleco";"09";"La Araucania";"IX";"pda";"0"
+"09210";"Traiguen";"092";"Malleco";"09";"La Araucania";"IX";"pda";"0"
+"09211";"Victoria";"092";"Malleco";"09";"La Araucania";"IX";"pda";"0"
+"10101";"Puerto Montt";"101";"Llanquihue";"10";"Los Lagos";"X";"pda";"1"
+"10102";"Calbuco";"101";"Llanquihue";"10";"Los Lagos";"X";"pda";"0"
+"10103";"Cochamo";"101";"Llanquihue";"10";"Los Lagos";"X";"pda";"0"
+"10104";"Fresia";"101";"Llanquihue";"10";"Los Lagos";"X";"pda";"0"
+"10105";"Frutillar";"101";"Llanquihue";"10";"Los Lagos";"X";"pda";"0"
+"10106";"Los Muermos";"101";"Llanquihue";"10";"Los Lagos";"X";"pda";"0"
+"10107";"Llanquihue";"101";"Llanquihue";"10";"Los Lagos";"X";"pda";"0"
+"10108";"Maullin";"101";"Llanquihue";"10";"Los Lagos";"X";"pda";"0"
+"10109";"Puerto Varas";"101";"Llanquihue";"10";"Los Lagos";"X";"pda";"1"
+"10201";"Castro";"102";"Chiloe";"10";"Los Lagos";"X";"pda";"0"
+"10202";"Ancud";"102";"Chiloe";"10";"Los Lagos";"X";"pda";"0"
+"10203";"Chonchi";"102";"Chiloe";"10";"Los Lagos";"X";"pda";"0"
+"10204";"Curaco de Velez";"102";"Chiloe";"10";"Los Lagos";"X";"pda";"0"
+"10205";"Dalcahue";"102";"Chiloe";"10";"Los Lagos";"X";"pda";"0"
+"10206";"Puqueldon";"102";"Chiloe";"10";"Los Lagos";"X";"pda";"0"
+"10207";"Queilen";"102";"Chiloe";"10";"Los Lagos";"X";"pda";"0"
+"10208";"Quellon";"102";"Chiloe";"10";"Los Lagos";"X";"pda";"0"
+"10209";"Quemchi";"102";"Chiloe";"10";"Los Lagos";"X";"pda";"0"
+"10210";"Quinchao";"102";"Chiloe";"10";"Los Lagos";"X";"pda";"0"
+"10301";"Osorno";"103";"Osorno";"10";"Los Lagos";"X";"pda";"1"
+"10302";"Puerto Octay";"103";"Osorno";"10";"Los Lagos";"X";"pda";"0"
+"10303";"Purranque";"103";"Osorno";"10";"Los Lagos";"X";"pda";"0"
+"10304";"Puyehue";"103";"Osorno";"10";"Los Lagos";"X";"pda";"0"
+"10305";"Rio Negro";"103";"Osorno";"10";"Los Lagos";"X";"pda";"0"
+"10306";"San Juan de la Costa";"103";"Osorno";"10";"Los Lagos";"X";"pda";"0"
+"10307";"San Pablo";"103";"Osorno";"10";"Los Lagos";"X";"pda";"0"
+"10401";"Chaiten";"104";"Palena";"10";"Los Lagos";"X";"pda";"0"
+"10402";"Futaleufu";"104";"Palena";"10";"Los Lagos";"X";"pda";"0"
+"10403";"Hualaihue";"104";"Palena";"10";"Los Lagos";"X";"pda";"0"
+"10404";"Palena";"104";"Palena";"10";"Los Lagos";"X";"pda";"0"
+"11101";"Coihaique";"111";"Coihaique";"11";"Aysen del General Carlos Ibanez del Campo";"XI";"pda";"1"
+"11102";"Lago Verde";"111";"Coihaique";"11";"Aysen del General Carlos Ibanez del Campo";"XI";"pda";"0"
+"11201";"Aisen";"112";"Aisen";"11";"Aysen del General Carlos Ibanez del Campo";"XI";"pda";"0"
+"11202";"Cisnes";"112";"Aisen";"11";"Aysen del General Carlos Ibanez del Campo";"XI";"pda";"0"
+"11203";"Guaitecas";"112";"Aisen";"11";"Aysen del General Carlos Ibanez del Campo";"XI";"pda";"0"
+"11301";"Cochrane";"113";"Capitan Prat";"11";"Aysen del General Carlos Ibanez del Campo";"XI";"pda";"0"
+"11302";"OHiggins";"113";"Capitan Prat";"11";"Aysen del General Carlos Ibanez del Campo";"XI";"pda";"0"
+"11303";"Tortel";"113";"Capitan Prat";"11";"Aysen del General Carlos Ibanez del Campo";"XI";"pda";"0"
+"11401";"Chile Chico";"114";"General Carrera";"11";"Aysen del General Carlos Ibanez del Campo";"XI";"pda";"0"
+"11402";"Rio Ibanez";"114";"General Carrera";"11";"Aysen del General Carlos Ibanez del Campo";"XI";"pda";"0"
+"12101";"Punta Arenas";"121";"Magallanes";"12";"Magallanes y de la Antartica Chilena";"XII";"pda";"0"
+"12102";"Laguna Blanca";"121";"Magallanes";"12";"Magallanes y de la Antartica Chilena";"XII";"pda";"0"
+"12103";"Rio Verde";"121";"Magallanes";"12";"Magallanes y de la Antartica Chilena";"XII";"pda";"0"
+"12104";"San Gregorio";"121";"Magallanes";"12";"Magallanes y de la Antartica Chilena";"XII";"pda";"0"
+"12201";"Cabo de Hornos";"122";"Antartica Chilena";"12";"Magallanes y de la Antartica Chilena";"XII";"pda";"0"
+"12202";"Antartica";"122";"Antartica Chilena";"12";"Magallanes y de la Antartica Chilena";"XII";"pda";"0"
+"12301";"Porvenir";"123";"Tierra del Fuego";"12";"Magallanes y de la Antartica Chilena";"XII";"pda";"0"
+"12302";"Primavera";"123";"Tierra del Fuego";"12";"Magallanes y de la Antartica Chilena";"XII";"pda";"0"
+"12303";"Timaukel";"123";"Tierra del Fuego";"12";"Magallanes y de la Antartica Chilena";"XII";"pda";"0"
+"12401";"Natales";"124";"Ultima Esperanza";"12";"Magallanes y de la Antartica Chilena";"XII";"pda";"0"
+"12402";"Torres del Paine";"124";"Ultima Esperanza";"12";"Magallanes y de la Antartica Chilena";"XII";"pda";"0"
+"13101";"Santiago";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13102";"Cerrillos";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13103";"Cerro Navia";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13104";"Conchali";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13105";"El Bosque";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13106";"Estacion Central";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13107";"Huechuraba";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13108";"Independencia";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13109";"La Cisterna";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13110";"La Florida";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13111";"La Granja";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13112";"La Pintana";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13113";"La Reina";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13114";"Las Condes";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13115";"Lo Barnechea";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13116";"Lo Espejo";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13117";"Lo Prado";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13118";"Macul";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13119";"Maipu";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13120";"Nunoa";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13121";"Pedro Aguirre Cerda";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13122";"Penalolen";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13123";"Providencia";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13124";"Pudahuel";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13125";"Quilicura";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13126";"Quinta Normal";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13127";"Recoleta";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13128";"Renca";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13129";"San Joaquin";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13130";"San Miguel";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13131";"San Ramon";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13132";"Vitacura";"131";"Santiago";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13201";"Puente Alto";"132";"Cordillera";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13202";"Pirque";"132";"Cordillera";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13203";"San Jose de Maipo";"132";"Cordillera";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13301";"Colina";"133";"Chacabuco";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13302";"Lampa";"133";"Chacabuco";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13303";"Tiltil";"133";"Chacabuco";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13401";"San Bernardo";"134";"Maipo";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13402";"Buin";"134";"Maipo";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13403";"Calera de Tango";"134";"Maipo";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13404";"Paine";"134";"Maipo";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13501";"Melipilla";"135";"Melipilla";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13502";"Alhue";"135";"Melipilla";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13503";"Curacavi";"135";"Melipilla";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13504";"Maria Pinto";"135";"Melipilla";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13505";"San Pedro";"135";"Melipilla";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13601";"Talagante";"136";"Talagante";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13602";"El Monte";"136";"Talagante";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13603";"Isla de Maipo";"136";"Talagante";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13604";"Padre Hurtado";"136";"Talagante";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"13605";"Penaflor";"136";"Talagante";"13";"Metropolitana de Santiago";"M";"pda";"0"
+"14101";"Valdivia";"141";"Valdivia";"14";"Los Rios";"XIV";"pda";"1"
+"14102";"Corral";"141";"Valdivia";"14";"Los Rios";"XIV";"pda";"0"
+"14103";"Lanco";"141";"Valdivia";"14";"Los Rios";"XIV";"pda";"0"
+"14104";"Los Lagos";"141";"Valdivia";"14";"Los Rios";"XIV";"pda";"0"
+"14105";"Mafil";"141";"Valdivia";"14";"Los Rios";"XIV";"pda";"0"
+"14106";"Mariquina";"141";"Valdivia";"14";"Los Rios";"XIV";"pda";"0"
+"14107";"Paillaco";"141";"Valdivia";"14";"Los Rios";"XIV";"pda";"0"
+"14108";"Panguipulli";"141";"Valdivia";"14";"Los Rios";"XIV";"pda";"0"
+"14201";"La Union";"142";"Ranco";"14";"Los Rios";"XIV";"pda";"0"
+"14202";"Futrono";"142";"Ranco";"14";"Los Rios";"XIV";"pda";"0"
+"14203";"Lago Ranco";"142";"Ranco";"14";"Los Rios";"XIV";"pda";"0"
+"14204";"Rio Bueno";"142";"Ranco";"14";"Los Rios";"XIV";"pda";"0"
+"15101";"Arica";"151";"Arica";"15";"Arica y Parinacota";"XV";"pda";"0"
+"15102";"Camarones";"151";"Arica";"15";"Arica y Parinacota";"XV";"pda";"0"
+"15201";"Putre";"152";"Parinacota";"15";"Arica y Parinacota";"XV";"pda";"0"
+"15202";"General Lagos";"152";"Parinacota";"15";"Arica y Parinacota";"XV";"pda";"0"
+"16101";"Chillan";"161";"Diguillin";"16";"Nuble";"VIII";"pda";"1"
+"16102";"Bulnes";"161";"Diguillin";"16";"Nuble";"VIII";"pda";"0"
+"16103";"Chillan Viejo";"161";"Diguillin";"16";"Nuble";"VIII";"pda";"1"
+"16104";"El Carmen";"161";"Diguillin";"16";"Nuble";"VIII";"pda";"0"
+"16105";"Pemuco";"161";"Diguillin";"16";"Nuble";"VIII";"pda";"0"
+"16106";"Pinto";"161";"Diguillin";"16";"Nuble";"VIII";"pda";"0"
+"16107";"Quillon";"161";"Diguillin";"16";"Nuble";"VIII";"pda";"0"
+"16108";"San Ignacio";"161";"Diguillin";"16";"Nuble";"VIII";"pda";"0"
+"16109";"Yungay";"161";"Diguillin";"16";"Nuble";"VIII";"pda";"0"
+"16201";"Quirihue";"162";"Itata";"16";"Nuble";"VIII";"pda";"0"
+"16202";"Cobquecura";"162";"Itata";"16";"Nuble";"VIII";"pda";"0"
+"16203";"Coelemu";"162";"Itata";"16";"Nuble";"VIII";"pda";"0"
+"16204";"Ninhue";"162";"Itata";"16";"Nuble";"VIII";"pda";"0"
+"16205";"Portezuelo";"162";"Itata";"16";"Nuble";"VIII";"pda";"0"
+"16206";"Ranquil";"162";"Itata";"16";"Nuble";"VIII";"pda";"0"
+"16207";"Treguaco";"162";"Itata";"16";"Nuble";"VIII";"pda";"0"
+"16301";"San Carlos";"163";"Punilla";"16";"Nuble";"VIII";"pda";"0"
+"16302";"Coihueco";"163";"Punilla";"16";"Nuble";"VIII";"pda";"0"
+"16303";"Niquen";"163";"Punilla";"16";"Nuble";"VIII";"pda";"0"
+"16304";"San Fabian";"163";"Punilla";"16";"Nuble";"VIII";"pda";"0"
+"16305";"San Nicolas";"163";"Punilla";"16";"Nuble";"VIII";"pda";"0"
