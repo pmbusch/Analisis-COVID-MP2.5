@@ -114,6 +114,23 @@ f_figMRR <- function(model){
   return(p)
 }
 
+## Para calcular MRR del MP2.5 con su intervalo de confianza
+f_MRR_mp25 <- function(mod, param="mp25"){
+  # Get coefficients
+  est <- summary(mod)$coefficients[,1:4] %>% as.data.frame() %>% 
+    as_tibble(rownames = "parametro") %>% 
+    filter(parametro==param)
+  names(est) <- c("parametro","coef","sd","z_value","p_value")
+  
+  # Calculate MRR
+  est <- est %>% mutate(low=coef-1.96*sd, high=coef+1.96*sd)
+  est_mrr <- est %>% mutate(RR=exp(coef) %>% round(2), 
+                            lower_CI=exp(low) %>% round(2), 
+                            upper_CI=exp(high) %>% round(2)) %>% 
+    dplyr::select(RR, lower_CI, upper_CI)
+  return(est_mrr)
+}
+
 
 
 ## EoF

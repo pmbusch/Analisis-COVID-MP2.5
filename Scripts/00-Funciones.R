@@ -171,6 +171,8 @@ f_replaceVar <- function(variable_orig){
      variable_orig== "perc_ocupado"~ "% Ocupado laboral",
      variable_orig=="consumo_lena_m3" ~" Consumo regional leña CDT",
      variable_orig=="cons_lena_kg" ~" Consumo anual leña Casen 2013 [kg]",
+     variable_orig=="cons_lena_urbana" ~ "Consumo leña urbana 2018 [MWh]",
+     variable_orig=="pda" ~ "Comuna con PDA",
      variable_orig== "cons_lena_calefactor_pp"~ "Consumo anual leña calefactor [kWh per cápita]",
      variable_orig== "cons_lena_cocina_pp"~ "Consumo anual leña cocina [kWh per cápita]",
      variable_orig== "perc_lenaCocina"~ "% Uso leña cocina",
@@ -238,7 +240,7 @@ f_addTypeVar <- function(var){
                    "perc_lenaCocina","perc_lenaCalefaccion",
                    "perc_lenaAgua","consumo_lena_m3","penetracion_lena",
                  "consumo_lena_pp","hdd15_winter_lenaCalefaccion",
-                 "cons_lena_kg")  ~ 
+                 "cons_lena_kg","cons_lena_urbana","pda")  ~ 
         "Leña",
       var %in% c("hr_anual","hr_fall","hr_winter","hr_spring","hr_summer",
                  "tmed_anual","tmed_fall","tmed_winter","tmed_spring","tmed_summer",
