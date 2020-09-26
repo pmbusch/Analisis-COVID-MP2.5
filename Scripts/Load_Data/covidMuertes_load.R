@@ -43,13 +43,16 @@ rm(url)
 #       exdir = "Data/Data_Original/DEIS")
 
 # lectura
-fecha_deis <- "17-09-2020"
-df_deis <- read_delim("Data/Data_Original/DEIS/DEFUNCIONES_FUENTE_DEIS_2016_2020_17092020.csv",
-                 delim = ";",col_names = F,
-                 col_types = "dDcddccccccccccccccccccccc",
-                 locale = locale(encoding = "windows-1252"))
+fecha_deis <- "24-09-2020"
+df_deis <- read_delim(paste(
+  "Data/Data_Original/DEIS/DEFUNCIONES_FUENTE_DEIS_2016_2020_",
+  fecha_deis %>% str_remove_all("-"),".csv",sep=""),
+                 delim = ";",col_names = T,
+                 col_types = "Dcddccccccccccccccccccccc",
+                 locale = locale(encoding = "windows-1252",
+                                 date_format = "%d-%m-%Y"))
 spec(df_deis)
-names(df_deis) <- c("year","date","sexo","edad_tipo","edad",
+names(df_deis) <- c("date","sexo","edad_tipo","edad",
                     "codigo_comuna","comuna","region",
                     "diag1","cap_diag1","glosa_cap_diag1",
                     "grupo_diag1","glosa_grupo_diag1",
@@ -60,6 +63,9 @@ names(df_deis) <- c("year","date","sexo","edad_tipo","edad",
                     "categ_diag2","glosa_categ_diag2",
                     "subcateg_diag2","glosa_subcateg_diag2")
                     # "causa_cie10","causa","cap_cie10","capitulo")
+
+## Add year: antes estaba y lo borarron, como cambian el formato semana a semana....
+df_deis <- df_deis %>% mutate(year=year(date))
 
 # Filtro COVID
 df_deis %>% group_by(glosa_cap_diag1) %>% summarise(count=n()) %>% arrange(desc(count))
@@ -88,7 +94,8 @@ df_deis <- df_deis %>% mutate(edad=if_else(edad_tipo!=1,0,edad),
 df_deis <- df_deis %>% mutate(sexo=factor(sexo),
                     glosa_subcateg_diag1=factor(glosa_subcateg_diag1),
                     tipo=factor(tipo))
-nrow(df_deis) # muertes
+nrow(df_deis) # muertes totales
+df_deis$tipo %>% table() #por tipo
 # df_deis %>% skim()
 
 df_deis$edad %>% unique()
