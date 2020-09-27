@@ -11,7 +11,7 @@ source("Scripts/Load_Data/covidMuertes_load.R", encoding = "UTF-8")
 ## Compilo Muertes desde el DEIS -----------
 df_muertes <- df_deis %>% 
   group_by(codigo_comuna, tipo) %>% 
-  summarise(casos_fallecidos=n()) %>% 
+  summarise(casos_fallecidos=n()) %>% ungroup() %>% 
   spread(tipo, casos_fallecidos) %>% 
   replace_na(list(confirmado=0, sospechoso=0)) %>% 
   rename(covid_fallecidos=confirmado, covid_fallecidos_sospechoso=sospechoso) %>% 
@@ -75,7 +75,7 @@ df_muertes <- df_muertes %>%
   left_join(df_75, by=c("codigo_comuna"))
 rm(df_75)
 
-## Replance NA in deaths
+## Replace NA in deaths
 df_muertes <- df_muertes %>% 
   replace_na(list(covid_fallecidos_65=0, covid_fallecidos_75=0)) 
 

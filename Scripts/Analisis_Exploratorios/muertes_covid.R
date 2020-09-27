@@ -23,14 +23,14 @@ rm(total_comunas, comunas_muerte)
 df_muertes$tasa_mortalidad_covid %>% range() # rango para los graficos
 # Chile
 df_muertes %>% left_join(mapa_comuna) %>% 
-  fig_mapa(tasa_mortalidad_covid, lwd=0.01,limites=c(0,260), 
+  fig_mapa(tasa_mortalidad_covid, lwd=0.01,limites=c(0,280), 
            titulo="Tasa Mortalidad Covid \n [muertes/100mil hab]")
 f_savePlot(last_plot(), 
            file_path = sprintf(file_name,"MapaChileCOVID"),dpi = 300)
 
 # Chile Facet
 df_muertes %>% left_join(mapa_comuna) %>% 
-  fig_mapaChile_facet(tasa_mortalidad_covid,limites=c(0,260),
+  fig_mapaChile_facet(tasa_mortalidad_covid,limites=c(0,280),
                       titulo="Tasa Mortalidad Covid \n [muertes/100mil hab]")
 f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaChileCOVIDFacet"),dpi = 300)
 
@@ -38,7 +38,7 @@ f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaChileCOVIDFacet"),dpi
 df_muertes %>% left_join(mapa_comuna) %>% 
   left_join(codigos_territoriales) %>% 
   filter(mapa_rm==1) %>% 
-  fig_mapa(tasa_mortalidad_covid, limites = c(0,260),
+  fig_mapa(tasa_mortalidad_covid, limites = c(0,280),
            titulo= "Tasa Mortalidad Covid \n [muertes/100mil hab]")
 f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaSantiagoCOVID"), dpi=100)
 

@@ -53,7 +53,7 @@ mapa_comuna <- mapa_comuna %>%
       factor(levels=c("Norte","Centro","RM","Sur","Austral")))
 
 ## Zonas termicas
-df_zonificacion <- read_excel("Data/Data_Original/Zonificacion_Termica.xlsx") %>% 
+df_zonificacion <- read_excel("Data/Data_Original/Lena/Zonificacion_Termica.xlsx") %>% 
   mutate(zona_termica=as.numeric(zona_principal) %>% factor(),
          codigo_comuna=paste(if_else(str_length(codigo_comuna)==4,"0",""),
                              codigo_comuna, sep=""))

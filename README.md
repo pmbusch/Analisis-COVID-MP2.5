@@ -25,9 +25,6 @@ El proyecto se subdivide en las siguientes secciones:
 	* Indice de Movilidad (viajes comuna por habitante) *(producto 33)*
 * Concentración ambiental (2017-2019): SINCA (https://sinca.mma.gob.cl/)
 	* MP2.5
-* Tasa de Mortalidad (2017): CENSO 2017 y DEIS (compilado por MinCiencia)
-	* Población 
-	* Defunciones *(producto 32)*
 * Infraestructura Sanitaria (2019): DEIS (https://deis.minsal.cl/)
 	* Número de Camas *(Listado de Establecimientos de Salud)*
 * Demografía: CENSO 2017 (https://www.censo2017.cl/)
@@ -40,7 +37,7 @@ El proyecto se subdivide en las siguientes secciones:
 	* Indice de Hacinamiento en Viviendas
 	* Permisos Edificación 2002-2017
 * Mapas de Chile: librería de R *chilemapas* (https://cran.r-project.org/web/packages/chilemapas/index.html)
-* Meteorología (2017-2019): Dirección Meteorológica de Chile (https://climatologia.meteochile.gob.cl/)
+* Meteorología (2017-2019): Dirección Meteorológica de Chile (https://climatologia.meteochile.gob.cl/) y SINCA (https://sinca.mma.gob.cl/)
 	* Temperatura (media, mínima y máxima diaria)
 	* Humedad relativa
 * Información Socioeconómica: CASEN 2017 (http://observatorio.ministeriodesarrollosocial.gob.cl/casen-multidimensional/casen/casen_2017.php)
