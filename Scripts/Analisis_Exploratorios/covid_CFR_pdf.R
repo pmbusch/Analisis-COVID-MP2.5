@@ -178,7 +178,8 @@ comunas <- df_covid_tiempo %>%
   left_join(codigos_territoriales) %>% 
   arrange(region, nombre_comuna) %>% 
   filter(!(nombre_comuna %in% c("Chile Chico", "Vichuquen",
-                                "Chonchi","Futaleufu","Antuco"))) %>% # Comunas con error
+                                "Chonchi","Futaleufu","Antuco",
+                                "Curaco de Velez"))) %>% # Comunas con error
   pull(nombre_comuna) %>% unique()
 df_covid_tiempo_c <- df_covid_tiempo %>% left_join(codigos_territoriales)
 for (c in comunas){

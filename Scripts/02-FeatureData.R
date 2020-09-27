@@ -36,13 +36,12 @@ df_modelo <- df_modelo %>%
 df_modelo <- df_modelo %>% 
   mutate(rm=if_else(region=="M","RM","Resto Chile"))
 
-df_modelo %>% skim()
-
-
 ## Densidad Poblacion en quintiles ------------
 df_modelo <- df_modelo %>% mutate(quintil_dens_pob=qgroup(densidad_pob, 5))
 df_modelo %>% group_by(quintil_dens_pob) %>% 
   summarise(count=n()) %>% arrange(desc(count))
+
+df_modelo %>% skim()
 
 
 ## Guardar datos -------

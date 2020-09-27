@@ -321,7 +321,8 @@ comunas <- df_covid_tiempo %>%
   left_join(codigos_territoriales) %>% 
   arrange(region, nombre_comuna) %>% 
   filter(!(nombre_comuna %in% c("Chile Chico","Vichuquen",
-                                "Chonchi","Futaleufu", "Antuco"))) %>% # Comunas con error
+                                "Chonchi","Futaleufu", "Antuco",
+                                "Curaco de Velez"))) %>% # Comunas con error
   pull(nombre_comuna) %>% unique()
 df_covid_tiempo_c <- df_covid_tiempo %>% left_join(codigos_territoriales)
 
@@ -335,7 +336,7 @@ casos_aplanados_array <- c(F,T)
 # DF para guardar todo
 cfr_comunas <- data.frame()
 for (c in comunas){
-  # cat("Comuna ",c, " \n", sep = "")
+  cat("Comuna ",c, " \n", sep = "")
   data_com <- df_covid_tiempo_c %>% filter(nombre_comuna==c)
   fecha_min <- data_com %>% filter(casos!=0) %>% pull(date) %>% min()
   fecha_max <- data_com %>% filter(casos!=0) %>% pull(date) %>% max()
