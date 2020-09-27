@@ -123,12 +123,12 @@ df_deis_tiempo <- df_deis_tiempo %>%
 df_deis_tiempo <- df_deis_tiempo %>%
   left_join(codigos_territoriales, by=c("codigo_comuna"))
 
+df_deis_tiempo <- df_deis_tiempo %>% 
+  mutate(sexo=if_else(sexo %in% c("Mujer","mujer"),"mujer","hombre"))
+
 ## Add pob
 df_deis_tiempo <- df_deis_tiempo %>%
   left_join(df_grupoEdad)
 # rm(df_grupoEdad)
-
-df_deis_tiempo <- df_deis_tiempo %>% 
-  mutate(sexo=if_else(sexo %in% c("Mujer","mujer"),"mujer","hombre"))
 
 ## EoF
