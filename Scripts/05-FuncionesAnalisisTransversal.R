@@ -23,7 +23,8 @@ f_tableCoef <- function(model){
   table <- est %>% 
     mutate(parametro=parametro %>% 
              str_remove_all("scale|\\(|\\)|log") %>% 
-             f_replaceVar()) %>% 
+             f_replaceVar() %>% 
+             str_replace("rmRM","Comuna dentro RM")) %>% 
     rename(Parametro=parametro, `Coef.`=coef, `Desv.`=sd,
            `Valor-z`=z_value,`Valor-p`=p_value,`Sign.`=codes) %>% 
     flextable() %>% 
@@ -64,7 +65,8 @@ f_tableMRR <- function(model){
     dplyr::select(parametro, coef, ci, p_value, codes) %>% 
     mutate(parametro=parametro %>% 
              str_remove_all("scale|\\(|\\)|log") %>% 
-             f_replaceVar()) %>% 
+             f_replaceVar() %>% 
+             str_replace("rmRM","Comuna dentro RM")) %>% 
     rename(Variable=parametro, MRR=coef, `95% I.C.`=ci,
            `Valor-p`=p_value,`Sign.`=codes) %>% 
     flextable() %>% 
@@ -103,7 +105,8 @@ f_figMRR <- function(model){
     rowid_to_column() %>% 
     mutate(parametro=parametro %>% 
              str_remove_all("scale|\\(|\\)|log") %>% 
-             f_replaceVar()) %>% 
+             f_replaceVar() %>% 
+             str_replace("rmRM","Comuna dentro RM")) %>% 
     ggplot(aes(x=reorder(parametro,desc(rowid)), y=coef))+
     geom_point()+
     geom_errorbar(aes(ymin=low, ymax=high))+
