@@ -66,15 +66,17 @@ mapa_filtro <- mapa %>%
                 tasa_mortalidad_covid, mp25, mp25_winter,
                 densidad_pob, densidad_pob_censal,
                 densidad_pob_manzana_mediana,densidad_pob_manzana_p90,
-                `15-44`,`65+`,
-                perc_rural, perc_puebloOrig,
+                `15-44`,`65+`,`75+`,
+                perc_rural, perc_puebloOrig, perc_vivHacMedio,
                 ingresoAutonomo_media, perc_menor_media, perc_isapre,perc_fonasa_A,
                 perc_fonasa_B,perc_fonasa_C,perc_fonasa_D,
-                perc_lenaCocina, perc_lenaCalefaccion,
+                perc_lenaCocina, perc_lenaCalefaccion, cons_lena_kg,
                 tasa_contagios, tasa_camas, dias_primerContagio, dias_primerMuerte,
                 dias_cuarentena, perc_letalidad,
+                cfr_raw_0, cfr_raw_10, cfr_raw_20, cfr_0_20, cfr_10_20, cfr_0_30,
+                hr_anual, tmed_anual,
                 tmed_summer,tmed_winter,hr_summer,hr_winter,heating_degree_15_summer,
-                heating_degree_15_winter) %>% 
+                heating_degree_15_winter, heating_degree_18_winter) %>% 
   mutate(`0-14`=100-`15-44`-`65+`)
 
 # PRUEBA FUNCION
@@ -110,10 +112,14 @@ m_leaf <- leaflet(mapa_filtro) %>%
              "15-44", unidad = "%") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$`65+`,
              "65+", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$`75+`,
+             "75+", unidad = "%") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$perc_rural,
              "perc_rural", unidad = "%") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$perc_puebloOrig,
              "perc_puebloOrig", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$perc_vivHacMedio,
+             "perc_vivHacMedio", unidad = "%") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$ingresoAutonomo_media,
              "ingresoAutonomo_media", unidad = "CLP mes") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$perc_menor_media,
@@ -128,6 +134,8 @@ m_leaf <- leaflet(mapa_filtro) %>%
              "perc_lenaCocina", unidad = "%") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$perc_lenaCalefaccion,
              "perc_lenaCalefaccion", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$cons_lena_kg,
+             "cons_lena_kg", unidad = "kg") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$tasa_camas,
              "tasa_camas", unidad = "por 100mil hab") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$dias_primerContagio,
@@ -138,10 +146,26 @@ m_leaf <- leaflet(mapa_filtro) %>%
              "dias_cuarentena", unidad = "dias") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$perc_letalidad,
              "perc_letalidad", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$cfr_raw_0,
+             "cfr_raw_0", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$cfr_raw_10,
+             "cfr_raw_10", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$cfr_raw_20,
+             "cfr_raw_20", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$cfr_0_20,
+             "cfr_0_20", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$cfr_10_20,
+             "cfr_10_20", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$cfr_0_30,
+             "cfr_0_30", unidad = "%") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$tmed_anual,
+             "tmed_anual", unidad = "°C") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$tmed_summer,
              "tmed_summer", unidad = "°C") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$tmed_winter,
              "tmed_winter", unidad = "°C") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$hr_anual,
+             "hr_anual", unidad = "%") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$hr_summer,
              "hr_summer", unidad = "%") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$hr_winter,
@@ -150,31 +174,42 @@ m_leaf <- leaflet(mapa_filtro) %>%
              "heating_degree_15_summer", unidad = "°C") %>% 
   f_leafleft(mapa_filtro,mapa_filtro$heating_degree_15_winter,
              "heating_degree_15_winter", unidad = "°C") %>% 
+  f_leafleft(mapa_filtro,mapa_filtro$heating_degree_18_winter,
+             "heating_degree_18_winter", unidad = "°C") %>% 
   addLayersControl(
     baseGroups = c("OpenStreetMap","Toner", "Toner by Stamen"),
     overlayGroups = c("tasa_mortalidad_covid","mp25","mp25_winter",
                       "poblacion","tasa_contagios",
                       "densidad_pob",
-                      "densidad_pob_censal","0-14","15-44","65+","perc_rural",
-                      "perc_puebloOrig","ingresoAutonomo_media",
+                      "densidad_pob_censal","0-14","15-44","65+","75+",
+                      "perc_rural","perc_puebloOrig","perc_vivHacMedio",
+                      "ingresoAutonomo_media",
                       "perc_menor_media","perc_isapre","perc_fonasa_A",
                       "perc_fonasa_D","perc_lenaCocina",
-                      "perc_lenaCalefaccion","tasa_camas",
+                      "perc_lenaCalefaccion","cons_lena_kg",
+                      "tasa_camas",
                       "dias_primerContagio","dias_primerMuerte","dias_cuarentena",
-                      "perc_letalidad","tmed_summer","tmed_winter",
-                      "hr_summer","hr_winter","heating_degree_15_summer",
-                      "heating_degree_15_winter")) %>% 
+                      "perc_letalidad",
+                      "cfr_raw_0", "cfr_raw_10", "cfr_raw_20",
+                      "cfr_0_20", "cfr_10_20", "cfr_0_30",
+                      "tmed_anual","tmed_summer","tmed_winter",
+                      "hr_anual","hr_summer","hr_winter","heating_degree_15_summer",
+                      "heating_degree_15_winter","heating_degree_18_winter")) %>% 
   hideGroup(c("tasa_mortalidad_covid","mp25","mp25_winter",
               "poblacion","tasa_contagios",
-              "densidad_pob","densidad_pob_censal","0-14","15-44","65+","perc_rural",
-              "perc_puebloOrig","ingresoAutonomo_media",
+              "densidad_pob","densidad_pob_censal","0-14","15-44","65+","75+",
+              "perc_rural","perc_puebloOrig","perc_vivHacMedio",
+              "ingresoAutonomo_media",
               "perc_menor_media","perc_isapre","perc_fonasa_A",
               "perc_fonasa_D","perc_lenaCocina",
-              "perc_lenaCalefaccion","tasa_camas",
-              "dias_primerContagio","dias_primerMuerte","dias_cuarentena",
-              "perc_letalidad","tmed_summer","tmed_winter",
-              "hr_summer","hr_winter","heating_degree_15_summer",
-              "heating_degree_15_winter"))
+              "perc_lenaCalefaccion","cons_lena_kg",
+              "tasa_camas","dias_primerContagio","dias_primerMuerte",
+              "dias_cuarentena","perc_letalidad",
+              "cfr_raw_0", "cfr_raw_10", "cfr_raw_20",
+              "cfr_0_20", "cfr_10_20", "cfr_0_30",
+              "tmed_anual","tmed_summer","tmed_winter",
+              "hr_anual","hr_summer","hr_winter","heating_degree_15_summer",
+              "heating_degree_15_winter","heating_degree_18_winter"))
 # m_leaf
 
 mapshot(m_leaf, "Figuras/MapaParametrosComuna.html", selfcontained=F)
