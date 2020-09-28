@@ -10,8 +10,6 @@ theme_set(theme_bw(16)+theme(panel.grid.major = element_blank()))
 file_name <- "Scripts/Analisis_General/Figuras/%s.png"
 
 
-
-
 ## Coeficiente de variacion ----------
 df_cv <- df_modelo %>% dplyr::select(-geometry) %>%  
   filter(!is.na(mp25)) %>% skim() %>% 

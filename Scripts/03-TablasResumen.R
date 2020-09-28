@@ -26,15 +26,15 @@ df <- df_modelo %>%
          poblacion=poblacion/1e3,
          ingresoAutonomo_media=ingresoAutonomo_media/1e3) %>% 
   select(tasa_mortalidad_covid, mp25, 
-         poblacion,densidad_pob, `15-44`, `45-64`, `65+`,perc_mujer, 
-         perc_rural, perc_puebloOrig, perc_material_irrecuperable, 
-         tasa_contagios, perc_letalidad,dias_primerContagio, 
-         dias_primerMuerte, dias_cuarentena, tasa_camas,tasa_mortalidad_all,
-         ingresoAutonomo_media, perc_isapre, perc_fonasa,
-         perc_menor_media, perc_ocupado, 
-         cons_lena_calefactor_pp,cons_lena_cocina_pp,perc_lenaCocina,
-         perc_lenaCalefaccion,perc_lenaAgua,
-          hr_summer, hr_winter, tmed_summer, tmed_winter,
+         poblacion,densidad_pob_censal, `15-44`, `45-64`, `65+`,perc_mujer, 
+         perc_rural, perc_puebloOrig, perc_material_irrecuperable,perc_vivHacMedio,
+         tasa_contagios, perc_letalidad, cfr_raw_0, cfr_0_20,
+         dias_primerContagio, dias_primerMuerte, dias_cuarentena, 
+         tasa_camas,
+         ingresoAutonomo_media, perc_isapre, perc_fonasa_A,perc_fonasa_B,
+         perc_fonasa_C, perc_fonasa_D,perc_menor_media, perc_ocupado, perc_salud,
+         cons_lena_kg,perc_lenaCocina,perc_lenaCalefaccion,perc_lenaAgua,
+         hr_summer, hr_winter, tmed_summer, tmed_winter,
          heating_degree_15_summer, heating_degree_15_winter)
 
 # separo por la condicion de si tiene o no estacion
@@ -47,9 +47,10 @@ df_sep <- df %>%
   spread(tiene_estacion, indicador)
   
 df_skim <- df %>% skim() %>% 
-  mutate(indicador=paste(round(numeric.mean,1)," (",
+  mutate(n=complete_rate*nrow(df),
+         indicador=paste(round(numeric.mean,1)," (",
                          round(numeric.sd,1),")", sep="")) %>% 
-  select(skim_variable, indicador) %>% 
+  select(skim_variable,n, indicador) %>% 
   left_join(df_sep)
 
 n_mp25 <- df_modelo %>% filter(!is.na(mp25)) %>% nrow()
@@ -64,22 +65,22 @@ df_skim <- df_skim %>%
            str_replace("Media Ingreso autonomo mensual",
                        "Media Ingreso autonomo mensual [miles CLP]")) %>% 
   arrange(Tipo)
-df_skim <- df_skim[,c(5,1,2,3,4)] # Reorder columns
+df_skim <- df_skim[,c(6,1,2,3,4,5)] # Reorder columns
 
 df_skim %>% 
   rename(Variable=skim_variable, Total=indicador, 
          `Sin MP2.5`=no, `Con MP2.5`=si) %>% 
   flextable() %>% 
-  bold(bold=T, part="header") %>% bold(j=1, bold=T) %>% 
+  bold(bold=T, part="header") %>% bold(j=1:2, bold=T) %>% 
   autofit(add_w = 0.1, add_h = 0.3) %>%
   align(j=1:2, align = "left", part="all") %>% 
   align(j=3, align = "center", part="all") %>% 
   merge_v(j = 1) %>%   fix_border_issues(part = "all") %>% 
-  border(j=1, part="body",
+  flextable::border(j=1, part="body",
          border.bottom = officer::fp_border(style = "solid", width=2)) %>%
-  border(j=2:5, part="body",i=c(6,7,12,22,28),
+  flextable::border(j=2:6, part="body",i=c(8,9,13,23,33),
          border.bottom = officer::fp_border(style = "solid", width=2)) %>%
-  footnote(j=3:5, value=as_paragraph(foot_note), part="header", inline=T)
+  footnote(j=4:6, value=as_paragraph(foot_note), part="header", inline=T) 
   # print(preview="pptx")
 # print(preview="docx")
 
@@ -114,16 +115,17 @@ df_skim %>%
   flextable() %>% 
   colformat_num(big.mark=" ", digits=1, j=3:ncol(df_skim),
                 na_str="s/i") %>%
-  bold(bold=T, part="header") %>% bold(j=1, bold=T) %>% 
+  bold(bold=T, part="header") %>% bold(j=1:2, bold=T) %>% 
   autofit(add_w = 0.1, add_h = 0.3) %>%
   align(j=1:2, align = "left", part="all") %>% 
   merge_v(j = 1) %>%   fix_border_issues(part = "all") %>% 
-  border(j=1, part="body",
+  flextable::border(j=1, part="body",
          border.bottom = officer::fp_border(style = "solid", width=2)) %>%
-  border(j=2:7, part="body",i=c(6,7,12,22,28),
+  flextable::border(j=2:7, part="body",i=c(8,9,13,23,33),
          border.bottom = officer::fp_border(style = "solid", width=2)) %>%
-  footnote(j=3, value=as_paragraph("Coeficiente Variación"), 
+  footnote(j=4, value=as_paragraph("Coeficiente Variación"), 
            part="header", inline=T)
+  # print(preview="docx")
   # print(preview="pptx")
 
 rm(df_skim, df)

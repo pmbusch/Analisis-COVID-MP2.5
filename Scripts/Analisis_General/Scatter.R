@@ -33,8 +33,7 @@ p1+geom_smooth(method = "lm",se=F, aes(col=rm),
 
 # Interactive plot
 # plotly::ggplotly(last_plot())
-p1+
-  geom_text_repel(aes(label=nombre_comuna))
+p1+geom_text_repel(aes(label=nombre_comuna))
 f_savePlot(last_plot(),
            sprintf(file_name, "Muertes_vs_MP25_name"), dpi=150)
 rm(p1)
