@@ -3,42 +3,45 @@
 ## Modelo Binomial negativo con y sin efectos aleatorios
 ## PBH Septiembre 2020
 
-# Load Data ------------
-source("Scripts/00-Funciones.R", encoding = "UTF-8")
-source("Scripts/05-FuncionesAnalisisTransversal.R", encoding = "UTF-8")
-load(".RData")
-## df modelo es la tabla de datos con todo a nivel de comuna
-## Columnas incluidas
-df_modelo %>% names() %>% sort()
-
 # Load library ----------
 source("Scripts/00-CargaLibrerias.R", encoding = "UTF-8")
+theme_set(theme_bw(16)+theme(panel.grid.major = element_blank()))
 library(MASS)
 library(lme4)
 library(glmmTMB)
 library(gamm4)
+
+# Load Data ------------
+source("Scripts/00-Funciones.R", encoding = "UTF-8")
+source("Scripts/05-FuncionesAnalisisTransversal.R", encoding = "UTF-8")
+load(".RData")
+
+## df modelo es la tabla de datos con todo a nivel de comuna
+## Columnas incluidas
+df_modelo %>% names() %>% sort()
+
 
 
 ## Modelo Prueba sin Efectos aleatorios--------
 # Como voy a ajustar CFR como variable dependiente, debo crear un offset "auxiliar"
 # de contagios
 data_mod <- df_modelo %>% filter(cfr_raw_0_aplanados>0) %>% 
-  mutate(contagios=covid_fallecidos/cfr_raw_0_aplanados*100)
+  mutate(contagios=covid_fallecidos/cfr_raw_0_aplanados*100) %>% 
+  filter(!rm=="RM")
+
 mod_nb <- glm.nb(covid_fallecidos ~ 
-                         mp25 + rm + 
-                         scale(densidad_pob) +
-                         scale(`15-44`) + scale(`65+`) +
-                         scale(perc_puebloOrig) + scale(perc_rural) +
-                         scale(dias_primerMuerte) + 
-                         scale(tasa_camas) + 
-                         scale(perc_lenaCocina) + 
-                         scale(log(ingresoTotal_media)) + scale(perc_menor_media) + 
-                         scale(perc_fonasa_A) + scale(perc_fonasa_D) +
-                         scale(tmed_summer) + scale(tmed_winter) + 
-                         scale(heating_degree_15_summer) + scale(heating_degree_15_winter) +
-                         offset(log(contagios)),
-                       data = data_mod,
-                       na.action=na.omit)
+                   # mp25 + 
+                   # rm +
+                   scale(`65+`) +
+                   scale(perc_vivHacMedio) +
+                   scale(perc_salud) +
+                   scale(perc_vivAntes2002) +
+                   scale(hr_anual) + 
+                   scale(movilidad) +
+                   scale(hdd15_winter_lenaCalefaccion) +
+                   offset(log(contagios)),
+                 data = data_mod,
+                 na.action=na.omit)
 
 # Analisis del modelo ajustado
 summary(mod_nb) #Resumen genela

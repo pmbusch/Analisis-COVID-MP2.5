@@ -34,6 +34,9 @@ df_movilidad <- df_movilidad %>%
 
 # df_movilidad %>% skim()
 
+## rango fechas
+df_movilidad$fecha %>% range()
+
 ## Agg to comunal values: Promedio en la serie temporal
 df_movilidad <- df_movilidad %>% group_by(codigo_comuna) %>% 
   summarise(movilidad=mean(movilidad, na.rm=T)) %>% ungroup()

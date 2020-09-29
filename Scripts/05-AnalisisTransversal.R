@@ -753,12 +753,37 @@ summary(mod_nb_cr2_lena)
 nobs(mod_nb_cr2_lena)
 exp(summary(mod_nb_cr2_lena)$coefficients[2,1]) # exponencial coeficiente MP2.5
 f_tableCoef(mod_nb_cr2_lena)
-f_tableMRR(mod_nb_cr2_lena)
-# print(preview="pptx")
+f_tableMRR(mod_nb_cr2_lena) %>% 
+print(preview="pptx")
 f_figMRR(mod_nb_cr2_lena)
 f_savePlot(last_plot(), sprintf(file_name,"CR2_lena"),dpi=150)
 saveRDS(mod_nb_cr2_lena, sprintf(file_mod,"CR2_lena"))
 rm(mod_nb_cr2_lena)
+
+## Modelo CR2 + Leña con letalidad acumulada ---------
+mod_nb_cr2_lena_let <- glm.nb(covid_fallecidos ~ 
+                            mp25 +
+                            rm +
+                            scale(`65+`) +
+                            scale(perc_vivHacMedio) +
+                            scale(perc_salud) +
+                            scale(perc_vivAntes2002) +
+                            scale(hr_anual) + 
+                            scale(movilidad) +
+                            scale(hdd15_winter_lenaCalefaccion) +
+                            offset(log(casos_confirmados)), 
+                          data = df,
+                          na.action=na.omit)
+summary(mod_nb_cr2_lena_let)
+nobs(mod_nb_cr2_lena_let)
+exp(summary(mod_nb_cr2_lena_let)$coefficients[2,1]) # exponencial coeficiente MP2.5
+f_tableCoef(mod_nb_cr2_lena_let)
+f_tableMRR(mod_nb_cr2_lena_let) %>% 
+  print(preview="pptx")
+f_figMRR(mod_nb_cr2_lena_let)
+f_savePlot(last_plot(), sprintf(file_name,"CR2_lena_letalidad"),dpi=150)
+saveRDS(mod_nb_cr2_lena_let, sprintf(file_mod,"CR2_lena_letalidads"))
+rm(mod_nb_cr2_lena_let)
 
 
 ## Modelo CR2 + Leña con CFR ---------
@@ -851,18 +876,12 @@ rm(mod_pda)
 ## Consumo Urbano Leña (n=45) ---------
 mod_lenaUrbano <- glm.nb(covid_fallecidos ~ 
                     mp25 +
-                    # rm +
-                    scale(densidad_pob_censal) +
-                    scale(`15-44`) + scale(`65+`) +
+                    scale(`15-44`) +
                     scale(perc_puebloOrig) + scale(perc_rural) +
                     scale(dias_primerMuerte) +
-                    # scale(tasa_camas) +
-                    # scale(perc_lenaCalefaccion) +
-                    scale(log(ingresoAutonomo_media)) + 
-                    scale(perc_menor_media) +
-                    scale(perc_fonasa_A) +
-                    # scale(perc_fonasa_D) +
+                    scale(tasa_camas) +
                     scale(perc_vivHacMedio)+
+                    # scale(perc_lenaCalefaccion)+
                     scale(hr_anual) +
                     scale(heating_degree_15_winter) +
                     scale(cons_lena_urbana) +
@@ -879,6 +898,33 @@ f_figMRR(mod_lenaUrbano)
 f_savePlot(last_plot(), sprintf(file_name,"lenaUrbano"),dpi=150)
 saveRDS(mod_lenaUrbano, sprintf(file_mod,"lenaUrbano"))
 rm(mod_lenaUrbano)
+
+
+## Consumo Urbano Leña Letalidad ---------
+mod_lenaUrbano_letal <- glm.nb(covid_fallecidos ~ 
+                           mp25 +
+                           scale(`15-44`) +
+                           scale(perc_puebloOrig) + scale(perc_rural) +
+                           scale(dias_primerMuerte) +
+                           scale(tasa_camas) +
+                           scale(perc_vivHacMedio)+
+                           # scale(perc_lenaCalefaccion)+
+                           scale(hr_anual) +
+                           scale(heating_degree_15_winter) +
+                           scale(cons_lena_urbana) +
+                           offset(log(casos_confirmados)),
+                         data = df,
+                         na.action=na.omit)
+summary(mod_lenaUrbano_letal)
+nobs(mod_lenaUrbano_letal)
+exp(summary(mod_lenaUrbano_letal)$coefficients[2,1]) # exponencial coeficiente MP2.5
+f_tableCoef(mod_lenaUrbano_letal)
+f_tableMRR(mod_lenaUrbano_letal)
+# print(preview="pptx")
+f_figMRR(mod_lenaUrbano_letal)
+f_savePlot(last_plot(), sprintf(file_name,"lenaUrbano_letalidad"),dpi=150)
+saveRDS(mod_lenaUrbano_letal, sprintf(file_mod,"lenaUrbano_letalidad"))
+rm(mod_lenaUrbano_letal)
 
 
 ## Fallecidos 65+---------
@@ -1121,7 +1167,7 @@ rm(mod_sinRM_sign)
 
 ## Solo RM significativo---------
 mod_RM_sign <- glm.nb(covid_fallecidos ~ 
-                        # mp25 +
+                        mp25 +
                         scale(`15-44`) +
                         scale(perc_puebloOrig) + scale(perc_rural) +
                         scale(dias_primerMuerte) +
