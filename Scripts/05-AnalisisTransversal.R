@@ -1241,6 +1241,7 @@ saveRDS(mod_letalidad_sign_rm, sprintf(file_mod,"Y_letalidad_sign_rm"))
 rm(mod_letalidad_sign_rm)
 
 
+
 ### Grafico MRR Resumen modelos probados ------------
 
 mod_nb <- read_rds(sprintf(file_mod,"sinRandomIntercept"))
