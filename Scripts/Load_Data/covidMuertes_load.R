@@ -67,19 +67,6 @@ names(df_deis) <- c("date","sexo","edad_tipo","edad",
 ## Add year: antes estaba y lo borarron, como cambian el formato semana a semana....
 df_deis <- df_deis %>% mutate(year=year(date))
 
-# Filtro COVID
-df_deis %>% group_by(glosa_cap_diag1) %>% summarise(count=n()) %>% arrange(desc(count))
-df_deis %>% group_by(glosa_grupo_diag1) %>% summarise(count=n()) %>% arrange(desc(count))
-df_deis %>% group_by(glosa_categ_diag1) %>% summarise(count=n()) %>% arrange(desc(count))
-df_deis %>% group_by(glosa_subcateg_diag1) %>% summarise(count=n()) %>% arrange(desc(count))
-df_deis <- df_deis %>% filter(str_detect(glosa_subcateg_diag1,"COVID-19")) %>% 
-  mutate(tipo=str_extract(glosa_subcateg_diag1, "no identificado|identificado"),
-         tipo=if_else(tipo=="no identificado","sospechoso","confirmado"))
-  
-# Comparacion muertes
-df_muertes$casos_fallecidos %>% sum()
-df_deis %>% filter(tipo=="confirmado") %>% nrow()
-
 # Cruzar con comunas
 df_deis <- df_deis %>% filter(codigo_comuna!="99999") %>% 
   mutate(codigo_comuna=paste(
@@ -92,11 +79,7 @@ df_deis <- df_deis %>% mutate(edad=if_else(edad_tipo!=1,0,edad),
 
 # Factores
 df_deis <- df_deis %>% mutate(sexo=factor(sexo),
-                    glosa_subcateg_diag1=factor(glosa_subcateg_diag1),
-                    tipo=factor(tipo))
-nrow(df_deis) # muertes totales
-df_deis$tipo %>% table() #por tipo
-# df_deis %>% skim()
+                    glosa_subcateg_diag1=factor(glosa_subcateg_diag1))
 
 df_deis$edad %>% unique()
 df_deis <- df_deis %>% mutate(grupo_edad=case_when(
@@ -104,6 +87,27 @@ df_deis <- df_deis %>% mutate(grupo_edad=case_when(
   edad < 45 ~ "15-44",
   edad < 65 ~ "45-64",
   T ~ "65+"))
+
+# Save for total deaths
+df_deis_total <- df_deis
+
+# Filtro COVID
+df_deis %>% group_by(glosa_cap_diag1) %>% summarise(count=n()) %>% arrange(desc(count))
+df_deis %>% group_by(glosa_grupo_diag1) %>% summarise(count=n()) %>% arrange(desc(count))
+df_deis %>% group_by(glosa_categ_diag1) %>% summarise(count=n()) %>% arrange(desc(count))
+df_deis %>% group_by(glosa_subcateg_diag1) %>% summarise(count=n()) %>% arrange(desc(count))
+df_deis <- df_deis %>% filter(str_detect(glosa_subcateg_diag1,"COVID-19")) %>% 
+  mutate(tipo=str_extract(glosa_subcateg_diag1, "no identificado|identificado"),
+         tipo=if_else(tipo=="no identificado","sospechoso","confirmado") %>% factor())
+ 
+# Comparacion muertes
+df_muertes$casos_fallecidos %>% sum()
+df_deis %>% filter(tipo=="confirmado") %>% nrow()
+
+nrow(df_deis) # muertes totales
+df_deis$tipo %>% table() #por tipo
+# df_deis %>% skim()
+
 
 
 # df_deis %>% group_by(grupo_edad,edad) %>% 
