@@ -11,7 +11,7 @@ options(dplyr.summarise.inform=FALSE)
 # Parametros ----------
 fecha_inicio <- "2000-01-01"
 fecha_fin <- format(Sys.time(),'%Y-%m-%d')
-contaminantes <- c("mp2.5", "co", "no2")
+contaminantes <- c("mp2.5","mp10", "co", "no2")
 
 # Scripts necesarios ------------------
 source('Scripts/00-Funciones.R')
@@ -135,6 +135,8 @@ df <- df %>%
            str_replace_all("Coyhaique","Coihaique")) %>% 
   left_join(codigos_territoriales,by=c("nombre_comuna"))
 
+df %>% filter(is.na(codigo_comuna)) %>% nrow()
+df$pollutant %>% table()
 
 # Guardar como objeto de R
 saveRDS(df, "Data/Data_Modelo/Datos_Concentraciones_raw.rsd")

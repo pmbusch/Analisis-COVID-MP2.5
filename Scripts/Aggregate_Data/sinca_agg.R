@@ -8,10 +8,13 @@ source("Scripts/Analisis_Exploratorios/f_figuras.R", encoding = "UTF-8")
 df <- read_rds("Data/Data_Modelo/Datos_Concentraciones_raw.rsd")
 
 
+df %>% group_by(pollutant, unidad) %>% summarise(count=n()) %>% arrange(desc(count))
+
+
 ## Expandir a otros años y season ---------
 ## Añadir Año especial (promedio 2017-2019 y años por separado)
 df <- df %>%
-  filter(year %in% 2017:2020 & pollutant=="mp2.5") %>%
+  filter(year %in% 2017:2020 & pollutant %in% c("mp2.5","mp10")) %>%
   mutate(season=as.character(year))
 df$season %>% unique()
 
@@ -37,7 +40,7 @@ df_conc <- df %>%
 
 # Disponibilidad mayor a 80% en el año, y con los tres años de datos
 sitios_validos <- df_conc %>% 
-  filter(season=="anual" & disponibilidad>0.8) %>% 
+  filter(season=="anual" & disponibilidad>0.8 & pollutant=="mp2.5") %>% 
   group_by(codigo_comuna,site) %>% 
   summarise(valor=mean(valor, na.rm=T),
             count=n()) %>% ungroup() %>% 
@@ -46,7 +49,7 @@ sitios_validos <- df_conc %>%
 
 df_conc <- df_conc %>% 
   filter(site %in% sitios_validos) %>% 
-  group_by(codigo_comuna, site, season) %>% 
+  group_by(codigo_comuna, site, season, pollutant) %>% 
   summarise(valor=mean(valor, na.rm=T)) %>% ungroup()
 rm(sitios_validos)
 df_conc$site %>% unique()
@@ -86,7 +89,7 @@ df_avg <- df_avg %>% left_join(df_conc %>% select(-codigo_comuna),
 
 ## Promedio ponderado por inverso de la distancia a nivel de zona censal
 df_mp <- df_avg %>% 
-  group_by(geocodigo, codigo_comuna, poblacion, season) %>% 
+  group_by(geocodigo, codigo_comuna, poblacion, season, pollutant) %>% 
   summarise(valor=weighted.mean(valor, 1/(dist)),
             count=n()) %>% ungroup()
 
@@ -101,10 +104,10 @@ rm(m2,m3)
 
 ## Promedio a nivel de comuna ponderado por la poblacion
 df_mp <- df_mp %>% 
-  group_by(codigo_comuna, season) %>% 
+  group_by(codigo_comuna, season, pollutant) %>% 
   summarise(valor=weighted.mean(valor, poblacion)) %>% ungroup() %>% 
-  mutate(season=paste("mp25",season,sep="_")) %>% 
-  spread(season,valor) %>% rename(mp25=mp25_anual) %>% 
+  mutate(season=paste(pollutant,season,sep="_") %>% str_remove_all("_anual|\\.")) %>% 
+  select(-pollutant) %>% spread(season,valor) %>% 
   right_join(mapa_comuna) %>% left_join(codigos_territoriales)
 
 df_mp %>% filter(!is.na(mp25)) %>% nrow() # N comunas con datos:120
@@ -121,9 +124,12 @@ mapshot(m1, "Figuras/ConcentracionMP25.html", selfContained=F)
 rm(m1)
 
 # Guarda datos ----------
+df_mp %>% names()
 df_conc <- df_mp %>% 
   select(codigo_comuna, mp25, mp25_fall, mp25_winter, mp25_spring, mp25_summer,
-         mp25_2017, mp25_2018, mp25_2019, mp25_2020) %>% 
+         mp25_2017, mp25_2018, mp25_2019, mp25_2020,
+         mp10, mp10_fall, mp10_winter, mp10_spring, mp10_summer,
+         mp10_2017, mp10_2018, mp10_2019, mp10_2020) %>% 
   filter(!is.na(mp25))
 saveRDS(df_conc, "Data/Data_Modelo/Datos_Concentraciones.rsd")
 
