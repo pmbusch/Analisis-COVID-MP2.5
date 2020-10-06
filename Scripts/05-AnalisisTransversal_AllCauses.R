@@ -51,7 +51,7 @@ mod_nb <- glm.nb(def_cardioPulmonar ~
                    scale(perc_fonasa_A) + scale(perc_fonasa_D) +
                    scale(perc_vivHacMedio)+
                    scale(hr_anual) +
-                   scale(heating_degree_15_winter) 
+                   scale(heating_degree_15_winter) +
                    offset(log(poblacion)), 
                  data = df,
                  na.action=na.omit)
@@ -80,4 +80,61 @@ f_tableCoef(mod_nb_sign)
 f_tableMRR(mod_nb_sign)
 f_figMRR(mod_nb_sign)
 rm(mod_nb_sign)
+
+
+## Modelo Step sobre Y= Causas Cardiopulmonares ------------
+# https://stats.stackexchange.com/questions/20836/algorithms-for-automatic-model-selection/20856#20856
+library(caret)
+
+## Creo df solo con variables numericas de interes (y fuera de COVID)
+df_modelo %>% names() %>% sort()
+df <-  df_modelo %>% select_if(is.numeric) %>% 
+  dplyr::select(
+    # -covid_fallecidos, -poblacion,
+    -tasa_mortalidad_covid,
+    -tasa_contagios,-casos_confirmados, -camas,
+    -cfr_0_20,-cfr_0_20_aplanados,-cfr_0_30,-cfr_0_30_aplanados,
+    -cfr_10_20,-cfr_10_20_aplanados,-cfr_raw_0,-cfr_raw_0_aplanados,
+    -cfr_raw_10,-cfr_raw_10_aplanados,-cfr_raw_20,-cfr_raw_20_aplanados,
+    -ifr_0_20,-ifr_0_20_aplanados,-ifr_0_30,-ifr_0_30_aplanados,-ifr_10_20,
+    -ifr_10_20_aplanados,-ifr_raw_0,-ifr_raw_0_aplanados,-ifr_raw_10,
+    -ifr_raw_10_aplanados,-ifr_raw_20,-ifr_raw_20_aplanados,
+    -pcr_region, -perc_letalidad,-defunciones,-tasa_mortalidad_all,
+    -cons_lena_calefactor_pp,-consumo_lena_m3,-consumo_lena_pp,-penetracion_lena,
+    -cons_lena_cocina_pp,
+    -superficie, -superficie_censal,-perimetro, -viviendas) %>% 
+  na.omit()
+
+
+# Columnas a remover dado que serian redundantes por su correlacion con otras variables
+# identify and eliminate collinear variables
+cols <- df %>% 
+  cor() %>% 
+  findCorrelation()
+# Columnas fuera
+df[,cols] %>% names() %>% sort()
+## Keep covid_fallecidos and poblacion
+# cols <- cols[cols!=1]
+# Columnas remanentes
+df[,-cols] %>% names() %>% sort()
+
+df <- df[,-cols]
+
+
+## Train with ML
+getModelInfo("glmStepAIC")
+modelLookup("glmStepAIC")
+
+
+# AIC estimates the relative amount of information lost by a given model: 
+# the less information a model loses, the higher the quality of that model
+glm_fit <- train(def_cardioPulmonar~ . +offset(log(poblacion)),
+                 data=df,
+                 method="glmStepAIC",
+                 family="poisson",
+                 link="log",
+                 na.action = na.omit)
+glm_fit
+summary(glm_fit)
+varImp(glm_fit)
 

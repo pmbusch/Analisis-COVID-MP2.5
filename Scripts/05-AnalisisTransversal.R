@@ -926,6 +926,70 @@ f_savePlot(last_plot(), sprintf(file_name,"lenaUrbano_letalidad"),dpi=150)
 saveRDS(mod_lenaUrbano_letal, sprintf(file_mod,"lenaUrbano_letalidad"))
 rm(mod_lenaUrbano_letal)
 
+## MP2.5 2019 --------
+mod_mp_2019 <- glm.nb(covid_fallecidos ~ 
+                   mp25_2019 +
+                   rm +
+                   scale(densidad_pob_censal) +
+                   scale(`15-44`) + scale(`65+`) +
+                   scale(perc_puebloOrig) +
+                   scale(perc_rural) +
+                   scale(dias_primerMuerte) +
+                   scale(tasa_camas) +
+                   scale(perc_lenaCalefaccion) +
+                   scale(log(ingresoAutonomo_media)) + scale(perc_menor_media) +
+                   scale(perc_fonasa_A) + scale(perc_fonasa_D) +
+                   scale(perc_vivHacMedio)+
+                   scale(hr_anual) +
+                   scale(heating_degree_15_winter) +
+                   offset(log(poblacion)), 
+                 data = df,
+                 na.action=na.omit)
+
+summary(mod_mp_2019)
+nobs(mod_mp_2019)
+exp(summary(mod_mp_2019)$coefficients[2,1]) # exponencial coeficiente MP2.5
+f_tableCoef(mod_mp_2019)
+f_tableMRR(mod_mp_2019)
+# print(preview="docx")
+# print(preview="pptx")
+f_figMRR(mod_mp_2019)
+f_savePlot(last_plot(), sprintf(file_name,"mp25_2019"),dpi=150)
+saveRDS(mod_mp_2019, sprintf(file_mod,"mp25_2019"))
+rm(mod_mp_2019)
+
+
+## MP10 --------
+mod_mp10 <- glm.nb(covid_fallecidos ~ 
+                        mp10 +
+                        rm +
+                        scale(densidad_pob_censal) +
+                        scale(`15-44`) + scale(`65+`) +
+                        scale(perc_puebloOrig) +
+                        scale(perc_rural) +
+                        scale(dias_primerMuerte) +
+                        scale(tasa_camas) +
+                        scale(perc_lenaCalefaccion) +
+                        scale(log(ingresoAutonomo_media)) + scale(perc_menor_media) +
+                        scale(perc_fonasa_A) + scale(perc_fonasa_D) +
+                        scale(perc_vivHacMedio)+
+                        scale(hr_anual) +
+                        scale(heating_degree_15_winter) +
+                        offset(log(poblacion)), 
+                      data = df,
+                      na.action=na.omit)
+
+summary(mod_mp10)
+nobs(mod_mp10)
+exp(summary(mod_mp10)$coefficients[2,1]) # exponencial coeficiente MP2.5
+f_tableCoef(mod_mp10)
+f_tableMRR(mod_mp10)
+# print(preview="docx")
+# print(preview="pptx")
+f_figMRR(mod_mp10)
+f_savePlot(last_plot(), sprintf(file_name,"mp10"),dpi=150)
+saveRDS(mod_mp10, sprintf(file_mod,"mp10"))
+rm(mod_mp10)
 
 ## Fallecidos 65+---------
 mod_65 <- glmer.nb(covid_fallecidos_65 ~ 

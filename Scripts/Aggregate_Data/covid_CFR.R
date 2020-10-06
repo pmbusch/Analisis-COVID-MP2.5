@@ -336,7 +336,7 @@ casos_aplanados_array <- c(F,T)
 # DF para guardar todo
 cfr_comunas <- data.frame()
 for (c in comunas){
-  cat("Comuna ",c, " \n", sep = "")
+  # cat("Comuna ",c, " \n", sep = "")
   data_com <- df_covid_tiempo_c %>% filter(nombre_comuna==c)
   fecha_min <- data_com %>% filter(casos!=0) %>% pull(date) %>% min()
   fecha_max <- data_com %>% filter(casos!=0) %>% pull(date) %>% max()
