@@ -53,11 +53,14 @@ f_tableMRR <- function(model){
     T ~ ""))
   
   # Calculate MRR
-  est <- est %>% mutate(low=coef-1.96*sd, high=coef+1.96*sd)
+  est <- est %>% 
+    mutate(ci=confint(model, method="Wald", level=0.95) %>% na.omit(),
+           low=ci[,1], high=ci[,2], ci=NULL)
   est_mrr <- est[-1,] %>% mutate(coef=exp(coef) %>% round(2), 
                                  low=exp(low) %>% round(2), 
                                  high=exp(high) %>% round(2),
-                                 ci=paste("(",low,", ",high,")",sep = ""),
+                                 ci=paste("(",format(low,digits=2),
+                                          ", ",format(high,digits=2),")",sep = ""),
                                  p_value=round(p_value,4))
   
   # Tabla MRR
@@ -93,11 +96,14 @@ f_figMRR <- function(model){
     T ~ ""))
   
   # Calculate MRR
-  est <- est %>% mutate(low=coef-1.96*sd, high=coef+1.96*sd)
+  est <- est %>% 
+    mutate(ci=confint(model, method="Wald", level=0.95) %>% na.omit(),
+           low=ci[,1], high=ci[,2], ci=NULL)
   est_mrr <- est[-1,] %>% mutate(coef=exp(coef) %>% round(2), 
                                  low=exp(low) %>% round(2), 
                                  high=exp(high) %>% round(2),
-                                 ci=paste("(",low,", ",high,")",sep = ""),
+                                 ci=paste("(",format(low,digits=2),
+                                          ", ",format(high,digits=2),")",sep = ""),
                                  p_value=round(p_value,4))
   
   ## Figure MRR
@@ -126,7 +132,9 @@ f_MRR_mp25 <- function(mod, param="mp25"){
   names(est) <- c("parametro","coef","sd","z_value","p_value")
   
   # Calculate MRR
-  est <- est %>% mutate(low=coef-1.96*sd, high=coef+1.96*sd)
+  est <- est %>% 
+    mutate(ci=confint(model, method="Wald", level=0.95) %>% na.omit(),
+           low=ci[,1], high=ci[,2], ci=NULL)
   est_mrr <- est %>% mutate(RR=exp(coef) %>% round(2), 
                             lower_CI=exp(low) %>% round(2), 
                             upper_CI=exp(high) %>% round(2)) %>% 

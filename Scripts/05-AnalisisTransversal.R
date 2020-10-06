@@ -31,7 +31,7 @@ df <- df_modelo %>%
                 covid_fallecidos,mp25,densidad_pob_censal,
                 densidad_pob, `65+`, `15-44`, perc_puebloOrig, perc_rural,
                 dias_primerContagio, dias_cuarentena,tasa_camas,
-                perc_lenaCocina,dias_primerMuerte,
+                perc_lenaCocina,dias_primerMuerte,perc_lenaCalefaccion,
                 ingresoTotal_media,perc_menor_media,ingresoAutonomo_media,
                 perc_fonasa_A, perc_fonasa_D, perc_isapre,
                 tmed_summer, tmed_winter, perc_vivHacMedio,hr_anual,
@@ -105,6 +105,9 @@ sigma(mod) # residual standard deviation
 formula(mod)
 # Coeficients of grouping variable, condicionados
 ranef(mod)
+
+# Intervalo de confianza
+confint(mod, method="Wald", level=0.95) %>% exp() %>% round(2)
 
 ## Residuales -----
 residuals(mod, scaled=T)
@@ -373,7 +376,7 @@ df <- df_modelo %>%
                 zona, zona_termica,rm, pda,
                 poblacion,tasa_mortalidad_covid,covid_fallecidos_65,
                 covid_fallecidos,casos_confirmados,
-                mp25,mp25_winter,
+                mp25,mp25_winter,mp10, mp25_anual,
                 densidad_pob, quintil_dens_pob,densidad_pob_censal,
                 `65+`, `75+`, `15-44`, perc_puebloOrig, perc_rural,
                 dias_primerContagio, dias_primerMuerte, dias_cuarentena,tasa_camas,
