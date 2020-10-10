@@ -38,7 +38,9 @@ f_tableCoef <- function(model){
   return(table)
 }
 
-f_tableMRR <- function(model){
+## Funcion para generar tabla con MRR estimados. Opcion preview permite abrir la tabla
+## en word (docx) o en ppt (pptx)
+f_tableMRR <- function(model, preview="none"){
   # est <- cbind(est=coef(mod), confint(mod))
   est <- summary(model)$coefficients[,1:4] %>% as.data.frame() %>% 
     as_tibble(rownames = "parametro")
@@ -78,7 +80,15 @@ f_tableMRR <- function(model){
     align(j=1, align = "left", part="all") %>% 
     footnote(j=5, value=as_paragraph(foot_note), part="header", inline=T)
   
-  return(table)
+  # Retorno tabla
+  if (preview=="docx"){
+    return(table %>% print(preview="docx"))
+  } else if(preview=="pptx"){
+    return(table %>% print(preview="pptx"))
+  } else {
+    return(table)
+  }
+  
 }
 
 f_figMRR <- function(model){
