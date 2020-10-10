@@ -4,8 +4,8 @@
 
 ## Librerias ------
 theme_set(theme_bw(16)+theme(panel.grid.major = element_blank()))
-# file_name <- "Figuras/Analisis_transversal/%s.png"
-file_mod <- "Data/Data_Modelo/Modelos/%s.rsd"
+file_name <- "Figuras/Analisis_Transversal/Modelos_Mortalidad_All/%s.png"
+file_mod <- "Data/Data_Modelo/Modelos_AllCauses/%s.rsd"
 source("Scripts/00-Funciones.R", encoding = "UTF-8")
 source("Scripts/05-FuncionesAnalisisTransversal.R", encoding = "UTF-8")
 
@@ -19,30 +19,30 @@ file_name <- "Figuras/Analisis_transversal/Modelos_Mortalidad_All/%s.png"
 df_modelo %>% names() %>% sort()
 df <- df_modelo %>% 
   mutate(mp25_10um=mp25/10, # para ver aumento en RR por 10ug/m3
-         mp_10_minus25=mp10-mp25)
+         mp10_minus25=mp10-mp25)
 
 ## Modelo Base. Y= Causas Cardiopulmonares -------------
 # Notar que es poisson
-mod_nb <- glm(def_cardioPulmonar ~ mp25_10um +mp_10_minus25+
-                   scale(densidad_pob_censal) +
-                   scale(`15-44`) + scale(`65+`) +
-                   scale(perc_puebloOrig) +
-                   scale(perc_rural) +
-                   scale(tasa_camas) +
-                   scale(perc_lenaCalefaccion) +
-                   scale(log(ingresoAutonomo_media)) + scale(perc_menor_media) +
-                   scale(perc_fonasa_A) + scale(perc_fonasa_D) +
-                   scale(perc_vivHacMedio)+
-                   scale(hr_anual) +
-                   scale(heating_degree_15_winter) +
-                   offset(log(poblacion)), 
-                 data = df,
-                 na.action=na.omit,
-              family = "poisson")
+mod_nb <- glm(def_cardioPulmonar ~ mp25_10um +mp10_minus25+
+                scale(densidad_pob_censal) +
+                scale(`15-44`) + scale(`65+`) +
+                scale(perc_puebloOrig) +
+                scale(perc_rural) +
+                scale(tasa_camas) +
+                scale(perc_lenaCalefaccion) +
+                scale(log(ingresoAutonomo_media)) + scale(perc_menor_media) +
+                scale(perc_fonasa_A) + scale(perc_fonasa_D) +
+                scale(perc_vivHacMedio)+
+                scale(hr_anual) +
+                scale(heating_degree_15_winter) +
+                offset(log(poblacion)), 
+              data = df,
+              family = "poisson",
+              na.action=na.omit)
 
 summary(mod_nb)
 nobs(mod_nb)
-f_tableMRR(mod_nb, preview = "none")
+f_tableMRR(mod_nb, preview = "none", highlight = T)
 f_figMRR(mod_nb)
 rm(mod_nb)
 
@@ -67,8 +67,8 @@ mod_nb_sign <- glm(def_cardioPulmonar ~
                      scale(heating_degree_15_winter) +
                      offset(log(poblacion)), 
                    data = df,
-                   na.action=na.omit,
-                   family="poisson")
+                   family="poisson",
+                   na.action=na.omit)
 
 summary(mod_nb_sign)
 nobs(mod_nb_sign)
@@ -173,7 +173,7 @@ library(caret)
 ## Creo df solo con variables numericas de interes (y fuera las COVID)
 df_modelo %>% names() %>% sort()
 df <-  df_modelo %>% 
-  mutate(mp_10_minus25=mp10-mp25) %>% 
+  mutate(mp10_minus25=mp10-mp25) %>% 
   dplyr::select(
     poblacion,
     def_cardioPulmonar,
@@ -192,7 +192,7 @@ df <-  df_modelo %>%
     tmed_anual,  tmed_fall, tmed_spring, tmed_summer,tmed_winter,
     ingresoAutonomo_media,ingresoAutonomo_mediana,
     ingresoTotal_media,   ingresoTotal_mediana,
-    mp25, mp_10_minus25,
+    mp25, mp10_minus25,
     perc_FFAA, perc_fonasa_A, perc_fonasa_B, perc_fonasa_C,
     perc_fonasa_D, perc_isapre, perc_salud,
     perc_lenaAgua, perc_lenaCalefaccion, perc_lenaCocina, 

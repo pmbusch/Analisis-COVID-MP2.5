@@ -30,7 +30,7 @@ library(caret)
 ## Creo df solo con variables numericas de interes (y fuera las COVID)
 df_modelo %>% names() %>% sort()
 df <-  df_modelo %>% 
-  mutate(mp_10_minus25=mp10-mp25) %>% 
+  mutate(mp10_minus25=mp10-mp25) %>% 
   dplyr::select(
     poblacion,
     covid_fallecidos ,
@@ -52,7 +52,7 @@ df <-  df_modelo %>%
     ingresoAutonomo_media,ingresoAutonomo_mediana,
     ingresoTotal_media,   ingresoTotal_mediana,
     movilidad,
-    mp25, mp_10_minus25,
+    mp25, mp10_minus25,
     perc_FFAA, perc_fonasa_A, perc_fonasa_B, perc_fonasa_C,
     perc_fonasa_D, perc_isapre, perc_salud,
     perc_lenaAgua, perc_lenaCalefaccion, perc_lenaCocina, 

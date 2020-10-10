@@ -38,10 +38,10 @@ f_tableCoef <- function(model){
   return(table)
 }
 
-## Funcion para generar tabla con MRR estimados. Opcion preview permite abrir la tabla
-## en word (docx) o en ppt (pptx)
-f_tableMRR <- function(model, preview="none"){
-  # est <- cbind(est=coef(mod), confint(mod))
+## Funcion para generar tabla con MRR estimados. 
+# Opcion preview permite abrir la tabla en word (docx) o en ppt (pptx)
+# Opcion highlight destaca variables con significancia al 5%
+f_tableMRR <- function(model, preview="none", highlight=F){
   est <- summary(model)$coefficients[,1:4] %>% as.data.frame() %>% 
     as_tibble(rownames = "parametro")
   names(est) <- c("parametro","coef","sd","z_value","p_value")
@@ -75,10 +75,16 @@ f_tableMRR <- function(model, preview="none"){
     rename(Variable=parametro, MRR=coef, `95% I.C.`=ci,
            `Valor-p`=p_value,`Sign.`=codes) %>% 
     flextable() %>% 
-    bold(bold=T, part="header") %>% bold(j=1, bold=T) %>% 
+    bold(bold=T, part="header") %>% 
     autofit(add_w = 0.1, add_h = 0.3) %>%
     align(j=1, align = "left", part="all") %>% 
     footnote(j=5, value=as_paragraph(foot_note), part="header", inline=T)
+  
+  if (highlight){
+    table <- table %>% bold(bold=T, i = ~`Valor-p`<=0.05)
+  } else {
+    table <- table %>% bold(j=1, bold=T)
+  }
   
   # Retorno tabla
   if (preview=="docx"){

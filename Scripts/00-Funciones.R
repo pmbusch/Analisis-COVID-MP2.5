@@ -135,6 +135,8 @@ f_replaceVar <- function(variable_orig){
       variable_orig== "mp10_2018" ~ "MP10 2018 [ug/m3]",
       variable_orig== "mp10_2019" ~ "MP10 2019 [ug/m3]",
       variable_orig== "mp10_2020" ~ "MP10 2020 [ug/m3]",
+      variable_orig== "mp25_10um" ~ "MP2.5 [10 ug/m3]",
+      variable_orig== "mp10_minus25" ~ "MP10 - MP2.5 [ug/m3]",
       variable_orig== "densidad_pob" ~ "Densidad [hab/km2]",
       variable_orig== "densidad_pob_censal" ~ "Densidad urbana",
       variable_orig== "quintil_dens_pob" ~ "Quintil densidad poblacion",
@@ -236,7 +238,7 @@ f_addTypeVar <- function(var){
         "COVID-19",
       str_detect(var, "cfr|ifr") ~ "COVID-19",
       var %in% c("mp25","mp25_fall","mp25_winter",
-                 "mp25_spring","mp25_summer",
+                 "mp25_spring","mp25_summer","mp25_10um",
                  "mp25_2017", "mp25_2018","mp25_2019", "mp25_2020")~ 
         "MP2.5",
       var %in% c("poblacion","densidad_pob","densidad_pob_censal",
