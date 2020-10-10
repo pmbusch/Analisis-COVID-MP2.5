@@ -28,6 +28,8 @@ df_deis_total %>% group_by(glosa_grupo_diag2) %>% summarise(count=n()) %>% arran
 ## Cardio: Enfermedades del sistema circulatorio. cap_diag1==I00-I99
 ## Pulmonar: Enfermedades del sistema respiratorio. cap_diag1==J00-J99
 ## Cardiopulmonar: Suma cardio+pulmonar
+## Cancer: Tumores [Neoplasias]. cap_diag1==C00-D48
+## External causes: Suplemento de all causes
 
 ## Agg data ----------
 ## Muertes totales
@@ -61,7 +63,7 @@ df_pulmonar <- df_deis_total %>%
   replace_na(list(def_pulmonar=0))
 df_pulmonar$def_pulmonar %>% sum()
 
-## Pulmonar
+## CardioPulmonar
 df_cardioPulmonar <- df_deis_total %>% 
   filter(cap_diag1 %in% c("J00-J99","I00-I99")) %>% 
   group_by(codigo_comuna, year) %>% 
@@ -69,6 +71,21 @@ df_cardioPulmonar <- df_deis_total %>%
   replace_na(list(def_cardioPulmonar=0))
 df_cardioPulmonar$def_cardioPulmonar %>% sum()
 
+## Cancer
+df_cancer <- df_deis_total %>% 
+  filter(cap_diag1 %in% c("C00-D48")) %>% 
+  group_by(codigo_comuna, year) %>% 
+  summarise(def_cancer=n()) %>% ungroup() %>% 
+  replace_na(list(def_cancer=0))
+df_cancer$def_cancer %>% sum()
+
+## Externas
+df_extCauses <- df_deis_total %>% 
+  filter(!is.na(cap_diag2)) %>% 
+  group_by(codigo_comuna, year) %>% 
+  summarise(def_extCauses=n()) %>% ungroup() %>% 
+  replace_na(list(def_extCauses=0))
+df_extCauses$def_extCauses %>% sum()
 
 ## Join All -------
 # Base codigo comuna y año
@@ -79,7 +96,9 @@ df_def <- df_def %>%
   left_join(df_allCauses) %>% 
   left_join(df_cardio) %>% 
   left_join(df_pulmonar) %>% 
-  left_join(df_cardioPulmonar)
+  left_join(df_cardioPulmonar) %>% 
+  left_join(df_cancer) %>% 
+  left_join(df_extCauses)
 
 
 
@@ -104,7 +123,11 @@ df_def <- df_def %>%
          def_pulmonar=mean(c(def_pulmonar_2017, def_pulmonar_2018,
                               def_pulmonar_2019), na.rm=T) %>% round(0),
          def_cardioPulmonar=mean(c(def_cardioPulmonar_2017, def_cardioPulmonar_2018,
-                              def_cardioPulmonar_2019), na.rm=T) %>% round(0)) %>% 
+                              def_cardioPulmonar_2019), na.rm=T) %>% round(0),
+         def_cancer=mean(c(def_cancer_2017, def_cancer_2018,
+                           def_cancer_2019), na.rm=T) %>% round(0),
+         def_extCauses=mean(c(def_extCauses_2017, def_extCauses_2018,
+                                   def_extCauses_2019), na.rm=T) %>% round(0)) %>% 
   ungroup()
 
 
