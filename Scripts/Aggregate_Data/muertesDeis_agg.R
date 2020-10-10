@@ -132,7 +132,8 @@ df_def <- df_def %>%
 
 
 # Clean WS
-rm(df_all, df_allCauses, df_cardio,df_pulmonar, df_cardioPulmonar, df_deis_total)
+rm(df_all, df_allCauses, df_cardio,df_pulmonar, df_cardioPulmonar, df_deis_total,
+   df_cancer,df_extCauses)
 
 
 ## EoF
