@@ -15,8 +15,11 @@ Códigos
 	* [`01-UpdateCovidData.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/01-UpdateCovidData.R): Actualiza datos COVID-19 (alternativa más rápida que cargar todo nuevamente).
 * [`02-FeatureData.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/02-FeatureData.R): Trabaja información levantada y genera nuevas feature para el modelo.
 * [`03-TablasResumen.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/03-TablasResumen.R): Genera tablas resumen de los datos levantados.
-* [`05-AnalisisTransversal.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/05-AnalisisTransversal.R): Modelo Transversal *(cross-sectional analysis)*
+* [`05-AnalisisTransversal.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/05-AnalisisTransversal.R): Modelos Transversales desarrollados *(cross-sectional analysis)*
 	* [`05-FuncionesAnalisisTransversal.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/05-FuncionesAnalisisTransversal.R): Funciones para analizar resultados del Modelo Transversal
+* [`06-PruebasModelos.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/06-PruebasModelos.R): Script para probar otros Modelos Transversales
+* [`06-Stepwise_AnalisisTransversal.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/06-Stepwise_AnalisisTransversal.R): Implementación de algoritmo Stepwise para ajustar Modelo Transversal *(cross-sectional analysis)*
+* [`07-AnalisisTransversal_AllCauses.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/07-AnalisisTransversal_AllCauses.R): Modelo Transversal para causas todas las causas de defunción en Chile *(cross-sectional analysis)*
 
 
 **Otros códigos de análisis:**
