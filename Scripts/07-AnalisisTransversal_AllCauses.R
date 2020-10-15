@@ -21,23 +21,32 @@ df <- df_modelo %>%
   mutate(mp25_10um=mp25/10, # para ver aumento en RR por 10ug/m3
          mp10_minus25=mp10-mp25)
 
+
+df_modelo %>% 
+  mutate(tasa_mortalidad=def_cardioPulmonar/poblacion*1e5) %>% 
+  summarise(mean_tasa=mean(tasa_mortalidad,na.rm=T),
+            var_tasa=var(tasa_mortalidad,na.rm=T),
+            sd_tasa=sd(tasa_mortalidad, na.rm = T))
+
+
 ## Modelo Base. Y= Causas Cardiopulmonares -------------
 # Notar que es poisson
-mod_nb <- glm(def_cardioPulmonar ~ mp25_10um +mp10_minus25+
+mod_nb <- glm(def_cardioPulmonar ~ mp25_10um +
+                # mp10_minus25+
                 scale(densidad_pob_censal) +
                 scale(`15-44`) + scale(`65+`) +
                 scale(perc_puebloOrig) +
                 scale(perc_rural) +
                 scale(tasa_camas) +
-                scale(perc_lenaCalefaccion) +
+                # scale(perc_lenaCalefaccion) +
                 scale(log(ingresoAutonomo_media)) + scale(perc_menor_media) +
                 scale(perc_fonasa_A) + scale(perc_fonasa_D) +
                 scale(perc_vivHacMedio)+
-                scale(hr_anual) +
-                scale(heating_degree_15_winter) +
+                # scale(hr_anual) +
+                # scale(heating_degree_15_winter) +
                 offset(log(poblacion)), 
               data = df,
-              family = "poisson",
+              family = poisson(link=log),
               na.action=na.omit)
 
 summary(mod_nb)
@@ -59,23 +68,64 @@ mod_nb_sign <- glm(def_cardioPulmonar ~
                      mp25_10um +
                      scale(`15-44`) + scale(`65+`) +
                      scale(perc_rural) +
-                     scale(perc_lenaCalefaccion) +
+                     # scale(perc_lenaCalefaccion) +
                      scale(log(ingresoAutonomo_media)) + 
                      scale(perc_menor_media) +
                      scale(perc_vivHacMedio)+
-                     scale(tmed_anual) +
-                     scale(heating_degree_15_winter) +
+                     # scale(tmed_anual) +
+                     # scale(heating_degree_15_winter) +
                      offset(log(poblacion)), 
                    data = df,
-                   family="poisson",
+                   family=poisson(link=log),
                    na.action=na.omit)
 
 summary(mod_nb_sign)
 nobs(mod_nb_sign)
+anova(mod_nb_sign)
 f_tableMRR(mod_nb_sign, preview = "none")
 f_figMRR(mod_nb_sign)
 rm(mod_nb_sign)
 
+
+## Modelo Base Sign. Y= Causas CardioPulmonares. Quartile PM2.5 -------------
+df_cuartil <- df_modelo %>% 
+  filter(!is.na(mp25)) %>% 
+  mutate(cuartil_mp25=qgroup(mp25, 4))
+df_cuartil$cuartil_mp25 %>% table()
+
+label_cuartil <- df_cuartil %>% group_by(cuartil_mp25) %>% 
+  summarise(count=n(), mean_mp25=mean(mp25,na.rm=T),
+            min_mp=min(mp25,na.rm=T) %>% round(1),
+            max_mp=max(mp25,na.rm=T) %>% round(1)) %>% 
+  ungroup() %>% 
+  mutate(cuartil_label=paste(cuartil_mp25,"\n [",min_mp," - ",max_mp,"]",sep=""))
+df_cuartil <- df_cuartil %>% left_join(label_cuartil, by=c("cuartil_mp25"))
+df_cuartil$cuartil_label %>% table()
+
+mod_nb_sign_q <- glm(def_cardioPulmonar ~ 
+                       cuartil_label +
+                       scale(`15-44`) + scale(`65+`) +
+                       scale(perc_rural) +
+                       scale(perc_lenaCalefaccion) +
+                       scale(log(ingresoAutonomo_media)) + 
+                       scale(perc_menor_media) +
+                       scale(perc_vivHacMedio)+
+                       scale(tmed_anual) +
+                       scale(heating_degree_15_winter) +
+                       offset(log(poblacion)), 
+                     data = df_cuartil,
+                     family=poisson(link=log),
+                     na.action=na.omit)
+
+summary(mod_nb_sign_q)
+nobs(mod_nb_sign_q)
+anova(mod_nb_sign_q)
+f_tableMRR(mod_nb_sign_q, preview = "none")
+f_figMRR(mod_nb_sign_q)
+rm(mod_nb_sign_q)
+
+
+## Modelo Base ---------
 formula_base <- formula( def_cardioPulmonar ~ 
   mp25_10um +
   scale(`15-44`) + scale(`65+`) +
@@ -95,7 +145,7 @@ reformulate(deparse(formula_base[[3]]), response = "def_cardio")
 mod_total <- glm(reformulate(deparse(formula_base[[3]]), response = "def_total"), 
            data = df,
            na.action=na.omit,
-           family="poisson")
+           family=poisson(link=log))
 
 summary(mod_total)
 nobs(mod_total)
@@ -107,7 +157,7 @@ rm(mod_total)
 mod_allCauses <- glm(reformulate(deparse(formula_base[[3]]), response = "def_allCauses"), 
                  data = df,
                  na.action=na.omit,
-                 family="poisson")
+                 family=poisson(link=log))
 
 summary(mod_allCauses)
 nobs(mod_allCauses)
@@ -120,7 +170,7 @@ rm(mod_allCauses)
 mod_extCauses <- glm(reformulate(deparse(formula_base[[3]]), response = "def_extCauses"), 
                     data = df,
                     na.action=na.omit,
-                    family="poisson")
+                    family=poisson(link=log))
 
 summary(mod_extCauses)
 nobs(mod_extCauses)
@@ -132,7 +182,7 @@ rm(mod_extCauses)
 mod_cardio <- glm(reformulate(deparse(formula_base[[3]]), response = "def_cardio"), 
                      data = df,
                      na.action=na.omit,
-                     family="poisson")
+                     family=poisson(link=log))
 
 summary(mod_cardio)
 nobs(mod_cardio)
@@ -144,7 +194,7 @@ rm(mod_cardio)
 mod_pulmonar <- glm(reformulate(deparse(formula_base[[3]]), response = "def_pulmonar"), 
                      data = df,
                      na.action=na.omit,
-                     family="poisson")
+                     family=poisson(link=log))
 
 summary(mod_pulmonar)
 nobs(mod_pulmonar)
@@ -156,7 +206,7 @@ rm(mod_pulmonar)
 mod_cancer <- glm(reformulate(deparse(formula_base[[3]]), response = "def_cancer"), 
                      data = df,
                      na.action=na.omit,
-                     family="poisson")
+                     family=poisson(link=log))
 
 summary(mod_cancer)
 nobs(mod_cancer)
@@ -262,7 +312,7 @@ formula_step
 
 mod <- glm(formula_step,
            data=df,
-           family="poisson",
+           family=poisson(link=log),
            na.action = na.omit)
 summary(mod)
 nobs(mod)

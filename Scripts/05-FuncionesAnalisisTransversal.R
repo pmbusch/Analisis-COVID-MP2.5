@@ -5,7 +5,7 @@
 
 foot_note <- "Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1"
 
-f_tableCoef <- function(model){
+f_tableCoef <- function(model, preview="none", highlight=F){
   # est <- cbind(est=coef(mod), confint(mod))
   est <- summary(model)$coefficients[,1:4] %>% as.data.frame() %>% 
     as_tibble(rownames = "parametro")
@@ -30,12 +30,27 @@ f_tableCoef <- function(model){
     flextable() %>% 
     colformat_num(big.mark=" ", digits=4, j=2:5,
                   na_str="s/i") %>% 
-    bold(bold=T, part="header") %>% bold(j=1, bold=T) %>% 
+    bold(bold=T, part="header") %>% 
     autofit(add_w = 0.1, add_h = 0.3) %>%
     align(j=1, align = "left", part="all") %>% 
     footnote(j=6, value=as_paragraph(foot_note), part="header", inline=T)
   
-  return(table)
+  if (highlight){
+    table <- table %>% bold(bold=T, i = ~`Valor-p`<=0.05)
+  } else {
+    table <- table %>% bold(j=1, bold=T)
+  }
+  
+  
+  # Retorno tabla
+  if (preview=="docx"){
+    return(table %>% print(preview="docx"))
+  } else if(preview=="pptx"){
+    return(table %>% print(preview="pptx"))
+  } else {
+    return(table)
+  }
+  
 }
 
 ## Funcion para generar tabla con MRR estimados. 
