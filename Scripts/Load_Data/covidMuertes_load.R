@@ -43,7 +43,7 @@ rm(url)
 #       exdir = "Data/Data_Original/DEIS")
 
 # lectura
-fecha_deis <- "01-10-2020"
+fecha_deis <- "08-10-2020"
 df_deis <- read_delim(paste(
   "Data/Data_Original/DEIS/DEFUNCIONES_FUENTE_DEIS_2016_2020_",
   fecha_deis %>% str_remove_all("-"),".csv",sep=""),
@@ -97,7 +97,9 @@ df_deis %>% group_by(glosa_grupo_diag1) %>% summarise(count=n()) %>% arrange(des
 df_deis %>% group_by(glosa_categ_diag1) %>% summarise(count=n()) %>% arrange(desc(count))
 df_deis %>% group_by(glosa_subcateg_diag1) %>% summarise(count=n()) %>% arrange(desc(count))
 df_deis <- df_deis %>% filter(str_detect(glosa_subcateg_diag1,"COVID-19")) %>% 
-  mutate(tipo=str_extract(glosa_subcateg_diag1, "no identificado|identificado"),
+  mutate(tipo=glosa_subcateg_diag1 %>% 
+           str_to_lower() %>% 
+           str_extract("no identificado|identificado"),
          tipo=if_else(tipo=="no identificado","sospechoso","confirmado") %>% factor())
  
 # Comparacion muertes
