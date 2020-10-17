@@ -164,8 +164,11 @@ f_MRR_mp25 <- function(mod, param="mp25"){
   
   # Calculate MRR
   est <- est %>% 
-    mutate(ci=confint(model, method="Wald", level=0.95) %>% na.omit(),
-           low=ci[,1], high=ci[,2], ci=NULL)
+    mutate(ci=confint(mod, method="Wald", level=0.95) %>% na.omit() %>% 
+             as.data.frame() %>% as_tibble(rownames = "parametro") %>% 
+             filter(parametro==param),
+           low=ci[,2] %>% unlist(), high=ci[,3] %>% unlist(), ci=NULL)
+  
   est_mrr <- est %>% mutate(RR=exp(coef) %>% round(2), 
                             lower_CI=exp(low) %>% round(2), 
                             upper_CI=exp(high) %>% round(2)) %>% 

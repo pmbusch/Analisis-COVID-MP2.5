@@ -15,7 +15,6 @@ library(glmmTMB)
 library(gamm4)
 
 ## Variables adicionales ---------
-file_name <- "Figuras/Analisis_transversal/Modelos_Mortalidad_All/%s.png"
 df_modelo %>% names() %>% sort()
 df <- df_modelo %>% 
   mutate(mp25_10um=mp25/10, # para ver aumento en RR por 10ug/m3
@@ -32,18 +31,18 @@ df_modelo %>%
 ## Modelo Base. Y= Causas Cardiopulmonares -------------
 # Notar que es poisson
 mod_nb <- glm(def_cardioPulmonar ~ mp25_10um +
-                # mp10_minus25+
+                mp10_minus25+
                 scale(densidad_pob_censal) +
                 scale(`15-44`) + scale(`65+`) +
                 scale(perc_puebloOrig) +
                 scale(perc_rural) +
                 scale(tasa_camas) +
-                # scale(perc_lenaCalefaccion) +
+                scale(perc_lenaCalefaccion) +
                 scale(log(ingresoAutonomo_media)) + scale(perc_menor_media) +
                 scale(perc_fonasa_A) + scale(perc_fonasa_D) +
                 scale(perc_vivHacMedio)+
-                # scale(hr_anual) +
-                # scale(heating_degree_15_winter) +
+                scale(hr_anual) +
+                scale(heating_degree_15_winter) +
                 offset(log(poblacion)), 
               data = df,
               family = poisson(link=log),
@@ -53,27 +52,20 @@ summary(mod_nb)
 nobs(mod_nb)
 f_tableMRR(mod_nb, preview = "none", highlight = T)
 f_figMRR(mod_nb)
+f_savePlot(last_plot(), sprintf(file_name,"CardioPulmonar_Base"),dpi=150)
+saveRDS(mod_nb, sprintf(file_mod,"CardioPulmonar_Base"))
 rm(mod_nb)
 
-## ver step 
-## densidad_poblacional: medida de hacinamiento/pobreza
-## Leña calefaccion (composicion MP2.5)
-## Ingreso
-## Educacion
-## Temperatura
-## Pueblo originario
+
 
 ## Modelo Base Sign. Y= Causas CardioPulmonares -------------
 mod_nb_sign <- glm(def_cardioPulmonar ~ 
                      mp25_10um +
-                     scale(`15-44`) + scale(`65+`) +
-                     scale(perc_rural) +
-                     # scale(perc_lenaCalefaccion) +
+                     scale(`65+`) +
                      scale(log(ingresoAutonomo_media)) + 
                      scale(perc_menor_media) +
                      scale(perc_vivHacMedio)+
-                     # scale(tmed_anual) +
-                     # scale(heating_degree_15_winter) +
+                     scale(heating_degree_15_winter) +
                      offset(log(poblacion)), 
                    data = df,
                    family=poisson(link=log),
@@ -84,7 +76,30 @@ nobs(mod_nb_sign)
 anova(mod_nb_sign)
 f_tableMRR(mod_nb_sign, preview = "none")
 f_figMRR(mod_nb_sign)
+f_savePlot(last_plot(), sprintf(file_name,"CardioPulmonar"),dpi=150)
+saveRDS(mod_nb_sign, sprintf(file_mod,"CardioPulmonar"))
 rm(mod_nb_sign)
+
+## Modelo Base Sign. Y= Causas CardioPulmonares 65+ -------------
+mod_nb_sign_65 <- glm(def_cardioPulmonar_65 ~ 
+                        mp25_10um +
+                        scale(log(ingresoAutonomo_media)) + 
+                        scale(perc_menor_media) +
+                        scale(perc_vivHacMedio)+
+                        scale(heating_degree_15_winter) +
+                        offset(log(poblacion*`65+`)), 
+                      data = df,
+                      family=poisson(link=log),
+                      na.action=na.omit)
+
+summary(mod_nb_sign_65)
+nobs(mod_nb_sign_65)
+anova(mod_nb_sign_65)
+f_tableMRR(mod_nb_sign_65, preview = "none")
+f_figMRR(mod_nb_sign_65)
+f_savePlot(last_plot(), sprintf(file_name,"CardioPulmonar_Mayor65"),dpi=150)
+saveRDS(mod_nb_sign_65, sprintf(file_mod,"CardioPulmonar_Mayor65"))
+rm(mod_nb_sign_65)
 
 
 ## Modelo Base Sign. Y= Causas CardioPulmonares. Quartile PM2.5 -------------
@@ -126,18 +141,15 @@ rm(mod_nb_sign_q)
 
 
 ## Modelo Base ---------
-formula_base <- formula( def_cardioPulmonar ~ 
-  mp25_10um +
-  scale(`15-44`) + scale(`65+`) +
-  scale(perc_rural) +
-  scale(perc_lenaCalefaccion) +
-  scale(log(ingresoAutonomo_media)) + 
-  scale(perc_menor_media) +
-  scale(perc_vivHacMedio)+
-  scale(tmed_anual) +
-  scale(heating_degree_15_winter) +
-  offset(log(poblacion)))
-
+formula_base <- formula(def_cardioPulmonar ~ 
+                          mp25_10um +
+                          scale(`65+`) +
+                          scale(log(ingresoAutonomo_media)) + 
+                          scale(perc_menor_media) +
+                          scale(perc_vivHacMedio)+
+                          scale(heating_degree_15_winter) +
+                          offset(log(poblacion)))
+                         
 reformulate(deparse(formula_base[[3]]), response = "def_cardio")
 
 ## MODELOS CON DISTINTA CAUSA DE DEFUNCION --------------
@@ -151,6 +163,8 @@ summary(mod_total)
 nobs(mod_total)
 f_tableMRR(mod_total, preview = "none")
 f_figMRR(mod_total)
+f_savePlot(last_plot(), sprintf(file_name,"Total"),dpi=150)
+saveRDS(mod_total, sprintf(file_mod,"Total"))
 rm(mod_total)
 
 # All Cause deaths (no external) ----------
@@ -163,6 +177,8 @@ summary(mod_allCauses)
 nobs(mod_allCauses)
 f_tableMRR(mod_allCauses, preview = "none")
 f_figMRR(mod_allCauses)
+f_savePlot(last_plot(), sprintf(file_name,"AllCauses"),dpi=150)
+saveRDS(mod_allCauses, sprintf(file_mod,"AllCauses"))
 rm(mod_allCauses)
 
 
@@ -176,6 +192,8 @@ summary(mod_extCauses)
 nobs(mod_extCauses)
 f_tableMRR(mod_extCauses, preview = "none")
 f_figMRR(mod_extCauses)
+f_savePlot(last_plot(), sprintf(file_name,"ExtCauses"),dpi=150)
+saveRDS(mod_extCauses, sprintf(file_mod,"ExtCauses"))
 rm(mod_extCauses)
 
 # Cardio ----------
@@ -188,6 +206,8 @@ summary(mod_cardio)
 nobs(mod_cardio)
 f_tableMRR(mod_cardio, preview = "none")
 f_figMRR(mod_cardio)
+f_savePlot(last_plot(), sprintf(file_name,"Cardio"),dpi=150)
+saveRDS(mod_cardio, sprintf(file_mod,"Cardio"))
 rm(mod_cardio)
 
 # Pulmonar ----------
@@ -200,6 +220,8 @@ summary(mod_pulmonar)
 nobs(mod_pulmonar)
 f_tableMRR(mod_pulmonar, preview = "none")
 f_figMRR(mod_pulmonar)
+f_savePlot(last_plot(), sprintf(file_name,"Pulmonar"),dpi=150)
+saveRDS(mod_pulmonar, sprintf(file_mod,"Pulmonar"))
 rm(mod_pulmonar)
 
 # Cancer ----------
@@ -212,8 +234,86 @@ summary(mod_cancer)
 nobs(mod_cancer)
 f_tableMRR(mod_cancer, preview = "none")
 f_figMRR(mod_cancer)
+f_savePlot(last_plot(), sprintf(file_name,"Cancer"),dpi=150)
+saveRDS(mod_cancer, sprintf(file_mod,"Cancer"))
 rm(mod_cancer)
 
+
+
+## Loop 65+ -------------
+causas <- c("def_total_65", "def_allCauses_65", "def_extCauses_65", "def_cardio_65",
+            "def_pulmonar_65", "def_cancer_65")
+
+formula_base <- formula(def_cardioPulmonar_65 ~ 
+                          mp25_10um +
+                          scale(log(ingresoAutonomo_media)) + 
+                          scale(perc_menor_media) +
+                          scale(perc_vivHacMedio)+
+                          scale(heating_degree_15_winter) +
+                          offset(log(poblacion*`65+`)))
+
+for (c in causas){
+  file_path <- paste(str_remove_all(c,"def_|_65"),"_mayor65",sep="")
+  cat("Causa: ",c," File: ",file_path,"\n",sep="")
+  mod <- glm(reformulate(deparse(formula_base[[3]]), response = c), 
+                    data = df,
+                    na.action=na.omit,
+                    family=poisson(link=log))
+  f_savePlot(last_plot(), sprintf(file_name,file_path),dpi=150)
+  saveRDS(mod, sprintf(file_mod,file_path))
+  rm(mod,file_path)
+}
+rm(c)
+
+## Loop 75+ -------------
+causas <- c("def_total_75", "def_allCauses_75", "def_extCauses_75", "def_cardio_75",
+            "def_pulmonar_75", "def_cancer_75")
+
+formula_base <- formula(def_cardioPulmonar_75 ~ 
+                          mp25_10um +
+                          scale(log(ingresoAutonomo_media)) + 
+                          scale(perc_menor_media) +
+                          scale(perc_vivHacMedio)+
+                          scale(heating_degree_15_winter) +
+                          offset(log(poblacion*`75+`)))
+
+for (c in causas){
+  file_path <- paste(str_remove_all(c,"def_|_75"),"_mayor75",sep="")
+  cat("Causa: ",c," File: ",file_path,"\n",sep="")
+  mod <- glm(reformulate(deparse(formula_base[[3]]), response = c), 
+             data = df,
+             na.action=na.omit,
+             family=poisson(link=log))
+  f_savePlot(last_plot(), sprintf(file_name,file_path),dpi=150)
+  saveRDS(mod, sprintf(file_mod,file_path))
+  rm(mod,file_path)
+}
+rm(c)
+
+## Loop 30+ -------------
+causas <- c("def_total_30", "def_allCauses_30", "def_extCauses_30", "def_cardio_30",
+            "def_pulmonar_30", "def_cancer_30")
+
+formula_base <- formula(def_cardioPulmonar_30 ~ 
+                          mp25_10um +
+                          scale(log(ingresoAutonomo_media)) + 
+                          scale(perc_menor_media) +
+                          scale(perc_vivHacMedio)+
+                          scale(heating_degree_15_winter) +
+                          offset(log(poblacion*`30+`)))
+
+for (c in causas){
+  file_path <- paste(str_remove_all(c,"def_|_30"),"_mayor30",sep="")
+  cat("Causa: ",c," File: ",file_path,"\n",sep="")
+  mod <- glm(reformulate(deparse(formula_base[[3]]), response = c), 
+             data = df,
+             na.action=na.omit,
+             family=poisson(link=log))
+  f_savePlot(last_plot(), sprintf(file_name,file_path),dpi=150)
+  saveRDS(mod, sprintf(file_mod,file_path))
+  rm(mod,file_path)
+}
+rm(c)
 
 
 ## Modelo Step sobre Y= Causas Cardiopulmonares ------------

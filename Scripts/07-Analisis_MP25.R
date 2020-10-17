@@ -31,6 +31,8 @@ mod_lm <- lm(log(mp25)~
 
 summary(mod_lm)
 nobs(mod_lm)
+summary(mod_lm)$adj.r.squared
+anova(mod_lm)
 f_tableCoef(mod_lm, preview = "none", highlight = T)
 f_tableMRR(mod_lm, preview = "none", highlight = T)
 

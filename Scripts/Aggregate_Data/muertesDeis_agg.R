@@ -152,13 +152,13 @@ df_def_total <- df_def
 df_def %>% names()
 df_def <- df_def %>% 
   select(codigo_comuna, 
-         def_total, def_total_30, def_total_65,
-         def_allCauses, def_allCauses_30, def_allCauses_65,
-         def_extCauses, def_extCauses_30, def_extCauses_65,
-         def_cancer, def_cancer_30, def_cancer_65,
-         def_pulmonar, def_pulmonar_30, def_pulmonar_65,
-         def_cardio, def_cardio_30, def_cardio_65,
-         def_cardioPulmonar, def_cardioPulmonar_30, def_cardioPulmonar_65)
+         def_total, def_total_30, def_total_65,def_total_75,
+         def_allCauses, def_allCauses_30, def_allCauses_65,def_allCauses_75,
+         def_extCauses, def_extCauses_30, def_extCauses_65,def_extCauses_75,
+         def_cancer, def_cancer_30, def_cancer_65,def_cancer_75,
+         def_pulmonar, def_pulmonar_30, def_pulmonar_65,def_pulmonar_75,
+         def_cardio, def_cardio_30, def_cardio_65,def_cardio_75,
+         def_cardioPulmonar, def_cardioPulmonar_30, def_cardioPulmonar_65,def_cardioPulmonar_75)
 
 df_def$def_total %>% sum()
 # Clean WS

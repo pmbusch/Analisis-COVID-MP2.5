@@ -22,18 +22,32 @@ df_grupoEdad <- df_poblacion %>%
   group_by(codigo_comuna, grupo_edad,sexo) %>% 
   summarise(poblacion=sum(poblacion,na.rm=T)) %>% ungroup() %>% 
   mutate(sexo=if_else(sexo %in% c("Mujer","mujer"),"mujer","hombre"))
+
 # Add 65+ and remove 75+
 df_grupoEdad_65 <- df_grupoEdad %>% 
   filter(grupo_edad %in% c("65-74", "75+")) %>% 
   mutate(grupo_edad="65+") %>% 
   group_by(codigo_comuna, grupo_edad, sexo) %>% 
   summarise(poblacion=sum(poblacion, na.rm=T))
+
+# Add 30+
+df_grupoEdad30 <- df_poblacion %>% 
+  filter(edad %in% c("30 a 34","35 a 39","40 a 44",
+                     "45 a 49","50 a 54","55 a 59","60 a 64",
+                     "65 a 69", "70 a 74","75 a 79","80 a 84",
+                     "85 a 89","90 a 94", "95 a 99", "100 o mas")) %>% 
+  mutate(grupo_edad="30+") %>% 
+  group_by(codigo_comuna, grupo_edad, sexo) %>% 
+  summarise(poblacion=sum(poblacion, na.rm=T))
+
 df_grupoEdad <- df_grupoEdad %>% 
   filter(!(grupo_edad %in% c("65-74", "75+"))) %>% 
   rbind(df_grupoEdad_65) %>% 
+  rbind(df_grupoEdad30) %>% 
   arrange(codigo_comuna, grupo_edad, sexo)
+
 df_grupoEdad$poblacion %>% sum()
-rm(df_grupoEdad_65)
+rm(df_grupoEdad_65,df_grupoEdad30)
 
 df_edad <- df_poblacion %>% 
   group_by(codigo_comuna, grupo_edad) %>% 
@@ -43,7 +57,20 @@ df_edad <- df_poblacion %>%
   filter(grupo_edad!="0-14") %>% spread(grupo_edad,perc_edad) %>% 
   mutate(`65+`=`65-74`+`75+`)
 
-  
+# Add 30+
+df_grupoEdad30 <- df_poblacion %>% 
+  mutate(edad30=edad %in% c("30 a 34","35 a 39","40 a 44",
+                     "45 a 49","50 a 54","55 a 59","60 a 64",
+                     "65 a 69", "70 a 74","75 a 79","80 a 84",
+                     "85 a 89","90 a 94", "95 a 99", "100 o mas")) %>% 
+  group_by(codigo_comuna, edad30) %>% 
+  summarise(pob=sum(poblacion,na.rm=T)) %>% 
+  mutate(`30+`=pob/sum(pob)*100,
+         pob=NULL) %>% ungroup() %>% 
+  filter(edad30==T) %>% mutate(edad30=NULL)
+df_edad <- df_edad %>% left_join(df_grupoEdad30, by=c("codigo_comuna"))
+rm(df_grupoEdad30)
+
 ## Dividir por sexo
 df_sexo <- df_poblacion %>% 
   group_by(codigo_comuna, sexo) %>% 
