@@ -34,6 +34,7 @@ mod_nb <- glm(def_cardioPulmonar ~ mp25_10um +
                 mp10_minus25+
                 scale(densidad_pob_censal) +
                 scale(`15-44`) + scale(`65+`) +
+                scale(perc_mujer) +
                 scale(perc_puebloOrig) +
                 scale(perc_rural) +
                 scale(tasa_camas) +
@@ -50,6 +51,8 @@ mod_nb <- glm(def_cardioPulmonar ~ mp25_10um +
 
 summary(mod_nb)
 nobs(mod_nb)
+plot(mod_nb)
+gam::plot.Gam(mod_nb,se=T,rug=T)
 f_tableMRR(mod_nb, preview = "none", highlight = T)
 f_figMRR(mod_nb)
 f_savePlot(last_plot(), sprintf(file_name,"CardioPulmonar_Base"),dpi=150)
@@ -242,7 +245,7 @@ rm(mod_cancer)
 
 ## Loop 65+ -------------
 causas <- c("def_total_65", "def_allCauses_65", "def_extCauses_65", "def_cardio_65",
-            "def_pulmonar_65", "def_cancer_65")
+            "def_pulmonar_65", "def_cancer_65","def_cardioPulmonar_65")
 
 formula_base <- formula(def_cardioPulmonar_65 ~ 
                           mp25_10um +
@@ -267,7 +270,7 @@ rm(c)
 
 ## Loop 75+ -------------
 causas <- c("def_total_75", "def_allCauses_75", "def_extCauses_75", "def_cardio_75",
-            "def_pulmonar_75", "def_cancer_75")
+            "def_pulmonar_75", "def_cancer_75","def_cardioPulmonar_75")
 
 formula_base <- formula(def_cardioPulmonar_75 ~ 
                           mp25_10um +
@@ -292,7 +295,7 @@ rm(c)
 
 ## Loop 30+ -------------
 causas <- c("def_total_30", "def_allCauses_30", "def_extCauses_30", "def_cardio_30",
-            "def_pulmonar_30", "def_cancer_30")
+            "def_pulmonar_30", "def_cancer_30","def_cardioPulmonar_30")
 
 formula_base <- formula(def_cardioPulmonar_30 ~ 
                           mp25_10um +

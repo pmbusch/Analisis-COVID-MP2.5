@@ -26,12 +26,11 @@ df_modelo %>% names() %>% sort()
 # Como voy a ajustar CFR como variable dependiente, debo crear un offset "auxiliar"
 # de contagios
 data_mod <- df_modelo %>% filter(cfr_raw_0_aplanados>0) %>% 
-  mutate(contagios=covid_fallecidos/cfr_raw_0_aplanados*100) %>% 
-  filter(!rm=="RM")
+  mutate(contagios=covid_fallecidos/cfr_raw_0_aplanados*100)
 
 mod_nb <- glm.nb(covid_fallecidos ~ 
-                   # mp25 + 
-                   # rm +
+                   mp25 +
+                   rm +
                    scale(`65+`) +
                    scale(perc_vivHacMedio) +
                    scale(perc_salud) +
@@ -39,6 +38,7 @@ mod_nb <- glm.nb(covid_fallecidos ~
                    scale(hr_anual) + 
                    scale(movilidad) +
                    scale(hdd15_winter_lenaCalefaccion) +
+                   scale(def_cardioPulmonar) +
                    offset(log(contagios)),
                  data = data_mod,
                  na.action=na.omit)
@@ -48,12 +48,13 @@ summary(mod_nb) #Resumen genela
 nobs(mod_nb) # Numero observaciones
 f_tableCoef(mod_nb) # Tabla Coeficientes ajustados
 
+
 ## MRR
 # Se interpreta como el aumento relativo en la tasa de mortalidad covid por 1 ug/m3
 # Dado que los confundentes estan estandarizados, su MRR se interepreta como 
 # variacion relativa al aumento en 1 desviacion estandar de la variable confundente
 # Fuente: https://stats.idre.ucla.edu/r/dae/negative-binomial-regression/
-f_tableMRR(mod_nb) # Tabla MRR
+f_tableMRR(mod_nb, preview = "none",highlight = T) # Tabla MRR
 f_figMRR(mod_nb) # Figuras MRR
 
 # Borra modelo ajustado
