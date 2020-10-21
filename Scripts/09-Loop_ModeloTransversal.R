@@ -270,25 +270,36 @@ write.table(df_coef_params,file_path, sep=';',row.names = F, append = T)
 rm(file_path,url,file_name, modelos_rsd, df_coef_params, df_coef, df_params)
 
 ## Figuras resumen -----------
-ggplot(df_coef_params, aes())
+df_coef_params <- read.delim("ResumenModelos/Loop/coef.csv", sep=";",skip = 1)
 
 
 df_coef_params %>% names()
+
+## Figura: MRR MP2.5 segun endpoint, para socioeconomico y demografia
 df_coef_params %>% 
   filter(term=="mp25") %>% 
   filter(lena=="perc_lenaCalefaccion" & meteorologia=="hr_anual") %>% 
   mutate(socioeconomico=socioeconomico %>% 
            str_remove_all("log\\(|\\)") %>% f_replaceVar(),
-         demografia=f_replaceVar(demografia)) %>% 
+         demografia=f_replaceVar(demografia),
+         dependiente=factor(dependiente,
+                            levels = c("MR","MR65","MR75",
+                                       "LET","CFR0","CFR0a20"))) %>% 
   rowid_to_column() %>% 
-  ggplot(aes(x=reorder(socioeconomico,desc(rowid)), y=estimate))+
+  ggplot(aes(x=fct_rev(dependiente), y=estimate))+
   geom_point(size=2, alpha=.5)+
   geom_errorbar(aes(ymin=conf.low, ymax=conf.high))+
   geom_hline(yintercept = 1, linetype = "dashed")+
-  facet_grid(dependiente~demografia)+
-  labs(x="",y="MRR")+
+  facet_grid(demografia~socioeconomico)+
+  coord_flip()+
   scale_y_continuous(labels = function(x) format(x, big.mark = " ",scientific = FALSE))+
-  coord_flip()
+  labs(x="",y="MRR MP2.5 2017-2019 [ug/m3]", 
+  caption="Coeficiente MP2.5 bajo distintas variables explicativas y endpoints. \n 
+  En columnas se presentan variables socioeconomicas, en filas las variables demograficas y en cada cuadricula se diferencia por Endpoint. \n
+  Formula base del modelo ajustado: {Endpoint} ~ MP2.5 + RM + DiasdesdePrimeraMuerteCOVID + {VariableDemografica} + {VariableSocioeconomica} + %LeñaCalefaccion + HumedadRelativa \n
+  {}: Representa la variable modificada en cada análisis mostrado en la figura.")+
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.caption = element_text(size=8, lineheight=.5))
 
 
 ## EoF
