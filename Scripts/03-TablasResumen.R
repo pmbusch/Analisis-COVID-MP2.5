@@ -115,6 +115,8 @@ df_skim %>%
   flextable() %>% 
   colformat_num(big.mark=" ", digits=1, j=3:ncol(df_skim),
                 na_str="s/i") %>%
+  colformat_num(big.mark=" ", digits=0, j=c(3,5:ncol(df_skim)),
+                i=c(2,6,7,10,14,15,24,25), na_str="s/i") %>%
   bold(bold=T, part="header") %>% bold(j=1:2, bold=T) %>% 
   autofit(add_w = 0.1, add_h = 0.3) %>%
   align(j=1:2, align = "left", part="all") %>% 
@@ -159,8 +161,8 @@ df_tabla %>% tail(15) %>%
   bold(bold=T, part="header") %>% 
   autofit(add_w = 0.1, add_h = 0.3) %>%
   align(j=1:2, align = "left", part="all") %>% 
-  align(j=3, align = "right", part="all") %>% 
-  print(preview="pptx")
+  align(j=3, align = "right", part="all")
+  # print(preview="pptx")
 
 rm(df_tabla)
 comunas_mp <- df_modelo %>% select(codigo_comuna,nombre_comuna)

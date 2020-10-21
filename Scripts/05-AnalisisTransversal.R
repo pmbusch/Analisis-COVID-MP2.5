@@ -39,6 +39,8 @@ mod_nb <- glm.nb(covid_fallecidos ~
                    rm +
                    scale(densidad_pob_censal) +
                    scale(`15-44`) + scale(`65+`) +
+                   scale(perc_mujer) +
+                   scale(def_cardioPulmonar) +
                    scale(perc_puebloOrig) +
                    scale(perc_rural) +
                    scale(dias_primerMuerte) +
@@ -56,7 +58,7 @@ mod_nb <- glm.nb(covid_fallecidos ~
 summary(mod_nb)
 nobs(mod_nb)
 f_tableCoef(mod_nb)
-f_tableMRR(mod_nb, preview = "none")
+f_tableMRR(mod_nb, preview = "none", highlight = T)
 # f_tableMRR(mod_nb,preview = "docx")
 # f_tableMRR(mod_nb,preview = "pptx")
 f_figMRR(mod_nb)
@@ -69,7 +71,7 @@ file_name <- "Figuras/Analisis_transversal/Otros_Modelos/%s.png"
 
 ## Base Solo Significativas---------
 mod_nb_sig <- glm.nb(covid_fallecidos ~ 
-                       # mp25 +
+                       mp25 +
                        rm +
                        scale(`15-44`) +
                        scale(perc_puebloOrig) + scale(perc_rural) +
@@ -84,7 +86,7 @@ mod_nb_sig <- glm.nb(covid_fallecidos ~
 summary(mod_nb_sig)
 nobs(mod_nb_sig)
 f_tableCoef(mod_nb_sig)
-f_tableMRR(mod_nb_sig, preview = "none") 
+f_tableMRR(mod_nb_sig, preview = "none", highlight = T) 
 f_figMRR(mod_nb_sig)
 f_savePlot(last_plot(), sprintf(file_name,"BaseSign"),dpi=150)
 saveRDS(mod_nb_sig, sprintf(file_mod,"BaseSign"))
@@ -330,8 +332,8 @@ mod_65 <- glm.nb(covid_fallecidos_65 ~
                      scale(perc_vivHacMedio)+
                      scale(hr_anual) +
                      scale(heating_degree_15_winter) +
-                     offset(log(poblacion*`65+`)),
-                   data = df_modelo,
+                     offset(log(pob65)),
+                   data = df_modelo %>% mutate(pob65=poblacion*`65+`),
                    na.action=na.omit)
 summary(mod_65)
 f_tableCoef(mod_65)
@@ -988,5 +990,26 @@ df_mrr %>%
   coord_flip()
 f_savePlot(last_plot(), sprintf(file_name,"resumenMRR_hdd15winter"),dpi=150)
 
+
+
+## Prueba con Stargazer ---------
+# Problemas:
+# Solo puede generar latex usando knit o generar un html (no como en flextable)
+# Calculo se complejiza para añadir CI y otras cosas.
+
+# library(stargazer)
+# 
+# stargazer(df_modelo %>% dplyr::select(mp25,movilidad))
+# 
+# stargazer(mod_RM,mod_sinRM, out = 'table.html', 
+#           digits = 2,
+#           # apply.coef = exp,apply.ci = exp, apply.se = exp,
+#           apply.coef=exp, t.auto=F, p.auto=F, report = "vct*",
+#           column.labels = c("RM", "Sin RM"),
+#           ci=T, ci.level = 0.95,
+#           # single.row = T,
+#           omit="Constant") 
+# 
+# f_tableMRR(mod_RM)
 
 ## EoF
