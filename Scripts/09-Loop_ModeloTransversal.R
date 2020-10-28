@@ -53,7 +53,7 @@ f_tableMRR(mod_nb, preview = "none", highlight = T)
 rm(mod_nb)
 
 ## Base Solo Significativas---------
-mob_base <- glm.nb(covid_fallecidos ~ 
+mod_base <- glm.nb(covid_fallecidos ~ 
                      mp25 +
                      rm +
                      scale(`15-44`) +  scale(`65+`) +
@@ -66,10 +66,11 @@ mob_base <- glm.nb(covid_fallecidos ~
                      offset(log(poblacion)), 
                    data = df_modelo,
                    na.action=na.omit)
-summary(mob_base)
-nobs(mob_base)
-f_tableMRR(mob_base, preview = "none", highlight = T) 
-rm(mob_base)
+summary(mod_base)
+nobs(mod_base)
+f_tableMRR(mod_base, preview = "none", highlight = T) 
+f_figMRR(mod_base)
+rm(mod_base)
 
 ## Formula Base ---------
 ## Terminos para crear mi formula
@@ -240,10 +241,7 @@ for (m in modelos_rsd){
 rm(i,m)
 
 ## Save Data ----------
-
-a <- df_coef
-b <- df_params
-
+a <- df_coef; b <- df_params;
 
 # Feat data
 df_params <- df_params %>% 
@@ -275,6 +273,39 @@ df_coef_params <- read.delim("ResumenModelos/Loop/coef.csv", sep=";",skip = 1)
 
 df_coef_params %>% names()
 
+
+## Figura: MRR todos segun EndPoint
+df_coef_params$term %>% unique()
+df_coef_params %>% 
+  rowid_to_column() %>% 
+  filter(!(term %in% c("(Intercept)","rmRM"))) %>% 
+  filter(lena=="perc_lenaCalefaccion" & meteorologia=="hr_anual" &
+           socioeconomico=="perc_menor_media" & demografia=="perc_puebloOrig") %>% 
+  mutate(term=term %>% str_remove_all("scale\\(|\\)") %>% f_replaceVar() %>% 
+           factor(unique(.)),
+         socioeconomico=socioeconomico %>% 
+           str_remove_all("log\\(|\\)") %>% f_replaceVar(),
+         demografia=f_replaceVar(demografia),
+         lena=f_replaceVar(lena),
+         meteorologia=f_replaceVar(meteorologia),
+         dependiente=factor(dependiente,
+                            levels = c("MR","MR65","MR75",
+                                       "LET","CFR0","CFR0a20"))) %>% 
+  ggplot(aes(x=fct_rev(term), y=estimate))+
+  geom_point(size=2, alpha=.5)+
+  geom_errorbar(aes(ymin=conf.low, ymax=conf.high))+
+  geom_hline(yintercept = 1, linetype = "dashed")+
+  facet_wrap(~dependiente)+
+  coord_flip()+
+  scale_y_continuous(labels = function(x) format(x, big.mark = " ",scientific = FALSE))+
+  labs(x="",y="MRR", 
+       caption="MRR bajo distintos Endpoints considerados. \n 
+  En columnas se presentan las variables explicativas de cada modelo. \n
+  Cada cuadro representa un Endpoint (variable dependiente) distinto.")+
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.caption = element_text(size=10, lineheight=.5))
+
+
 ## Figura: MRR MP2.5 segun endpoint, para socioeconomico y demografia
 df_coef_params %>% 
   filter(term=="mp25") %>% 
@@ -299,7 +330,176 @@ df_coef_params %>%
   Formula base del modelo ajustado: {Endpoint} ~ MP2.5 + RM + DiasdesdePrimeraMuerteCOVID + {VariableDemografica} + {VariableSocioeconomica} + %LeñaCalefaccion + HumedadRelativa \n
   {}: Representa la variable modificada en cada análisis mostrado en la figura.")+
   theme(plot.title = element_text(hjust = 0.5),
-        plot.caption = element_text(size=8, lineheight=.5))
+        plot.caption = element_text(size=10, lineheight=.5))
+
+
+## Figura: MRR MP2.5 segun endpoint, para leña y meteorologia
+df_coef_params %>% 
+  filter(term=="mp25") %>% 
+  filter(socioeconomico=="perc_menor_media" & demografia=="perc_puebloOrig") %>% 
+  mutate(lena=f_replaceVar(lena),
+         meteorologia=f_replaceVar(meteorologia),
+         dependiente=factor(dependiente,
+                            levels = c("MR","MR65","MR75",
+                                       "LET","CFR0","CFR0a20"))) %>% 
+  rowid_to_column() %>% 
+  ggplot(aes(x=fct_rev(dependiente), y=estimate))+
+  geom_point(size=2, alpha=.5)+
+  geom_errorbar(aes(ymin=conf.low, ymax=conf.high))+
+  geom_hline(yintercept = 1, linetype = "dashed")+
+  facet_grid(lena~meteorologia)+
+  coord_flip()+
+  scale_y_continuous(labels = function(x) format(x, big.mark = " ",scientific = FALSE))+
+  labs(x="",y="MRR MP2.5 2017-2019 [ug/m3]", 
+       caption="Coeficiente MP2.5 bajo distintas variables explicativas y endpoints. \n 
+  En columnas se presentan variables socioeconomicas, en filas las variables demograficas y en cada cuadricula se diferencia por Endpoint. \n
+  Formula base del modelo ajustado: {Endpoint} ~ MP2.5 + RM + DiasdesdePrimeraMuerteCOVID + {VariableDemografica} + {VariableSocioeconomica} + %LeñaCalefaccion + HumedadRelativa \n
+  {}: Representa la variable modificada en cada análisis mostrado en la figura.")+
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.caption = element_text(size=10, lineheight=.5))
+
+## Figura: MRR Leña segun endpoint, para socioeconomico y meteorologia
+df_coef_params %>% 
+  filter(term=="scale(perc_lenaCalefaccion)") %>% 
+  filter(demografia=="perc_puebloOrig" & lena=="perc_lenaCalefaccion") %>% 
+  mutate(socioeconomico=socioeconomico %>% 
+           str_remove_all("log\\(|\\)") %>% f_replaceVar(),
+         meteorologia=f_replaceVar(meteorologia),
+         dependiente=factor(dependiente,
+                            levels = c("MR","MR65","MR75",
+                                       "LET","CFR0","CFR0a20"))) %>% 
+  rowid_to_column() %>% 
+  ggplot(aes(x=fct_rev(dependiente), y=estimate))+
+  geom_point(size=2, alpha=.5)+
+  geom_errorbar(aes(ymin=conf.low, ymax=conf.high))+
+  geom_hline(yintercept = 1, linetype = "dashed")+
+  facet_grid(meteorologia~socioeconomico)+
+  coord_flip()+
+  scale_y_continuous(labels = function(x) format(x, big.mark = " ",scientific = FALSE))+
+  labs(x="",y="MRR % Leña Calefacción", 
+       caption="Coeficiente MP2.5 bajo distintas variables explicativas y endpoints. \n 
+  En columnas se presentan variables socioeconomicas, en filas las variables demograficas y en cada cuadricula se diferencia por Endpoint. \n
+  Formula base del modelo ajustado: {Endpoint} ~ MP2.5 + RM + DiasdesdePrimeraMuerteCOVID + {VariableDemografica} + {VariableSocioeconomica} + %LeñaCalefaccion + HumedadRelativa \n
+  {}: Representa la variable modificada en cada análisis mostrado en la figura.")+
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.caption = element_text(size=10, lineheight=.5))
+
+
+## Figura: MRR HDD15 segun endpoint, para socioeconomico y leña
+df_coef_params %>% 
+  filter(term=="scale(heating_degree_15_winter)") %>% 
+  filter(demografia=="perc_puebloOrig" & meteorologia=="heating_degree_15_winter") %>% 
+  mutate(socioeconomico=socioeconomico %>% 
+           str_remove_all("log\\(|\\)") %>% f_replaceVar(),
+         lena=f_replaceVar(lena),
+         dependiente=factor(dependiente,
+                            levels = c("MR","MR65","MR75",
+                                       "LET","CFR0","CFR0a20"))) %>% 
+  rowid_to_column() %>% 
+  ggplot(aes(x=fct_rev(dependiente), y=estimate))+
+  geom_point(size=2, alpha=.5)+
+  geom_errorbar(aes(ymin=conf.low, ymax=conf.high))+
+  geom_hline(yintercept = 1, linetype = "dashed")+
+  facet_grid(lena~socioeconomico)+
+  coord_flip()+
+  scale_y_continuous(labels = function(x) format(x, big.mark = " ",scientific = FALSE))+
+  labs(x="",y="MRR HDD 15°C Invierno", 
+       caption="Coeficiente MP2.5 bajo distintas variables explicativas y endpoints. \n 
+  En columnas se presentan variables socioeconomicas, en filas las variables demograficas y en cada cuadricula se diferencia por Endpoint. \n
+  Formula base del modelo ajustado: {Endpoint} ~ MP2.5 + RM + DiasdesdePrimeraMuerteCOVID + {VariableDemografica} + {VariableSocioeconomica} + %LeñaCalefaccion + HumedadRelativa \n
+  {}: Representa la variable modificada en cada análisis mostrado en la figura.")+
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.caption = element_text(size=10, lineheight=.5))
+
+
+## Modelo Causas CardioPulmonares ----------
+mod_valido <- glm.nb(def_cardioPulmonar ~ 
+                     mp25 +
+                     rm +
+                     scale(`15-44`) +  scale(`65+`) +
+                     scale(perc_vivHacMedio)+
+                     scale(perc_puebloOrig) +
+                     scale(dias_primerMuerte) +
+                     scale(perc_lenaCalefaccion) +
+                     scale(perc_menor_media)+
+                     scale(hr_anual) +
+                     offset(log(poblacion)), 
+                   data = df_modelo %>% mutate(mp25=mp25/10),
+                   na.action=na.omit)
+summary(mod_valido)
+nobs(mod_valido)
+f_tableMRR(mod_valido, preview = "none", highlight = T) 
+f_figMRR(mod_valido)
+rm(mod_valido)
+
+
+## Modelo RM o no --------
+## Base Solo Significativas---------
+mod_base <- glm.nb(covid_fallecidos ~ 
+                     mp25 +
+                     # pda +
+                     # rm +
+                     scale(`15-44`) +  scale(`65+`) +
+                     scale(perc_vivHacMedio)+
+                     scale(perc_puebloOrig) +
+                     scale(dias_primerMuerte) +
+                     scale(perc_lenaCalefaccion) +
+                     scale(perc_menor_media)+
+                     scale(hr_anual) +
+                     offset(log(poblacion)),
+                     # offset(log(casos_confirmados)),
+                   data = df_modelo %>% filter(region!="M"),
+                   na.action=na.omit)
+summary(mod_base)
+nobs(mod_base)
+f_tableMRR(mod_base, preview = "none", highlight = T) 
+f_figMRR(mod_base)
+rm(mod_base)
+
+
+
+## Tasa Contagios -----------
+mod_base <- glm.nb(casos_confirmados ~ 
+                     mp25 +
+                     rm +
+                     scale(`15-44`) +  scale(`65+`) +
+                     scale(perc_vivHacMedio)+
+                     scale(perc_puebloOrig) +
+                     scale(dias_primerContagio) +
+                     scale(perc_lenaCalefaccion) +
+                     scale(perc_menor_media)+
+                     scale(hr_anual) +
+                     offset(log(poblacion)), 
+                   data = df_modelo,
+                   na.action=na.omit)
+summary(mod_base)
+nobs(mod_base)
+f_tableMRR(mod_base, preview = "none", highlight = T) 
+f_figMRR(mod_base)
+rm(mod_base)
+
+
+## Tablas informe ----------
+url <- "Data/Data_Modelo/Loop/"
+(modelos_rsd <- list.files(url))
+
+df_coef_params$dependiente %>% unique()
+df_coef_params$socioeconomico %>% unique()
+df_coef_params$demografia %>% unique()
+df_coef_params$lena %>% unique()
+df_coef_params$meteorologia %>% unique()
+
+## Pruebas concretas
+modelo_mr <- read_rds(paste(url, "mod-MR-Sperc_menor_media-Dperc_puebloOrig-Lperc_lenaCalefaccion-Mhr_anual.rsd", sep=""))
+modelo_let <- read_rds(paste(url, "mod-LET-Sperc_menor_media-Dperc_puebloOrig-Lperc_lenaCalefaccion-Mhr_anual.rsd", sep=""))
+modelo_cfr0 <- read_rds(paste(url, "mod-CFR0-Sperc_menor_media-Dperc_puebloOrig-Lperc_lenaCalefaccion-Mhr_anual.rsd", sep=""))
+modelo_cfr0a20 <- read_rds(paste(url, "mod-CFR0a20-Sperc_menor_media-Dperc_puebloOrig-Lperc_lenaCalefaccion-Mhr_anual.rsd", sep=""))
+
+
+f_tableMRR(modelo_mr, highlight = T); nobs(modelo_mr)
+f_tableMRR(modelo_let, highlight = T, preview = "docx"); nobs(modelo_let)
+f_tableMRR(modelo_cfr0, highlight = T, preview = "docx"); nobs(modelo_cfr0)
+f_tableMRR(modelo_cfr0a20, highlight = T, preview = "docx"); nobs(modelo_cfr0a20)
 
 
 ## EoF

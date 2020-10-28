@@ -880,7 +880,7 @@ rm(mod_nb_cr2_lena_cfr,data_mod)
 ### Grafico MRR MP2.5 Resumen modelos probados ------------
 
 mod_nb <- read_rds(sprintf(file_mod,"Base"))
-mod_nb_sig <- read_rds(sprintf(file_mod,"sinRandomInterceptSign"))
+mod_nb_sig <- read_rds(sprintf(file_mod,"BaseSign"))
 mod_sinMP <- read_rds(sprintf(file_mod,"sin_MP"))
 mod_sinRM <- read_rds(sprintf(file_mod,"sin_RM"))
 mod_RM <- read_rds(sprintf(file_mod,"soloRM"))

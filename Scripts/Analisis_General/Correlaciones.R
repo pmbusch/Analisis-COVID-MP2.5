@@ -123,7 +123,7 @@ df_pairs <- df_modelo %>%
   select(rm,tasa_mortalidad_covid, cfr_raw_0, mp25, densidad_pob_censal,
          perc_fonasa_B, perc_lenaCalefaccion, tmed_winter)
 names(df_pairs) <- names(df_pairs) %>% f_replaceVar()
-p <- GGally::ggpairs(df_pairs, aes(col=rm, alpha=0.5),
+p <- GGally::ggpairs(df_pairs, aes(col=`Comuna pertence a la RM`, alpha=0.5),
                      columns = 2:ncol(df_pairs))
 p
 f_savePlot(p, sprintf(file_name, "ggpairs"), dpi=300)

@@ -25,7 +25,7 @@ df <- df_modelo %>%
   mutate(perc_fonasa=perc_fonasa_A+perc_fonasa_B+perc_fonasa_C+perc_fonasa_D,
          poblacion=poblacion/1e3,
          ingresoAutonomo_media=ingresoAutonomo_media/1e3) %>% 
-  select(tasa_mortalidad_covid, mp25, 
+  select(tasa_mortalidad_covid, mp25, mp10,
          poblacion,densidad_pob_censal, `15-44`, `45-64`, `65+`,perc_mujer, 
          perc_rural, perc_puebloOrig, perc_material_irrecuperable,perc_vivHacMedio,
          tasa_contagios, perc_letalidad, cfr_raw_0, cfr_0_20,
@@ -78,10 +78,10 @@ df_skim %>%
   merge_v(j = 1) %>%   fix_border_issues(part = "all") %>% 
   flextable::border(j=1, part="body",
          border.bottom = officer::fp_border(style = "solid", width=2)) %>%
-  flextable::border(j=2:6, part="body",i=c(8,9,13,23,33),
+  flextable::border(j=2:6, part="body",i=c(8,10,14,24,34),
          border.bottom = officer::fp_border(style = "solid", width=2)) %>%
   footnote(j=4:6, value=as_paragraph(foot_note), part="header", inline=T) 
-  # print(preview="pptx")
+# print(preview="pptx")
 # print(preview="docx")
 
 rm(foot_note,df_skim, df_sep, n_mp25)
@@ -116,18 +116,18 @@ df_skim %>%
   colformat_num(big.mark=" ", digits=1, j=3:ncol(df_skim),
                 na_str="s/i") %>%
   colformat_num(big.mark=" ", digits=0, j=c(3,5:ncol(df_skim)),
-                i=c(2,6,7,10,14,15,24,25), na_str="s/i") %>%
+                i=c(2,6,7,11,15,16,25,26), na_str="s/i") %>%
   bold(bold=T, part="header") %>% bold(j=1:2, bold=T) %>% 
   autofit(add_w = 0.1, add_h = 0.3) %>%
   align(j=1:2, align = "left", part="all") %>% 
   merge_v(j = 1) %>%   fix_border_issues(part = "all") %>% 
   flextable::border(j=1, part="body",
          border.bottom = officer::fp_border(style = "solid", width=2)) %>%
-  flextable::border(j=2:7, part="body",i=c(8,9,13,23,33),
+  flextable::border(j=2:7, part="body",i=c(8,10,14,24,34),
          border.bottom = officer::fp_border(style = "solid", width=2)) %>%
   footnote(j=4, value=as_paragraph("Coeficiente Variación"), 
-           part="header", inline=T)
-  # print(preview="docx")
+           part="header", inline=T) %>% 
+  print(preview="docx")
   # print(preview="pptx")
 
 rm(df_skim, df)

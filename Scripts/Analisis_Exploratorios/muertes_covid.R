@@ -23,14 +23,14 @@ rm(total_comunas, comunas_muerte)
 df_muertes$tasa_mortalidad_covid %>% range() # rango para los graficos
 # Chile
 df_muertes %>% left_join(mapa_comuna) %>% 
-  fig_mapa(tasa_mortalidad_covid, lwd=0.01,limites=c(0,280), 
+  fig_mapa(tasa_mortalidad_covid, lwd=0.01,limites=c(0,300), 
            titulo="Tasa Mortalidad Covid \n [muertes/100mil hab]")
 f_savePlot(last_plot(), 
            file_path = sprintf(file_name,"MapaChileCOVID"),dpi = 300)
 
 # Chile Facet
 df_muertes %>% left_join(mapa_comuna) %>% 
-  fig_mapaChile_facet(tasa_mortalidad_covid,limites=c(0,280),
+  fig_mapaChile_facet(tasa_mortalidad_covid,limites=c(0,300),
                       titulo="Tasa Mortalidad Covid \n [muertes/100mil hab]")
 f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaChileCOVIDFacet"),dpi = 300)
 
@@ -38,7 +38,7 @@ f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaChileCOVIDFacet"),dpi
 df_muertes %>% left_join(mapa_comuna) %>% 
   left_join(codigos_territoriales) %>% 
   filter(mapa_rm==1) %>% 
-  fig_mapa(tasa_mortalidad_covid, limites = c(0,280),
+  fig_mapa(tasa_mortalidad_covid, limites = c(0,300),
            titulo= "Tasa Mortalidad Covid \n [muertes/100mil hab]")
 f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaSantiagoCOVID"), dpi=100)
 
@@ -158,7 +158,7 @@ df_muertes_region_edad %>%
   facet_wrap(~region)+
   labs(x="", y="Tasa mortalidad COVID [por 100mil]")+
   theme(axis.text.x = element_text(angle = 90))
-f_savePlot(last_plot(), sprintf(file_name,"SerieTiempoRegion"))
+f_savePlot(last_plot(), sprintf(file_name,"SerieTiempoRegionEdad"))
 rm(df_muertes_region_edad, df_muertes_nacional_edad)
 
 ## Heatmap Serie tiempo -------

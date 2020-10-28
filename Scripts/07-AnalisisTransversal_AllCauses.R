@@ -28,6 +28,12 @@ df_modelo %>%
             sd_tasa=sd(tasa_mortalidad, na.rm = T))
 
 
+
+
+
+
+
+
 ## Modelo Base. Y= Causas Cardiopulmonares -------------
 # Notar que es poisson
 mod_nb <- glm(def_cardioPulmonar ~ mp25_10um +

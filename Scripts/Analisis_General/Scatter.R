@@ -11,7 +11,8 @@ file_name <- "Scripts/Analisis_General/Figuras/%s.png"
 
 ## Scatter correlacion -----------
 p1 <- df_modelo %>% 
-  mutate(nombre_comuna=if_else(poblacion>1e5,nombre_comuna,"")) %>% #Label solo pob mayor a 100 mil
+  mutate(nombre_comuna=if_else(poblacion>1e5|tasa_mortalidad_covid>200,
+                               nombre_comuna,"")) %>% #Label solo pob mayor a 100 mil
   ggplot(aes(mp25, tasa_mortalidad_covid, size=poblacion, col=rm))+
   geom_point(alpha=.5)+
   scale_size(labels=function(x) format(x,big.mark = " ", digits=0, scientific = F))+
