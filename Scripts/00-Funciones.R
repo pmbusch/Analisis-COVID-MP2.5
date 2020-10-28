@@ -240,7 +240,7 @@ f_addTypeVar <- function(var){
       var %in% c("mp25","mp25_fall","mp25_winter",
                  "mp25_spring","mp25_summer","mp25_10um",
                  "mp25_2017", "mp25_2018","mp25_2019", "mp25_2020")~ 
-        "MP2.5",
+        "Contaminación",
       var %in% c("poblacion","densidad_pob","densidad_pob_censal",
                  "0-14","15-44","45-64","65+","65-74","75+","perc_mujer",
                  "e0_14","e15_44","e45_64","e65_74","e65_plus","e75_plus",
@@ -266,14 +266,14 @@ f_addTypeVar <- function(var){
                  "consumo_lena_pp","hdd15_winter_lenaCalefaccion",
                  "cons_lena_kg","cons_lena_urbana","pda")  ~ 
         "Leña",
-      str_detect(var,"mp10") ~ "Leña",
+      str_detect(var,"mp10") ~ "Contaminación",
       var %in% c("hr_anual","hr_fall","hr_winter","hr_spring","hr_summer",
                  "tmed_anual","tmed_fall","tmed_winter","tmed_spring","tmed_summer",
                  "heating_degree_15_anual","heating_degree_15_fall","heating_degree_15_winter","heating_degree_15_spring","heating_degree_15_summer",
                  "heating_degree_18_anual","heating_degree_18_fall","heating_degree_18_winter","heating_degree_18_spring","heating_degree_18_summer") ~ 
         "Meteorología",
       T ~ "s/i") %>% 
-      factor(levels=c("COVID-19","MP2.5","Leña","Demografía",
+      factor(levels=c("COVID-19","Contaminación","Leña","Demografía",
                       "Socioeconómico","Meteorología")))
 }
 
