@@ -43,10 +43,10 @@ rm(url)
 #       exdir = "Data/Data_Original/DEIS")
 
 # lectura
-fecha_deis <- "15-10-2020"
+fecha_deis <- "22-10-2020"
 df_deis <- read_delim(paste(
   "Data/Data_Original/DEIS/DEFUNCIONES_FUENTE_DEIS_2016_2020_",
-  fecha_deis %>% str_remove_all("-"),".csv",sep=""),
+  "20202210",".csv",sep=""),
                  delim = ";",col_names = T,
                  col_types = "Dcddccccccccccccccccccccc",
                  locale = locale(encoding = "windows-1252",
