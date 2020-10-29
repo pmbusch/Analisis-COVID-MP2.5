@@ -29,6 +29,7 @@ cat("Fecha informe DEIS muertes COVID: ",fecha_deis, sep="")
 mod_nb <- glm.nb(covid_fallecidos ~ 
                    mp25 +
                    rm +
+                   scale(tasaMorbilidad_CPM) +
                    scale(densidad_pob_censal) +
                    scale(`15-44`) + scale(`65+`) +
                    scale(perc_vivHacMedio)+
@@ -56,6 +57,7 @@ rm(mod_nb)
 mod_base <- glm.nb(covid_fallecidos ~ 
                      mp25 +
                      rm +
+                     # scale(tasaMorbilidad_CPM) +
                      scale(`15-44`) +  scale(`65+`) +
                      scale(perc_vivHacMedio)+
                      scale(perc_puebloOrig) +
@@ -459,6 +461,9 @@ rm(mod_base)
 
 
 ## Tasa Contagios -----------
+## Correlacion
+cor(df_modelo$casos_confirmados, df_modelo$covid_fallecidos,
+    method="pearson", use = "complete.obs")
 mod_base <- glm.nb(casos_confirmados ~ 
                      mp25 +
                      rm +

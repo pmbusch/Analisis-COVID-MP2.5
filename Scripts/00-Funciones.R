@@ -117,6 +117,7 @@ f_replaceVar <- function(variable_orig){
       variable_orig== "def_cardio" ~ "Número fallecidos causas cardiovasculares",
       variable_orig== "def_pulmonar" ~ "Número fallecidos causas respiratorias",
       variable_orig== "def_cardioPulmonar" ~ "Número fallecidos causas cardiopulmonares",
+      variable_orig== "tasaMorbilidad_CPM" ~ "Tasa egresos hospitalarios por enfermedades cardiopulmonares 2013-2017",
       variable_orig== "mp25" ~ "MP2.5 2017-2019 [ug/m3]",
       variable_orig== "mp25_fall" ~ "MP2.5 2017-2019 Otoño",
       variable_orig== "mp25_winter" ~ "MP2.5 2017-2019 Invierno",
