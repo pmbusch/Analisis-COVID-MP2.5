@@ -276,7 +276,7 @@ df_coef_params <- read.delim("ResumenModelos/Loop/coef.csv", sep=";",skip = 1)
 df_coef_params %>% names()
 
 
-## Figura: MRR todos segun EndPoint
+## Figura: MRR todos segun EndPoint ---------
 df_coef_params$term %>% unique()
 df_coef_params %>% 
   rowid_to_column() %>% 
@@ -308,7 +308,7 @@ df_coef_params %>%
         plot.caption = element_text(size=10, lineheight=.5))
 
 
-## Figura: MRR MP2.5 segun endpoint, para socioeconomico y demografia
+## Figura: MRR MP2.5 segun endpoint, para socioeconomico y demografia ----------
 df_coef_params %>% 
   filter(term=="mp25") %>% 
   filter(lena=="perc_lenaCalefaccion" & meteorologia=="hr_anual") %>% 
@@ -335,7 +335,7 @@ df_coef_params %>%
         plot.caption = element_text(size=10, lineheight=.5))
 
 
-## Figura: MRR MP2.5 segun endpoint, para leña y meteorologia
+## Figura: MRR MP2.5 segun endpoint, para leña y meteorologia ---------
 df_coef_params %>% 
   filter(term=="mp25") %>% 
   filter(socioeconomico=="perc_menor_media" & demografia=="perc_puebloOrig") %>% 
@@ -360,7 +360,7 @@ df_coef_params %>%
   theme(plot.title = element_text(hjust = 0.5),
         plot.caption = element_text(size=10, lineheight=.5))
 
-## Figura: MRR Leña segun endpoint, para socioeconomico y meteorologia
+## Figura: MRR Leña segun endpoint, para socioeconomico y meteorologia --------
 df_coef_params %>% 
   filter(term=="scale(perc_lenaCalefaccion)") %>% 
   filter(demografia=="perc_puebloOrig" & lena=="perc_lenaCalefaccion") %>% 
@@ -387,7 +387,7 @@ df_coef_params %>%
         plot.caption = element_text(size=10, lineheight=.5))
 
 
-## Figura: MRR HDD15 segun endpoint, para socioeconomico y leña
+## Figura: MRR HDD15 segun endpoint, para socioeconomico y leña ---------
 df_coef_params %>% 
   filter(term=="scale(heating_degree_15_winter)") %>% 
   filter(demografia=="perc_puebloOrig" & meteorologia=="heating_degree_15_winter") %>% 
@@ -436,8 +436,8 @@ rm(mod_valido)
 
 
 ## Modelo RM o no --------
-## Base Solo Significativas---------
-mod_base <- glm.nb(covid_fallecidos ~ 
+## Base Solo Significativas
+mod_rm <- glm.nb(covid_fallecidos ~ 
                      mp25 +
                      # pda +
                      # rm +
@@ -450,14 +450,34 @@ mod_base <- glm.nb(covid_fallecidos ~
                      scale(hr_anual) +
                      offset(log(poblacion)),
                      # offset(log(casos_confirmados)),
-                   data = df_modelo %>% filter(region!="M"),
+                   data = df_modelo %>% filter(region=="M"),
                    na.action=na.omit)
-summary(mod_base)
-nobs(mod_base)
-f_tableMRR(mod_base, preview = "none", highlight = T) 
-f_figMRR(mod_base)
-rm(mod_base)
+summary(mod_rm)
+nobs(mod_rm)
+f_tableMRR(mod_rm, preview = "none", highlight = T) 
+f_figMRR(mod_rm)
+rm(mod_rm)
 
+mod_sinrm <- glm.nb(covid_fallecidos ~ 
+                   mp25 +
+                   # pda +
+                   # rm +
+                   scale(`15-44`) +  scale(`65+`) +
+                   scale(perc_vivHacMedio)+
+                   scale(perc_puebloOrig) +
+                   scale(dias_primerMuerte) +
+                   scale(perc_lenaCalefaccion) +
+                   scale(perc_menor_media)+
+                   scale(hr_anual) +
+                   offset(log(poblacion)),
+                 # offset(log(casos_confirmados)),
+                 data = df_modelo %>% filter(region!="M"),
+                 na.action=na.omit)
+summary(mod_sinrm)
+nobs(mod_sinrm)
+f_tableMRR(mod_sinrm, preview = "none", highlight = T) 
+f_figMRR(mod_sinrm)
+rm(mod_sinrm)
 
 
 ## Tasa Contagios -----------
@@ -506,5 +526,468 @@ f_tableMRR(modelo_let, highlight = T, preview = "docx"); nobs(modelo_let)
 f_tableMRR(modelo_cfr0, highlight = T, preview = "docx"); nobs(modelo_cfr0)
 f_tableMRR(modelo_cfr0a20, highlight = T, preview = "docx"); nobs(modelo_cfr0a20)
 
+
+## Figure resumen conclusiones distintos modelos ---------
+## ----------------------
+## De aca abajo todo manual
+mod_mp25winter <- glm.nb(covid_fallecidos ~ 
+                           mp25_winter +
+                           # pda +
+                           rm +
+                           scale(`15-44`) +  scale(`65+`) +
+                           scale(perc_vivHacMedio)+
+                           scale(perc_puebloOrig) +
+                           scale(dias_primerMuerte) +
+                           scale(perc_lenaCalefaccion) +
+                           scale(perc_menor_media)+
+                           scale(hr_anual) +
+                           offset(log(poblacion)),
+                         # offset(log(casos_confirmados)),
+                         data = df_modelo,
+                         na.action=na.omit)
+
+
+## Random Region---------
+mod_region <- glmer.nb(covid_fallecidos ~ 
+                         mp25 +
+                         rm +
+                         scale(`15-44`) +  scale(`65+`) +
+                         scale(perc_vivHacMedio)+
+                         scale(perc_puebloOrig) +
+                         scale(dias_primerMuerte) +
+                         scale(perc_lenaCalefaccion) +
+                         scale(perc_menor_media)+
+                         scale(hr_anual) +
+                         (1|region)+
+                         offset(log(poblacion)), 
+                       data = df_modelo,
+                       na.action=na.omit)
+
+## Random Zonas---------
+mod_zona <- glmer.nb(covid_fallecidos ~ 
+                       mp25 +
+                       rm +
+                       scale(`15-44`) +  scale(`65+`) +
+                       scale(perc_vivHacMedio)+
+                       scale(perc_puebloOrig) +
+                       scale(dias_primerMuerte) +
+                       scale(perc_lenaCalefaccion) +
+                       scale(perc_menor_media)+
+                       scale(hr_anual) +
+                       (1|zona)+
+                       offset(log(poblacion)), 
+                     data = df_modelo,
+                     na.action=na.omit)
+
+## Random Zona Termica---------
+mod_zonaTermica <- glmer.nb(covid_fallecidos ~ 
+                              mp25 +
+                              rm +
+                              scale(`15-44`) +  scale(`65+`) +
+                              scale(perc_vivHacMedio)+
+                              scale(perc_puebloOrig) +
+                              scale(dias_primerMuerte) +
+                              scale(perc_lenaCalefaccion) +
+                              scale(perc_menor_media)+
+                              scale(hr_anual) +
+                              (1|zona_termica)+
+                              offset(log(poblacion)), 
+                            data = df_modelo,
+                            na.action=na.omit)
+
+## Modelos LET -----
+mod_base_let <- glm.nb(covid_fallecidos ~ 
+                     mp25 +
+                     rm +
+                     scale(`15-44`) +  scale(`65+`) +
+                     scale(perc_vivHacMedio)+
+                     scale(perc_puebloOrig) +
+                     scale(dias_primerMuerte) +
+                     scale(perc_lenaCalefaccion) +
+                     scale(perc_menor_media)+
+                     scale(hr_anual) +
+                     offset(log(casos_confirmados)), 
+                   data = df_modelo,
+                   na.action=na.omit)
+
+mod_rm_let <- glm.nb(covid_fallecidos ~ 
+                   mp25 +
+                   scale(`15-44`) +  scale(`65+`) +
+                   scale(perc_vivHacMedio)+
+                   scale(perc_puebloOrig) +
+                   scale(dias_primerMuerte) +
+                   scale(perc_lenaCalefaccion) +
+                   scale(perc_menor_media)+
+                   scale(hr_anual) +
+                 offset(log(casos_confirmados)),
+                 data = df_modelo %>% filter(region=="M"),
+                 na.action=na.omit)
+
+mod_sinrm_let <- glm.nb(covid_fallecidos ~ 
+                      mp25 +
+                      scale(`15-44`) +  scale(`65+`) +
+                      scale(perc_vivHacMedio)+
+                      scale(perc_puebloOrig) +
+                      scale(dias_primerMuerte) +
+                      scale(perc_lenaCalefaccion) +
+                      scale(perc_menor_media)+
+                      scale(hr_anual) +
+                    offset(log(casos_confirmados)),
+                    data = df_modelo %>% filter(region!="M"),
+                    na.action=na.omit)
+
+mod_mp25winter_let <- glm.nb(covid_fallecidos ~ 
+                           mp25_winter +
+                           rm +
+                           scale(`15-44`) +  scale(`65+`) +
+                           scale(perc_vivHacMedio)+
+                           scale(perc_puebloOrig) +
+                           scale(dias_primerMuerte) +
+                           scale(perc_lenaCalefaccion) +
+                           scale(perc_menor_media)+
+                           scale(hr_anual) +
+                         offset(log(casos_confirmados)),
+                         data = df_modelo,
+                         na.action=na.omit)
+
+mod_region_let <- glmer.nb(covid_fallecidos ~ 
+                         mp25 +
+                         rm +
+                         scale(`15-44`) +  scale(`65+`) +
+                         scale(perc_vivHacMedio)+
+                         scale(perc_puebloOrig) +
+                         scale(dias_primerMuerte) +
+                         scale(perc_lenaCalefaccion) +
+                         scale(perc_menor_media)+
+                         scale(hr_anual) +
+                         (1|region)+
+                         offset(log(casos_confirmados)), 
+                       data = df_modelo,
+                       na.action=na.omit)
+
+## Random Zonas
+mod_zona_let <- glmer.nb(covid_fallecidos ~ 
+                       mp25 +
+                       rm +
+                       scale(`15-44`) +  scale(`65+`) +
+                       scale(perc_vivHacMedio)+
+                       scale(perc_puebloOrig) +
+                       scale(dias_primerMuerte) +
+                       scale(perc_lenaCalefaccion) +
+                       scale(perc_menor_media)+
+                       scale(hr_anual) +
+                       (1|zona)+
+                       offset(log(casos_confirmados)), 
+                     data = df_modelo,
+                     na.action=na.omit)
+
+## Random Zona Termica
+mod_zonaTermica_let <- glmer.nb(covid_fallecidos ~ 
+                              mp25 +
+                              rm +
+                              scale(`15-44`) +  scale(`65+`) +
+                              scale(perc_vivHacMedio)+
+                              scale(perc_puebloOrig) +
+                              scale(dias_primerMuerte) +
+                              scale(perc_lenaCalefaccion) +
+                              scale(perc_menor_media)+
+                              scale(hr_anual) +
+                              (1|zona_termica)+
+                              offset(log(casos_confirmados)), 
+                            data = df_modelo,
+                            na.action=na.omit)
+
+
+## MODELOS CFR 0 a 20 ----------
+df_modelo <- df_modelo %>% mutate(
+  pob65=poblacion*`65+`, pob75=poblacion*`75+`,
+  contagios_lag0=covid_fallecidos/cfr_raw_0*100,
+  contagios_lag0_20=covid_fallecidos/cfr_0_20*100)
+mod_base_cfr020 <- glm.nb(covid_fallecidos ~ 
+                         mp25 +
+                         rm +
+                         scale(`15-44`) +  scale(`65+`) +
+                         scale(perc_vivHacMedio)+
+                         scale(perc_puebloOrig) +
+                         scale(dias_primerMuerte) +
+                         scale(perc_lenaCalefaccion) +
+                         scale(perc_menor_media)+
+                         scale(hr_anual) +
+                         offset(log(contagios_lag0_20)), 
+                       data = df_modelo,
+                       na.action=na.omit)
+
+mod_rm_cfr020 <- glm.nb(covid_fallecidos ~ 
+                       mp25 +
+                       scale(`15-44`) +  scale(`65+`) +
+                       scale(perc_vivHacMedio)+
+                       scale(perc_puebloOrig) +
+                       scale(dias_primerMuerte) +
+                       scale(perc_lenaCalefaccion) +
+                       scale(perc_menor_media)+
+                       scale(hr_anual) +
+                       offset(log(contagios_lag0_20)),
+                     data = df_modelo %>% filter(region=="M"),
+                     na.action=na.omit)
+
+mod_sinrm_cfr020 <- glm.nb(covid_fallecidos ~ 
+                          mp25 +
+                          scale(`15-44`) +  scale(`65+`) +
+                          scale(perc_vivHacMedio)+
+                          scale(perc_puebloOrig) +
+                          scale(dias_primerMuerte) +
+                          scale(perc_lenaCalefaccion) +
+                          scale(perc_menor_media)+
+                          scale(hr_anual) +
+                          offset(log(contagios_lag0_20)),
+                        data = df_modelo %>% filter(region!="M"),
+                        na.action=na.omit)
+
+mod_mp25winter_cfr020 <- glm.nb(covid_fallecidos ~ 
+                               mp25_winter +
+                               rm +
+                               scale(`15-44`) +  scale(`65+`) +
+                               scale(perc_vivHacMedio)+
+                               scale(perc_puebloOrig) +
+                               scale(dias_primerMuerte) +
+                               scale(perc_lenaCalefaccion) +
+                               scale(perc_menor_media)+
+                               scale(hr_anual) +
+                               offset(log(contagios_lag0_20)),
+                             data = df_modelo,
+                             na.action=na.omit)
+
+mod_region_cfr020 <- glmer.nb(covid_fallecidos ~ 
+                             mp25 +
+                             rm +
+                             scale(`15-44`) +  scale(`65+`) +
+                             scale(perc_vivHacMedio)+
+                             scale(perc_puebloOrig) +
+                             scale(dias_primerMuerte) +
+                             scale(perc_lenaCalefaccion) +
+                             scale(perc_menor_media)+
+                             scale(hr_anual) +
+                             (1|region)+
+                             offset(log(contagios_lag0_20)), 
+                           data = df_modelo,
+                           na.action=na.omit)
+
+## Random Zonas
+mod_zona_cfr020 <- glmer.nb(covid_fallecidos ~ 
+                           mp25 +
+                           rm +
+                           scale(`15-44`) +  scale(`65+`) +
+                           scale(perc_vivHacMedio)+
+                           scale(perc_puebloOrig) +
+                           scale(dias_primerMuerte) +
+                           scale(perc_lenaCalefaccion) +
+                           scale(perc_menor_media)+
+                           scale(hr_anual) +
+                           (1|zona)+
+                           offset(log(contagios_lag0_20)), 
+                         data = df_modelo,
+                         na.action=na.omit)
+
+## Random Zona Termica
+mod_zonaTermica_cfr020 <- glmer.nb(covid_fallecidos ~ 
+                                  mp25 +
+                                  rm +
+                                  scale(`15-44`) +  scale(`65+`) +
+                                  scale(perc_vivHacMedio)+
+                                  scale(perc_puebloOrig) +
+                                  scale(dias_primerMuerte) +
+                                  scale(perc_lenaCalefaccion) +
+                                  scale(perc_menor_media)+
+                                  scale(hr_anual) +
+                                  (1|zona_termica)+
+                                  offset(log(contagios_lag0_20)), 
+                                data = df_modelo,
+                                na.action=na.omit)
+
+## Cargo MRR del MP2.5 en mi Dataframe
+df_mrr <- data.frame()
+df_mrr <- rbind(df_mrr,cbind(data.frame(method="Base"), 
+                             f_MRR_mp25(mod_base)))
+df_mrr <- rbind(df_mrr,cbind(data.frame(method="MP2.5 Invierno"), 
+                             f_MRR_mp25(mod_mp25winter,param="mp25_winter")))
+df_mrr <- rbind(df_mrr,cbind(data.frame(method="Sin RM"), 
+                             f_MRR_mp25(mod_sinrm)))
+df_mrr <- rbind(df_mrr,cbind(data.frame(method="Solo RM"), 
+                             f_MRR_mp25(mod_rm)))
+df_mrr <- rbind(df_mrr,cbind(data.frame(method="Random Region"), 
+                             f_MRR_mp25(mod_region)))
+df_mrr <- rbind(df_mrr,cbind(data.frame(method="Random Zona"), 
+                             f_MRR_mp25(mod_zona)))
+df_mrr <- rbind(df_mrr,cbind(data.frame(method="Random Zona Termica"), 
+                             f_MRR_mp25(mod_zonaTermica)))
+## Add from excel
+df_coef_params$dependiente %>% unique()
+aux <- df_coef_params %>% 
+  filter(dependiente=="MR65" & term=="mp25" &
+           lena=="perc_lenaCalefaccion" & meteorologia=="hr_anual" &
+           socioeconomico=="perc_menor_media" & demografia=="perc_puebloOrig")
+df_mrr <- rbind(df_mrr,cbind(data.frame(method="Fallecidos 65+",
+                                        RR=aux$estimate,
+                                        lower_CI=aux$conf.low,
+                                        upper_CI=aux$conf.high)))
+aux <- df_coef_params %>% 
+  filter(dependiente=="MR75" & term=="mp25" &
+           lena=="perc_lenaCalefaccion" & meteorologia=="hr_anual" &
+           socioeconomico=="perc_menor_media" & demografia=="perc_puebloOrig")
+df_mrr <- rbind(df_mrr,cbind(data.frame(method="Fallecidos 75+",
+                                        RR=aux$estimate,
+                                        lower_CI=aux$conf.low,
+                                        upper_CI=aux$conf.high)))
+
+df_mrr <- df_mrr %>% mutate(endpoint="MR")
+
+
+## Let
+df_mrr_let <- data.frame()
+df_mrr_let <- rbind(df_mrr_let,cbind(data.frame(method="Base"), 
+                             f_MRR_mp25(mod_base_let)))
+df_mrr_let <- rbind(df_mrr_let,cbind(data.frame(method="MP2.5 Invierno"), 
+                             f_MRR_mp25(mod_mp25winter_let,param="mp25_winter")))
+df_mrr_let <- rbind(df_mrr_let,cbind(data.frame(method="Sin RM"), 
+                             f_MRR_mp25(mod_sinrm_let)))
+df_mrr_let <- rbind(df_mrr_let,cbind(data.frame(method="Solo RM"), 
+                             f_MRR_mp25(mod_rm_let)))
+df_mrr_let <- rbind(df_mrr_let,cbind(data.frame(method="Random Region"), 
+                             f_MRR_mp25(mod_region_let)))
+df_mrr_let <- rbind(df_mrr_let,cbind(data.frame(method="Random Zona"), 
+                             f_MRR_mp25(mod_zona_let)))
+df_mrr_let <- rbind(df_mrr_let,cbind(data.frame(method="Random Zona Termica"), 
+                             f_MRR_mp25(mod_zonaTermica_let)))
+df_mrr_let <- df_mrr_let %>% mutate(endpoint="LET")
+
+## CFR 0a20
+df_mrr_cfr020 <- data.frame()
+df_mrr_cfr020 <- rbind(df_mrr_cfr020,cbind(data.frame(method="Base"), 
+                                     f_MRR_mp25(mod_base_cfr020)))
+df_mrr_cfr020 <- rbind(df_mrr_cfr020,cbind(data.frame(method="MP2.5 Invierno"), 
+                                     f_MRR_mp25(mod_mp25winter_cfr020,param="mp25_winter")))
+df_mrr_cfr020 <- rbind(df_mrr_cfr020,cbind(data.frame(method="Sin RM"), 
+                                     f_MRR_mp25(mod_sinrm_cfr020)))
+df_mrr_cfr020 <- rbind(df_mrr_cfr020,cbind(data.frame(method="Solo RM"), 
+                                     f_MRR_mp25(mod_rm_cfr020)))
+df_mrr_cfr020 <- rbind(df_mrr_cfr020,cbind(data.frame(method="Random Region"), 
+                                     f_MRR_mp25(mod_region_cfr020)))
+df_mrr_cfr020 <- rbind(df_mrr_cfr020,cbind(data.frame(method="Random Zona"), 
+                                     f_MRR_mp25(mod_zona_cfr020)))
+df_mrr_cfr020 <- rbind(df_mrr_cfr020,cbind(data.frame(method="Random Zona Termica"), 
+                                     f_MRR_mp25(mod_zonaTermica_cfr020)))
+df_mrr_cfr020 <- df_mrr_cfr020 %>% mutate(endpoint="CFR 0-20")
+
+
+df_mrr_all <- rbind(df_mrr,df_mrr_let,df_mrr_cfr020) %>% 
+  mutate(endpoint=factor(endpoint, levels=c("MR","LET","CFR 0-20")),
+         method=factor(method, levels=c("Base", "MP2.5 Invierno",
+                                        "Solo RM","Sin RM","Random Region",
+                                        "Random Zona","Random Zona Termica",
+                                        "Fallecidos 65+", "Fallecidos 75+")))
+
+## Figure MRR --------
+df_mrr_all %>% 
+  rowid_to_column() %>% 
+  ggplot(aes(x=fct_rev(method), y=RR))+
+  geom_point(size=2, alpha=.5)+
+  geom_errorbar(aes(ymin=lower_CI, ymax=upper_CI))+
+  geom_hline(yintercept = 1, linetype = "dashed")+
+  facet_wrap(~endpoint)+
+  labs(x="",y="MRR MP2.5")+
+  scale_y_continuous(labels = function(x) format(x, big.mark = " ",scientific = FALSE))+
+  coord_flip()
+f_savePlot(last_plot(), sprintf(file_name,"resumenMRR_mp25"),dpi=150)
+
+
+## IDEM pero para variable de leña
+## Cargo MRR del MP2.5 en mi Dataframe
+df_mrr <- data.frame()
+df_mrr <- rbind(df_mrr,cbind(data.frame(method="Base"), 
+                             f_MRR_mp25(mod_base,"scale(perc_lenaCalefaccion)")))
+df_mrr <- rbind(df_mrr,cbind(data.frame(method="Sin RM"), 
+                             f_MRR_mp25(mod_sinrm, "scale(perc_lenaCalefaccion)")))
+df_mrr <- rbind(df_mrr,cbind(data.frame(method="Solo RM"), 
+                             f_MRR_mp25(mod_rm, "scale(perc_lenaCalefaccion)")))
+df_mrr <- rbind(df_mrr,cbind(data.frame(method="Random Region"), 
+                             f_MRR_mp25(mod_region, "scale(perc_lenaCalefaccion)")))
+df_mrr <- rbind(df_mrr,cbind(data.frame(method="Random Zona"), 
+                             f_MRR_mp25(mod_zona, "scale(perc_lenaCalefaccion)")))
+df_mrr <- rbind(df_mrr,cbind(data.frame(method="Random Zona Termica"), 
+                             f_MRR_mp25(mod_zonaTermica, "scale(perc_lenaCalefaccion)")))
+## Add from excel
+df_coef_params$dependiente %>% unique()
+aux <- df_coef_params %>% 
+  filter(dependiente=="MR65" & term=="scale(perc_lenaCalefaccion)" &
+           lena=="perc_lenaCalefaccion" & meteorologia=="hr_anual" &
+           socioeconomico=="perc_menor_media" & demografia=="perc_puebloOrig")
+df_mrr <- rbind(df_mrr,cbind(data.frame(method="Fallecidos 65+",
+                                        RR=aux$estimate,
+                                        lower_CI=aux$conf.low,
+                                        upper_CI=aux$conf.high)))
+aux <- df_coef_params %>% 
+  filter(dependiente=="MR75" & term=="scale(perc_lenaCalefaccion)" &
+           lena=="perc_lenaCalefaccion" & meteorologia=="hr_anual" &
+           socioeconomico=="perc_menor_media" & demografia=="perc_puebloOrig")
+df_mrr <- rbind(df_mrr,cbind(data.frame(method="Fallecidos 75+",
+                                        RR=aux$estimate,
+                                        lower_CI=aux$conf.low,
+                                        upper_CI=aux$conf.high)))
+
+df_mrr <- df_mrr %>% mutate(endpoint="MR")
+
+
+## Let
+df_mrr_let <- data.frame()
+df_mrr_let <- rbind(df_mrr_let,cbind(data.frame(method="Base"), 
+                                     f_MRR_mp25(mod_base_let, "scale(perc_lenaCalefaccion)")))
+df_mrr_let <- rbind(df_mrr_let,cbind(data.frame(method="Sin RM"), 
+                                     f_MRR_mp25(mod_sinrm_let, "scale(perc_lenaCalefaccion)")))
+df_mrr_let <- rbind(df_mrr_let,cbind(data.frame(method="Solo RM"), 
+                                     f_MRR_mp25(mod_rm_let, "scale(perc_lenaCalefaccion)")))
+df_mrr_let <- rbind(df_mrr_let,cbind(data.frame(method="Random Region"), 
+                                     f_MRR_mp25(mod_region_let, "scale(perc_lenaCalefaccion)")))
+df_mrr_let <- rbind(df_mrr_let,cbind(data.frame(method="Random Zona"), 
+                                     f_MRR_mp25(mod_zona_let, "scale(perc_lenaCalefaccion)")))
+df_mrr_let <- rbind(df_mrr_let,cbind(data.frame(method="Random Zona Termica"), 
+                                     f_MRR_mp25(mod_zonaTermica_let, "scale(perc_lenaCalefaccion)")))
+df_mrr_let <- df_mrr_let %>% mutate(endpoint="LET")
+
+## CFR 0a20
+df_mrr_cfr020 <- data.frame()
+df_mrr_cfr020 <- rbind(df_mrr_cfr020,cbind(data.frame(method="Base"), 
+                                           f_MRR_mp25(mod_base_cfr020, "scale(perc_lenaCalefaccion)")))
+df_mrr_cfr020 <- rbind(df_mrr_cfr020,cbind(data.frame(method="Sin RM"), 
+                                           f_MRR_mp25(mod_sinrm_cfr020, "scale(perc_lenaCalefaccion)")))
+df_mrr_cfr020 <- rbind(df_mrr_cfr020,cbind(data.frame(method="Solo RM"), 
+                                           f_MRR_mp25(mod_rm_cfr020, "scale(perc_lenaCalefaccion)")))
+df_mrr_cfr020 <- rbind(df_mrr_cfr020,cbind(data.frame(method="Random Region"), 
+                                           f_MRR_mp25(mod_region_cfr020, "scale(perc_lenaCalefaccion)")))
+df_mrr_cfr020 <- rbind(df_mrr_cfr020,cbind(data.frame(method="Random Zona"), 
+                                           f_MRR_mp25(mod_zona_cfr020, "scale(perc_lenaCalefaccion)")))
+df_mrr_cfr020 <- rbind(df_mrr_cfr020,cbind(data.frame(method="Random Zona Termica"), 
+                                           f_MRR_mp25(mod_zonaTermica_cfr020, "scale(perc_lenaCalefaccion)")))
+df_mrr_cfr020 <- df_mrr_cfr020 %>% mutate(endpoint="CFR 0-20")
+
+
+df_mrr_all <- rbind(df_mrr,df_mrr_let,df_mrr_cfr020) %>% 
+  mutate(endpoint=factor(endpoint, levels=c("MR","LET","CFR 0-20")),
+         method=factor(method, levels=c("Base",
+                                        "Solo RM","Sin RM","Random Region",
+                                        "Random Zona","Random Zona Termica",
+                                        "Fallecidos 65+", "Fallecidos 75+")))
+
+## Figure MRR --------
+df_mrr_all %>% 
+  rowid_to_column() %>% 
+  ggplot(aes(x=fct_rev(method), y=RR))+
+  geom_point(size=2, alpha=.5)+
+  geom_errorbar(aes(ymin=lower_CI, ymax=upper_CI))+
+  geom_hline(yintercept = 1, linetype = "dashed")+
+  facet_wrap(~endpoint)+
+  labs(x="",y="% Uso leña como combustible principal en Calefacción")+
+  scale_y_continuous(labels = function(x) format(x, big.mark = " ",scientific = FALSE))+
+  coord_flip()
+f_savePlot(last_plot(), sprintf(file_name,"resumenMRR_lena"),dpi=150)
 
 ## EoF

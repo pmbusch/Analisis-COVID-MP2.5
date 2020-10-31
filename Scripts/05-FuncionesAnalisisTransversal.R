@@ -169,9 +169,9 @@ f_MRR_mp25 <- function(mod, param="mp25"){
              filter(parametro==param),
            low=ci[,2] %>% unlist(), high=ci[,3] %>% unlist(), ci=NULL)
   
-  est_mrr <- est %>% mutate(RR=exp(coef) %>% round(2), 
-                            lower_CI=exp(low) %>% round(2), 
-                            upper_CI=exp(high) %>% round(2)) %>% 
+  est_mrr <- est %>% mutate(RR=exp(coef) %>% round(4), 
+                            lower_CI=exp(low) %>% round(4), 
+                            upper_CI=exp(high) %>% round(4)) %>% 
     dplyr::select(RR, lower_CI, upper_CI)
   return(est_mrr)
 }

@@ -438,7 +438,7 @@ mod_region <- glmer.nb(covid_fallecidos ~
                          scale(perc_vivHacMedio)+
                          scale(hr_anual) +
                          scale(heating_degree_15_winter) +
-                         (1|zona)+
+                         (1|region)+
                          offset(log(poblacion)), 
                        data = df_modelo,
                        na.action=na.omit)
