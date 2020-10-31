@@ -66,4 +66,35 @@ f_savePlot(p1,sprintf(file_name, "CFR_vs_MP25"), dpi=300)
 # p1+geom_text_repel(aes(label=nombre_comuna))
 # f_savePlot(last_plot(),sprintf(file_name, "CFR_vs_MP25_name"), dpi=300)
 rm(p1)
+
+## Correlacion Leña ----------
+p1 <- df_modelo %>% 
+  mutate(nombre_comuna=if_else(poblacion>1e5|tasa_mortalidad_covid>200,
+                               nombre_comuna,"")) %>% #Label solo pob mayor a 100 mil
+  ggplot(aes(perc_lenaCalefaccion, tasa_mortalidad_covid, size=poblacion, col=rm))+
+  geom_point(alpha=.5)+
+  scale_size(labels=function(x) format(x,big.mark = " ", digits=0, scientific = F))+
+  labs(x="% Uso leña como combustible principal en Calefacción", 
+       y="Tasa Mortalidad COVID [muertes/100mil hab]",
+       size="Poblacion",
+       color="")
+p1+geom_text_repel(aes(label=nombre_comuna))
+f_savePlot(last_plot(),
+           sprintf(file_name, "Muertes_vs_Lena_name"), dpi=150)
+
+
+p1 <- df_modelo %>% 
+  mutate(nombre_comuna=if_else(poblacion>1e5|tasa_mortalidad_covid>200,
+                               nombre_comuna,"")) %>% #Label solo pob mayor a 100 mil
+  ggplot(aes(cons_lena_kg, tasa_mortalidad_covid, size=poblacion, col=rm))+
+  geom_point(alpha=.5)+
+  scale_size(labels=function(x) format(x,big.mark = " ", digits=0, scientific = F))+
+  labs(x="Consumo anual leña Casen 2013 [kg]", 
+       y="Tasa Mortalidad COVID [muertes/100mil hab]",
+       size="Poblacion",
+       color="")
+p1+geom_text_repel(aes(label=nombre_comuna))
+f_savePlot(last_plot(),
+           sprintf(file_name, "Muertes_vs_LenaCons_name"), dpi=150)
+
 ## EoF

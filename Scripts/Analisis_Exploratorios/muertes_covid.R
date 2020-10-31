@@ -203,6 +203,7 @@ f_savePlot(last_plot(), sprintf(file_name,"nuevasMuertes",dpi=300))
 rm(df_muertes_tiempo)
 
 # Idem contagios nuevos -----------
+url <- "https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output"
 df_casos <- read_csv(paste(url,"producto1","Covid-19_std.csv", sep="/"))
 names(df_casos) <- names(df_casos) %>% str_to_lower() %>% str_replace_all(" ","_")
 df_casos <- df_casos %>% na.omit() # limpio NA
@@ -258,6 +259,35 @@ df_casos_tiempo %>%
         panel.grid.minor = element_blank(),
         axis.text.y = element_text(size=4))
 f_savePlot(last_plot(), sprintf(file_name,"nuevosContagios",dpi=900))
+
+
+## Serie tiempo region casos -------------
+# Añado promedio nacional
+df_casos_nacional <- df_casos_tiempo %>%
+  group_by(fecha) %>% 
+  summarise(tasa_contagios_covid=sum(casos_confirmados,na.rm=T)/
+              sum(poblacion,na.rm=T)*1e5) %>% ungroup() %>% 
+  mutate(region="Nacional")
+
+df_casos_region <- df_casos_tiempo %>%
+  select(codigo_comuna, fecha, casos_confirmados, poblacion) %>% 
+  left_join(mapa_comuna) %>% 
+  group_by(region, fecha) %>% 
+  summarise(tasa_contagios_covid=sum(casos_confirmados,na.rm=T)/
+              sum(poblacion,na.rm=T)*1e5) %>% ungroup() %>% 
+  rbind(df_casos_nacional)
+
+df_casos_region %>% 
+  filter(!is.na(region)) %>% 
+  ggplot(aes(x=fecha, y=tasa_contagios_covid))+
+  geom_line()+
+  # facet_grid(region~., scales = "free", space="free")
+  facet_wrap(~region)+
+  labs(x="", y="Tasa Contagios COVID [por 100mil]")+
+  theme(axis.text.x = element_text(angle = 90))
+f_savePlot(last_plot(), sprintf(file_name,"SerieTiempoCasosRegion"))
+
+rm(df_casos_region, df_casos_nacional)
 
 
 ## EoF
