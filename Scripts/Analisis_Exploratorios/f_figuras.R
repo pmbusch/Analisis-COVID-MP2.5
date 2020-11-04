@@ -91,6 +91,76 @@ fig_mapaChile_facet <- function(df, val, facets=NULL, limites=NULL,
 }
 
 
+## Figura con zoom a partes de Chile de mayor interes
+# Considera 4 zonas: Norte, Centro, Sur y Austral
+# Utiliza como base la funcion de fig_mapa
+# Additional feature: ubicacion monitores
+fig_mapaChile_facet_monitor <- function(df, val, monitor, facets=NULL, limites=NULL, 
+                                titulo="", fileName=NULL){
+  
+  # Creo las zonas, en base a las regiones
+  df <- df %>% mutate(zona_facet=case_when(
+    codigo_region %in% c("15","01","02","03","04") ~ "Norte",
+    codigo_region %in% c("05","13","06","07") ~ "Centro",
+    codigo_region %in% c("08","16","09","14") ~ "Sur",
+    codigo_region %in% c("10","11","12") ~ "Austral") %>% factor())
+  
+  monitor <- monitor %>% mutate(zona_facet=case_when(
+    codigo_region %in% c("15","01","02","03","04") ~ "Norte",
+    codigo_region %in% c("05","13","06","07") ~ "Centro",
+    codigo_region %in% c("08","16","09","14") ~ "Sur",
+    codigo_region %in% c("10","11","12") ~ "Austral") %>% factor())
+  
+  # Creo los graficos, con coordenadas fijas para cada zona (mejora la estetica)
+  p1 <- df %>% filter(zona_facet=="Norte") %>% 
+    fig_mapa({{val}}, facets={{facets}}, limites = limites, lwd=0.01,titulo=titulo)+
+    geom_sf(data=monitor, aes(geometry=geometry), shape=4)+
+    labs(title="Norte",subtitle = "Arica a Coquimbo")+
+    theme(legend.position = "none")+
+    coord_sf(xlim = c(-72, -66.5), ylim = c(-32.5, -17.5),datum = NA,expand=F)
+  p2 <- df %>% filter(zona_facet=="Centro") %>% 
+    fig_mapa({{val}}, facets={{facets}}, limites = limites, lwd=0.01,titulo=titulo)+
+    geom_sf(data=monitor, aes(geometry=geometry), shape=4)+
+    labs(title="Centro",subtitle = "RM-V a Talca")+
+    coord_sf(xlim = c(-73, -69.5), ylim = c(-37, -32),datum = NA, expand=F)
+  p3 <- df %>% filter(zona_facet=="Sur") %>% 
+    fig_mapa({{val}}, facets={{facets}}, limites = limites, lwd=0.01,titulo=titulo)+
+    geom_sf(data=monitor, aes(geometry=geometry), shape=4)+
+    labs(title="Sur",subtitle = "Biobio a Los Rios")+
+    theme(legend.position = "none")+
+    coord_sf(xlim = c(-74, -70.5), ylim = c(-41, -36),datum = NA,expand=F)
+  p4 <- df %>% filter(zona_facet=="Austral") %>% 
+    fig_mapa({{val}}, facets={{facets}}, limites = limites, lwd=0.01,titulo=titulo)+
+    geom_sf(data=monitor, aes(geometry=geometry), shape=4)+
+    labs(title="Austral",subtitle = "Pto Montt a Punta Arenas")+
+    theme(legend.position = "none")+
+    coord_sf(xlim = c(-76, -66), ylim = c(-56, -40),datum = NA,expand=F)
+  
+  p_region <- mapa_regiones %>% 
+    left_join(df %>% select(codigo_region, zona_facet) %>% unique()) %>% 
+    ggplot()+
+    geom_sf(aes(geometry=geometry, fill=zona_facet),alpha=.3)+
+    scale_fill_viridis_d(option = "inferno")+
+    coord_sf(xlim=c(-76,-66), ylim=c(-56, -17.5), datum = NA,expand=F)+
+    theme_minimal(base_size = 14)+
+    theme(legend.position = "none")
+  
+  # Nota: alineacion de la leyenda fue dificil, solucion heuristica actual es buena
+  p <- (p1|p2)/(p3|p4)+plot_layout(guide="auto")&
+    theme(plot.subtitle = element_text(size=8))
+  
+  # best solution so far to include mapa chile completo
+  p <- plot_spacer()|p_region|p
+  
+  # Guardo
+  if (!is.null(fileName)){
+    f_savePlot(p,fileName, dpi=300)
+  }
+  p
+}
+
+
+
 ## SCATTER COMUNA -----------
 # Funcion para graficar en puntos valores de comuna
 # Se ordena segun geografia de las regiones y latitud de las comunas

@@ -142,6 +142,23 @@ fig_mapaChile_facet(df_mp, mp25, limites=c(0,50),
 f_savePlot(last_plot(),
            file_path =sprintf(file_name,"MapaChileMP25Facet_Exp"),dpi=300)
 
+# Mapa monitores
+df_dist$dist %>% range()
+df_dist %>% names()
+estaciones <- df_dist %>% group_by(site) %>% 
+  summarise(count=n()) %>% ungroup() %>% 
+  left_join(df_dist, by=c("site"))
+
+ggplot(df_dist)+
+  geom_sf(aes(geometry=geometry), shape=4)
+
+fig_mapaChile_facet_monitor(df_mp, mp25, df_dist,
+                    limites=c(0,50),
+                    titulo = "Promedio 2017-2019 \n MP2.5 [ug/m3]")
+f_savePlot(last_plot(),
+           file_path =sprintf(file_name,"MapaChileMP25Facet_ExpMonitor"),dpi=300)
+
+
 # Santiago
 df_mp %>% 
   filter(mapa_rm==1) %>% 
