@@ -133,7 +133,7 @@ mod_sinRM <- glm.nb(covid_fallecidos ~
                         scale(hr_anual) +
                         scale(heating_degree_15_winter) +
                         offset(log(poblacion)), 
-                      data = df_modelo %>% filter(region!="M"),
+                      data = df_modelo %>% filter(region!="Metropolitana"),
                       na.action=na.omit)
 summary(mod_sinRM)
 nobs(mod_sinRM)
@@ -159,7 +159,7 @@ mod_RM <- glm.nb(covid_fallecidos ~
                    scale(hr_anual) +
                    scale(heating_degree_15_winter)+
                    offset(log(poblacion)),
-                 data = df_modelo %>% filter(region=="M"),
+                 data = df_modelo %>% filter(region=="Metropolitana"),
                       na.action=na.omit)
 summary(mod_RM)
 nobs(mod_RM)
@@ -183,7 +183,7 @@ mod_sinRM_sign <- glm.nb(covid_fallecidos ~
                            scale(hr_anual) +
                            scale(heating_degree_15_winter) +
                            offset(log(poblacion)), 
-                         data = df_modelo %>% filter(region!="M"),
+                         data = df_modelo %>% filter(region!="Metropolitana"),
                          na.action=na.omit)
 summary(mod_sinRM_sign)
 nobs(mod_sinRM_sign)
@@ -205,7 +205,7 @@ mod_RM_sign <- glm.nb(covid_fallecidos ~
                         scale(hr_anual) +
                         scale(heating_degree_15_winter) +
                         offset(log(poblacion)),
-                      data = df_modelo %>% filter(region=="M"),
+                      data = df_modelo %>% filter(region=="Metropolitana"),
                       na.action=na.omit)
 summary(mod_RM_sign)
 nobs(mod_RM_sign)
@@ -767,7 +767,7 @@ mod_letalidad_sign_Sinrm <- glm.nb(covid_fallecidos ~
                                      scale(hr_anual) +
                                      scale(heating_degree_15_winter) +
                                      offset(log(casos_confirmados)),
-                                   data = df_modelo %>% filter(region!="M"),
+                                   data = df_modelo %>% filter(region!="Metropolitana"),
                                    na.action=na.omit)
 summary(mod_letalidad_sign_Sinrm)
 nobs(mod_letalidad_sign_Sinrm)
@@ -789,7 +789,7 @@ mod_letalidad_sign_rm <- glm.nb(covid_fallecidos ~
                                   scale(hr_anual) +
                                   scale(heating_degree_15_winter) +
                                   offset(log(casos_confirmados)),
-                                data = df_modelo %>% filter(region=="M"),
+                                data = df_modelo %>% filter(region=="Metropolitana"),
                                 na.action=na.omit)
 summary(mod_letalidad_sign_rm)
 nobs(mod_letalidad_sign_rm)
