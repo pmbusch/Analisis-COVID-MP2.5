@@ -29,7 +29,7 @@ p1+geom_smooth(method = "lm", col="black")
 p1+geom_smooth(method = "lm")
 p1+geom_smooth(method = "lm",se=F, aes(col=region), data=df_modelo)
 p1+geom_smooth(method = "lm",se=F, aes(col=rm), 
-               data=df_modelo %>% mutate(rm=if_else(region=="M","RM","Resto Chile") %>% factor()))
+               data=df_modelo)
 
 
 # Interactive plot
@@ -69,6 +69,7 @@ rm(p1)
 
 ## Correlacion Leña ----------
 p1 <- df_modelo %>% 
+  filter(!is.na(mp25)) %>% 
   mutate(nombre_comuna=if_else(poblacion>1e5|tasa_mortalidad_covid>200,
                                nombre_comuna,"")) %>% #Label solo pob mayor a 100 mil
   ggplot(aes(perc_lenaCalefaccion, tasa_mortalidad_covid, size=poblacion, col=rm))+
@@ -84,12 +85,13 @@ f_savePlot(last_plot(),
 
 
 p1 <- df_modelo %>% 
+  filter(!is.na(mp25)) %>% 
   mutate(nombre_comuna=if_else(poblacion>1e5|tasa_mortalidad_covid>200,
                                nombre_comuna,"")) %>% #Label solo pob mayor a 100 mil
   ggplot(aes(cons_lena_kg, tasa_mortalidad_covid, size=poblacion, col=rm))+
   geom_point(alpha=.5)+
   scale_size(labels=function(x) format(x,big.mark = " ", digits=0, scientific = F))+
-  labs(x="Consumo anual leña Casen 2013 [kg]", 
+  labs(x="Consumo anual leña Casen 2013 [kg/hogar]", 
        y="Tasa Mortalidad COVID [muertes/100mil hab]",
        size="Poblacion",
        color="")

@@ -4,12 +4,12 @@
 ## PBH Septiembre 2020
 
 theme_set(theme_bw(16)+theme(panel.grid.major = element_blank()))
-source("Scripts/Aggregate_Data/poblacion_agg.R", encoding = "UTF-8")
+# source("Scripts/Aggregate_Data/poblacion_agg.R", encoding = "UTF-8")
 print_ggplot <- F
 
 ## Load Data ------------
 # Muertes -----
-source("Scripts/Aggregate_Data/covidMuertes_agg.R", encoding = "UTF-8")
+# source("Scripts/Aggregate_Data/covidMuertes_agg.R", encoding = "UTF-8")
 
 # Remuevo edad y sexo
 df_deis_edad <- df_deis_tiempo %>% 
@@ -322,7 +322,8 @@ comunas <- df_covid_tiempo %>%
   arrange(region, nombre_comuna) %>% 
   filter(!(nombre_comuna %in% c("Chile Chico","Vichuquen",
                                 "Chonchi","Futaleufu", "Antuco",
-                                "Curaco de Velez"))) %>% # Comunas con error
+                                "Curaco de Velez","Guaitecas",
+                                "Rio Ibanez"))) %>% # Comunas con error
   pull(nombre_comuna) %>% unique()
 df_covid_tiempo_c <- df_covid_tiempo %>% left_join(codigos_territoriales)
 
