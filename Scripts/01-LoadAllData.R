@@ -39,7 +39,7 @@ df_modelo <- df_poblacion %>%
   left_join(df_conc, by=c("codigo_comuna")) %>% 
   left_join(df_camas, by=c("codigo_comuna")) %>% 
   left_join(df_casos ,by=c("codigo_comuna")) %>% 
-  left_join(cfr_comunas ,by=c("codigo_comuna")) %>% 
+  left_join(cfr_comunas ,by=c("codigo_comuna")) %>%
   left_join(df_cuarentena, by=c("codigo_comuna")) %>% 
   left_join(df_meteo, by=c("codigo_comuna")) %>% 
   left_join(df_casen, by=c("codigo_comuna")) %>% 

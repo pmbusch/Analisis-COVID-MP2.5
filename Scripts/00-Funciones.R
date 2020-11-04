@@ -193,7 +193,7 @@ f_replaceVar <- function(variable_orig){
       variable_orig== "perc_menor_media"~ "% Educación menor a media",
       variable_orig== "perc_ocupado"~ "% Ocupado laboral",
       variable_orig=="consumo_lena_m3" ~" Consumo regional leña CDT",
-      variable_orig=="cons_lena_kg" ~" Consumo anual leña Casen 2013 [kg]",
+      variable_orig=="cons_lena_kg" ~" Consumo anual leña Casen 2013 [kg/hogar]",
       variable_orig=="cons_lena_urbana" ~ "Consumo leña urbana 2018 [MWh]",
       variable_orig=="pda" ~ "Comuna con PDA",
       variable_orig== "cons_lena_calefactor_pp"~ "Consumo anual leña calefactor [kWh per cápita]",

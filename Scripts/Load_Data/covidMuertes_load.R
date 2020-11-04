@@ -43,16 +43,16 @@ rm(url)
 #       exdir = "Data/Data_Original/DEIS")
 
 # lectura
-fecha_deis <- "22-10-2020"
+fecha_deis <- "29-10-2020"
 df_deis <- read_delim(paste(
   "Data/Data_Original/DEIS/DEFUNCIONES_FUENTE_DEIS_2016_2020_",
-  "20202210",".csv",sep=""),
+  fecha_deis %>% str_remove_all("-"),".csv",sep=""),
                  delim = ";",col_names = T,
-                 col_types = "Dcddccccccccccccccccccccc",
+                 col_types = "dDcddccccccccccccccccccccc",
                  locale = locale(encoding = "windows-1252",
-                                 date_format = "%d-%m-%Y"))
+                                 date_format = "%Y-%m-%d"))
 spec(df_deis)
-names(df_deis) <- c("date","sexo","edad_tipo","edad",
+names(df_deis) <- c("year","date","sexo","edad_tipo","edad",
                     "codigo_comuna","comuna","region",
                     "diag1","cap_diag1","glosa_cap_diag1",
                     "grupo_diag1","glosa_grupo_diag1",
@@ -65,7 +65,8 @@ names(df_deis) <- c("date","sexo","edad_tipo","edad",
                     # "causa_cie10","causa","cap_cie10","capitulo")
 
 ## Add year: antes estaba y lo borarron, como cambian el formato semana a semana....
-df_deis <- df_deis %>% mutate(year=year(date))
+## Volvieron a agregarlo, les gusta cambiar el formato cada vez....
+# df_deis <- df_deis %>% mutate(year=year(date))
 
 # Cruzar con comunas
 df_deis <- df_deis %>% filter(codigo_comuna!="99999") %>% 
