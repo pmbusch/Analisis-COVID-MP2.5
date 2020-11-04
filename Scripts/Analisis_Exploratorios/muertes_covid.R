@@ -42,8 +42,21 @@ df_muertes %>% left_join(mapa_comuna) %>%
            titulo= "Tasa Mortalidad Covid \n [muertes/100mil hab]")
 f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaSantiagoCOVID"), dpi=100)
 
+## Mapa CFR -------
+load(".RData")
+df_modelo$perc_letalidad %>% range(na.rm=T) # rango para los graficos
+# Chile
+df_modelo %>%
+  fig_mapa(perc_letalidad, lwd=0.01,limites=c(0,12.5), 
+           titulo="% CFR Covid \n [muertes/casos]")
+f_savePlot(last_plot(), 
+           file_path = sprintf(file_name,"MapaChileCOVIDCFR"),dpi = 300)
 
-
+# Chile Facet
+df_modelo %>% 
+  fig_mapaChile_facet(perc_letalidad,limites=c(0,12.5),
+                      titulo="% CFR Covid \n [muertes/casos]")
+f_savePlot(last_plot(), file_path = sprintf(file_name,"MapaChileCOVIDFacetCFR"),dpi = 300)
 
 
 ## DATOS DEIS ----------
@@ -116,6 +129,14 @@ df_muertes_nacional <- df_muertes_tiempo %>%
 df_muertes_region <- df_muertes_tiempo %>%
   select(codigo_comuna, date, muertes_acc, poblacion) %>% 
   left_join(mapa_comuna) %>% 
+  left_join(codigos_territoriales) %>% 
+  mutate(region_num=region,
+         region=nombre_region %>% 
+           str_remove_all("Libertador General Bernardo | del General Carlos Ibanez del Campo| y de la Antartica Chilena| de Santiago| y Parinacota") %>% 
+           factor(levels=c("Arica","Tarapaca","Antofagasta","Atacama","Coquimbo",
+                           "Valparaiso","Metropolitana","OHiggins","Maule",
+                           "Biobio","Nuble","La Araucania","Los Rios","Los Lagos","Aysen",
+                           "Magallanes"))) %>% 
   group_by(region, date) %>% 
   summarise(tasa_mortalidad_covid=sum(muertes_acc,na.rm=T)/
               sum(poblacion,na.rm=T)*1e5) %>% ungroup() %>% 
@@ -146,6 +167,14 @@ df_muertes_region_edad <- df_deis_tiempo %>%
   select(codigo_comuna, date,grupo_edad, muertes_acc, poblacion) %>%
   left_join(mapa_comuna) %>%
   group_by(region, date,grupo_edad) %>%
+  left_join(codigos_territoriales) %>% 
+  mutate(region_num=region,
+         region=nombre_region %>% 
+           str_remove_all("Libertador General Bernardo | del General Carlos Ibanez del Campo| y de la Antartica Chilena| de Santiago| y Parinacota") %>% 
+           factor(levels=c("Arica","Tarapaca","Antofagasta","Atacama","Coquimbo",
+                           "Valparaiso","Metropolitana","OHiggins","Maule",
+                           "Biobio","Nuble","La Araucania","Los Rios","Los Lagos","Aysen",
+                           "Magallanes"))) %>% 
   summarise(tasa_mortalidad_covid=sum(muertes_acc,na.rm=T)/
               sum(poblacion,na.rm=T)*1e5) %>% ungroup() %>%
   rbind(df_muertes_nacional_edad)
@@ -272,6 +301,14 @@ df_casos_nacional <- df_casos_tiempo %>%
 df_casos_region <- df_casos_tiempo %>%
   select(codigo_comuna, fecha, casos_confirmados, poblacion) %>% 
   left_join(mapa_comuna) %>% 
+  left_join(codigos_territoriales) %>% 
+  mutate(region_num=region,
+         region=nombre_region %>% 
+           str_remove_all("Libertador General Bernardo | del General Carlos Ibanez del Campo| y de la Antartica Chilena| de Santiago| y Parinacota") %>% 
+           factor(levels=c("Arica","Tarapaca","Antofagasta","Atacama","Coquimbo",
+                           "Valparaiso","Metropolitana","OHiggins","Maule",
+                           "Biobio","Nuble","La Araucania","Los Rios","Los Lagos","Aysen",
+                           "Magallanes"))) %>% 
   group_by(region, fecha) %>% 
   summarise(tasa_contagios_covid=sum(casos_confirmados,na.rm=T)/
               sum(poblacion,na.rm=T)*1e5) %>% ungroup() %>% 

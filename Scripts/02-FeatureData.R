@@ -36,6 +36,19 @@ df_modelo <- df_modelo %>%
 df_modelo <- df_modelo %>% 
   mutate(rm=if_else(region=="M","RM","Resto Chile"))
 
+## Nombres regiones para output
+df_modelo$nombre_region %>% unique()
+df_modelo <- df_modelo %>% 
+  mutate(region_num=region,
+         region=nombre_region %>% 
+           str_remove_all("Libertador General Bernardo | del General Carlos Ibanez del Campo| y de la Antartica Chilena| de Santiago| y Parinacota") %>% 
+           factor(levels=c("Arica","Tarapaca","Antofagasta","Atacama","Coquimbo",
+                         "Valparaiso","Metropolitana","OHiggins","Maule",
+                         "Biobio","Nuble","La Araucania","Los Rios","Los Lagos","Aysen",
+                         "Magallanes")))
+df_modelo$region %>% unique()
+
+
 ## Densidad Poblacion en quintiles ------------
 df_modelo <- df_modelo %>% mutate(quintil_dens_pob=qgroup(densidad_pob, 5))
 df_modelo %>% group_by(quintil_dens_pob) %>% 

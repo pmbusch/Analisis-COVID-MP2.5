@@ -126,8 +126,8 @@ df_skim %>%
   flextable::border(j=2:7, part="body",i=c(8,10,14,24,34),
          border.bottom = officer::fp_border(style = "solid", width=2)) %>%
   footnote(j=4, value=as_paragraph("Coeficiente Variación"), 
-           part="header", inline=T) %>% 
-  print(preview="docx")
+           part="header", inline=T)
+  # print(preview="docx")
   # print(preview="pptx")
 
 rm(df_skim, df)
