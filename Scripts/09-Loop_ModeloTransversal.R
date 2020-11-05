@@ -429,6 +429,69 @@ df_coef_params %>%
         plot.caption = element_text(size=10, lineheight=.5))
 
 
+## Tabla Resumen PPT modelos principales ----------
+url <- "Data/Data_Modelo/Loop/"
+## Pruebas concretas
+modelo_mr <- read_rds(paste(url, "mod-MR-Sperc_menor_media-Dperc_puebloOrig-Lperc_lenaCalefaccion-Mhr_anual.rsd", sep="")); summary(modelo_mr)
+modelo_mr65 <- read_rds(paste(url, "mod-MR65-Sperc_menor_media-Dperc_puebloOrig-Lperc_lenaCalefaccion-Mhr_anual.rsd", sep="")); summary(modelo_mr65)
+modelo_mr75 <- read_rds(paste(url, "mod-MR75-Sperc_menor_media-Dperc_puebloOrig-Lperc_lenaCalefaccion-Mhr_anual.rsd", sep="")); summary(modelo_mr75)
+modelo_cfr <- read_rds(paste(url, "mod-CFR-Sperc_menor_media-Dperc_puebloOrig-Lperc_lenaCalefaccion-Mhr_anual.rsd", sep="")); summary(modelo_cfr)
+
+# MP2.5
+df_mrr_mp <- data.frame()
+df_mrr_mp <- rbind(df_mrr_mp,cbind(data.frame(Endpoint="TMR (all)"), 
+                                 f_MRR_mp25(modelo_mr)))
+df_mrr_mp <- rbind(df_mrr_mp,cbind(data.frame(Endpoint="TMR (65+)"), 
+                             f_MRR_mp25(modelo_mr65)))
+df_mrr_mp <- rbind(df_mrr_mp,cbind(data.frame(Endpoint="TMR (75+)"), 
+                             f_MRR_mp25(modelo_mr75)))
+df_mrr_mp <- rbind(df_mrr_mp,cbind(data.frame(Endpoint="CFR (all)"), 
+                             f_MRR_mp25(modelo_cfr)))
+df_mrr_mp <- df_mrr_mp %>% mutate(Variable="MP2.5 2017-2019 [ug/m3]")
+
+# Lena
+df_mrr_lena <- data.frame()
+df_mrr_lena <- rbind(df_mrr_lena,cbind(data.frame(Endpoint="TMR (all)"), 
+                                   f_MRR_mp25(modelo_mr, "scale(perc_lenaCalefaccion)")))
+df_mrr_lena <- rbind(df_mrr_lena,cbind(data.frame(Endpoint="TMR (65+)"), 
+                                   f_MRR_mp25(modelo_mr65,"scale(perc_lenaCalefaccion)")))
+df_mrr_lena <- rbind(df_mrr_lena,cbind(data.frame(Endpoint="TMR (75+)"), 
+                                   f_MRR_mp25(modelo_mr75,"scale(perc_lenaCalefaccion)")))
+df_mrr_lena <- rbind(df_mrr_lena,cbind(data.frame(Endpoint="CFR (all)"), 
+                                   f_MRR_mp25(modelo_cfr,"scale(perc_lenaCalefaccion)")))
+df_mrr_lena <- df_mrr_lena %>% mutate(Variable="% Leña Calefacción")
+
+df_mrr <- rbind(df_mrr_mp, df_mrr_lena)
+
+## Add sign codes
+df_mrr <- df_mrr %>%
+  mutate(`Sign.`=c("**","***","***"," ",
+                   "*","*"," ","."))
+
+foot_note <- "Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1"
+
+df_mrr %>% 
+  mutate(`95% I.C.`= paste("(",round(lower_CI,2),", ",round(upper_CI,2),
+                           ")", sep=""),
+         MRR=round(RR,2)) %>% 
+  dplyr::select(Variable,Endpoint, MRR, `95% I.C.`,`Sign.`) %>% 
+  flextable() %>% 
+  bold(bold=T, part="header") %>% 
+  bold(j=1, bold=T) %>%
+  merge_v(j = 1) %>%   fix_border_issues(part = "all") %>% 
+  autofit(add_w = 0.1, add_h = 0.3) %>% 
+  flextable::border(j=1, part="body",
+                    border.bottom = officer::fp_border(style = "solid", width=2)) %>%
+  flextable::border(j=2:5, part="body",i=c(4),
+                  border.bottom = officer::fp_border(style = "solid", width=2)) %>%
+  footnote(j=5, value=as_paragraph(foot_note), part="header", inline=T)
+  # print(preview="pptx")
+
+
+rm(df_mrr, df_mrr_mp,df_mrr_lena, modelo_mr, modelo_mr65,modelo_mr75,modelo_cfr)
+
+
+
 ## Modelo Causas CardioPulmonares ----------
 mod_valido <- glm.nb(def_cardioPulmonar ~ 
                      mp25 +
