@@ -145,12 +145,6 @@ f_savePlot(last_plot(),
 # Mapa monitores
 df_dist$dist %>% range()
 df_dist %>% names()
-estaciones <- df_dist %>% group_by(site) %>% 
-  summarise(count=n()) %>% ungroup() %>% 
-  left_join(df_dist, by=c("site"))
-
-ggplot(df_dist)+
-  geom_sf(aes(geometry=geometry), shape=4)
 
 fig_mapaChile_facet_monitor(df_mp, mp25, df_dist,
                     limites=c(0,50),

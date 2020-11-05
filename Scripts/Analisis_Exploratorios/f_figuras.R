@@ -114,24 +114,28 @@ fig_mapaChile_facet_monitor <- function(df, val, monitor, facets=NULL, limites=N
   # Creo los graficos, con coordenadas fijas para cada zona (mejora la estetica)
   p1 <- df %>% filter(zona_facet=="Norte") %>% 
     fig_mapa({{val}}, facets={{facets}}, limites = limites, lwd=0.01,titulo=titulo)+
-    geom_sf(data=monitor, aes(geometry=geometry), shape=4)+
+    geom_sf(data=monitor %>% filter(zona_facet=="Norte"), 
+            aes(geometry=geometry), shape=4)+
     labs(title="Norte",subtitle = "Arica a Coquimbo")+
     theme(legend.position = "none")+
     coord_sf(xlim = c(-72, -66.5), ylim = c(-32.5, -17.5),datum = NA,expand=F)
   p2 <- df %>% filter(zona_facet=="Centro") %>% 
     fig_mapa({{val}}, facets={{facets}}, limites = limites, lwd=0.01,titulo=titulo)+
-    geom_sf(data=monitor, aes(geometry=geometry), shape=4)+
+    geom_sf(data=monitor %>% filter(zona_facet=="Centro"), 
+            aes(geometry=geometry), shape=4)+
     labs(title="Centro",subtitle = "RM-V a Talca")+
     coord_sf(xlim = c(-73, -69.5), ylim = c(-37, -32),datum = NA, expand=F)
   p3 <- df %>% filter(zona_facet=="Sur") %>% 
     fig_mapa({{val}}, facets={{facets}}, limites = limites, lwd=0.01,titulo=titulo)+
-    geom_sf(data=monitor, aes(geometry=geometry), shape=4)+
+    geom_sf(data=monitor %>% filter(zona_facet=="Sur"),
+            aes(geometry=geometry), shape=4)+
     labs(title="Sur",subtitle = "Biobio a Los Rios")+
     theme(legend.position = "none")+
     coord_sf(xlim = c(-74, -70.5), ylim = c(-41, -36),datum = NA,expand=F)
   p4 <- df %>% filter(zona_facet=="Austral") %>% 
     fig_mapa({{val}}, facets={{facets}}, limites = limites, lwd=0.01,titulo=titulo)+
-    geom_sf(data=monitor, aes(geometry=geometry), shape=4)+
+    geom_sf(data=monitor %>% filter(zona_facet=="Austral"),
+            aes(geometry=geometry), shape=4)+
     labs(title="Austral",subtitle = "Pto Montt a Punta Arenas")+
     theme(legend.position = "none")+
     coord_sf(xlim = c(-76, -66), ylim = c(-56, -40),datum = NA,expand=F)
