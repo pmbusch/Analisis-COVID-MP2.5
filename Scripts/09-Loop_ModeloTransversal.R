@@ -886,7 +886,7 @@ df_mrr <- rbind(df_mrr,cbind(data.frame(method="Fallecidos 75+",
 df_mrr <- df_mrr %>% mutate(endpoint="MR")
 
 
-## Let
+## CFR
 df_mrr_cfr <- data.frame()
 df_mrr_cfr <- rbind(df_mrr_cfr,cbind(data.frame(method="Base"), 
                              f_MRR_mp25(mod_base_cfr)))
@@ -916,13 +916,15 @@ df_mrr_all <- rbind(df_mrr,df_mrr_cfr) %>%
 df_mrr_all %>% 
   rowid_to_column() %>% 
   ggplot(aes(x=fct_rev(method), y=RR))+
-  geom_point(size=2, alpha=.5)+
-  geom_errorbar(aes(ymin=lower_CI, ymax=upper_CI))+
+  geom_point(size=4, alpha=.5)+
+  geom_errorbar(aes(ymin=lower_CI, ymax=upper_CI), size=0.8)+
   geom_hline(yintercept = 1, linetype = "dashed")+
   facet_wrap(~endpoint)+
   labs(x="",y="MRR MP2.5")+
   scale_y_continuous(labels = function(x) format(x, big.mark = " ",scientific = FALSE))+
-  coord_flip()
+  coord_flip()+
+  theme_set(theme_bw(20)+theme(panel.grid.major = element_blank()))
+
 f_savePlot(last_plot(), sprintf(file_name,"resumenMRR_mp25"),dpi=150)
 
 
@@ -962,7 +964,7 @@ df_mrr <- rbind(df_mrr,cbind(data.frame(method="Fallecidos 75+",
 
 df_mrr <- df_mrr %>% mutate(endpoint="MR")
 
-## Let
+## CFR
 df_mrr_cfr <- data.frame()
 df_mrr_cfr <- rbind(df_mrr_cfr,cbind(data.frame(method="Base"), 
                                      f_MRR_mp25(mod_base_cfr, "scale(perc_lenaCalefaccion)")))
@@ -990,13 +992,14 @@ df_mrr_all <- rbind(df_mrr,df_mrr_cfr) %>%
 df_mrr_all %>% 
   rowid_to_column() %>% 
   ggplot(aes(x=fct_rev(method), y=RR))+
-  geom_point(size=2, alpha=.5)+
-  geom_errorbar(aes(ymin=lower_CI, ymax=upper_CI))+
+  geom_point(size=4, alpha=.5)+
+  geom_errorbar(aes(ymin=lower_CI, ymax=upper_CI),size=.8)+
   geom_hline(yintercept = 1, linetype = "dashed")+
   facet_wrap(~endpoint)+
   labs(x="",y="% Uso leña como combustible principal en Calefacción")+
   scale_y_continuous(labels = function(x) format(x, big.mark = " ",scientific = FALSE))+
-  coord_flip()
+  coord_flip()+
+  theme_set(theme_bw(20)+theme(panel.grid.major = element_blank()))
 f_savePlot(last_plot(), sprintf(file_name,"resumenMRR_lena"),dpi=150)
 
 ## EoF

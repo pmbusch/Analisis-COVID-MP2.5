@@ -32,13 +32,14 @@ p1 <- df_modelo %>%
                                nombre_comuna,"")) %>% #Label solo pob mayor a 100 mil
   ggplot(aes(mp25, tasa_mortalidad_covid, col=Zona))+
   geom_point(alpha=.7, aes(size=poblacion))+
-  scale_color_viridis_d()+
+  # scale_color_viridis_d()+
   scale_size(labels=function(x) format(x,big.mark = " ", digits=0, scientific = F))+
   guides(colour = guide_legend(override.aes = list(size=4)))+
   labs(x="Concentración MP2.5 2017-2019 [ug/m3]", 
        y="Tasa Mortalidad COVID [muertes/100mil hab]",
        size="Poblacion",
-       color="")
+       color="")+
+  theme_bw(20)+theme(panel.grid.major = element_blank())
 p1
 f_savePlot(p1,
            sprintf(file_name, "Muertes_vs_MP25"), dpi=300)
@@ -93,13 +94,17 @@ p1 <- df_modelo %>%
                                nombre_comuna,"")) %>% #Label solo pob mayor a 100 mil
   ggplot(aes(perc_lenaCalefaccion, tasa_mortalidad_covid, col=Zona))+
   geom_point(alpha=.7, aes(size=poblacion))+
-  scale_color_viridis_d()+
+  # scale_color_viridis_d()+
   scale_size(labels=function(x) format(x,big.mark = " ", digits=0, scientific = F))+
   guides(colour = guide_legend(override.aes = list(size=4)))+
   labs(x="% Uso leña como combustible principal en Calefacción", 
        y="Tasa Mortalidad COVID [muertes/100mil hab]",
        size="Poblacion",
-       color="")
+       color="")+
+  theme_bw(20)+theme(panel.grid.major = element_blank())
+p1
+f_savePlot(last_plot(),
+           sprintf(file_name, "Muertes_vs_Lena"), dpi=300)
 p1+geom_text_repel(aes(label=nombre_comuna), alpha=.8)
 f_savePlot(last_plot(),
            sprintf(file_name, "Muertes_vs_Lena_name"), dpi=300)
@@ -112,13 +117,16 @@ p1 <- df_modelo %>%
                                nombre_comuna,"")) %>% #Label solo pob mayor a 100 mil
   ggplot(aes(cons_lena_kg, tasa_mortalidad_covid, col=Zona))+
   geom_point(alpha=.7, aes(size=poblacion))+
-  scale_color_viridis_d()+
+  # scale_color_viridis_d()+
   scale_size(labels=function(x) format(x,big.mark = " ", digits=0, scientific = F))+
   guides(colour = guide_legend(override.aes = list(size=4)))+
   labs(x="Consumo anual leña Casen 2013 [kg/hogar]", 
        y="Tasa Mortalidad COVID [muertes/100mil hab]",
        size="Poblacion",
-       color="")
+       color="")+
+  theme_bw(20)+theme(panel.grid.major = element_blank())
+f_savePlot(last_plot(),
+           sprintf(file_name, "Muertes_vs_LenaCons"), dpi=150)
 p1+geom_text_repel(aes(label=nombre_comuna), alpha=.8)
 f_savePlot(last_plot(),
            sprintf(file_name, "Muertes_vs_LenaCons_name"), dpi=150)
@@ -131,13 +139,16 @@ p1 <- df_modelo %>%
                                nombre_comuna,"")) %>% #Label solo pob mayor a 100 mil
   ggplot(aes(perc_isapre, tasa_mortalidad_covid, col=Zona))+
   geom_point(alpha=.7, aes(size=poblacion))+
-  scale_color_viridis_d()+
+  # scale_color_viridis_d()+
   scale_size(labels=function(x) format(x,big.mark = " ", digits=0, scientific = F))+
   guides(colour = guide_legend(override.aes = list(size=4)))+
   labs(x="% Población en previsión de salud Isapre", 
        y="Tasa Mortalidad COVID [muertes/100mil hab]",
        size="Poblacion",
-       color="")
+       color="")+
+  theme_bw(20)+theme(panel.grid.major = element_blank())
+f_savePlot(last_plot(),
+           sprintf(file_name, "Muertes_vs_Isapre"), dpi=300)
 p1+geom_text_repel(aes(label=nombre_comuna), alpha=.8)
 f_savePlot(last_plot(),
            sprintf(file_name, "Muertes_vs_Isapre_name"), dpi=300)
@@ -151,15 +162,140 @@ p1 <- df_modelo %>%
                                nombre_comuna,"")) %>% #Label solo pob mayor a 100 mil
   ggplot(aes(ingresoAutonomo_media/1e3, tasa_mortalidad_covid, col=Zona))+
   geom_point(alpha=.7, aes(size=poblacion))+
-  scale_color_viridis_d()+
+  # scale_color_viridis_d()+
   scale_size(labels=function(x) format(x,big.mark = " ", digits=0, scientific = F))+
   guides(colour = guide_legend(override.aes = list(size=4)))+
-  labs(x="Media ingreso autonomo [miles CLP/mes]", 
+  labs(x="Media ingreso autonomo [miles CLP/mes per capita]", 
        y="Tasa Mortalidad COVID [muertes/100mil hab]",
        size="Poblacion",
-       color="")
+       color="")+
+  theme_bw(20)+theme(panel.grid.major = element_blank())
+f_savePlot(last_plot(),
+           sprintf(file_name, "Muertes_vs_Ingreso"), dpi=300)
 p1+geom_text_repel(aes(label=nombre_comuna), alpha=.8)
 f_savePlot(last_plot(),
            sprintf(file_name, "Muertes_vs_Ingreso_name"), dpi=300)
+
+### Mismos graficos pero con CFR ----------
+
+p1 <- df_modelo %>% 
+  filter(Zona!="s/i") %>% 
+  mutate(nombre_comuna=if_else(poblacion>1e5|mp25>30,
+                               nombre_comuna,"")) %>% #Label solo pob mayor a 100 mil
+  ggplot(aes(mp25, perc_letalidad, col=Zona))+
+  geom_point(alpha=.7, aes(size=poblacion))+
+  # scale_color_viridis_d()+
+  scale_size(labels=function(x) format(x,big.mark = " ", digits=0, scientific = F))+
+  guides(colour = guide_legend(override.aes = list(size=4)))+
+  ylim(0,6)+
+  labs(x="Concentración MP2.5 2017-2019 [ug/m3]", 
+       y="% CFR [muertes/casos]",
+       size="Poblacion",
+       color="")+
+  theme_bw(20)+theme(panel.grid.major = element_blank())
+p1
+f_savePlot(p1,
+           sprintf(file_name, "CFR_vs_MP25"), dpi=300)
+p1+geom_text_repel(aes(label=nombre_comuna), alpha=.8)
+f_savePlot(last_plot(),
+           sprintf(file_name, "CFR_vs_MP25_name"), dpi=150)
+
+
+
+## Correlacion Leña ----------
+p1 <- df_modelo %>% 
+  filter(!is.na(mp25)) %>% 
+  filter(Zona!="s/i") %>% 
+  mutate(nombre_comuna=if_else(poblacion>1e5|mp25>30,
+                               nombre_comuna,"")) %>% #Label solo pob mayor a 100 mil
+  ggplot(aes(perc_lenaCalefaccion, perc_letalidad, col=Zona))+
+  geom_point(alpha=.7, aes(size=poblacion))+
+  # scale_color_viridis_d()+
+  scale_size(labels=function(x) format(x,big.mark = " ", digits=0, scientific = F))+
+  guides(colour = guide_legend(override.aes = list(size=4)))+
+  ylim(0,6)+
+  labs(x="% Uso leña como combustible principal en Calefacción", 
+       y="% CFR [muertes/casos]",
+       size="Poblacion",
+       color="")+
+  theme_bw(20)+theme(panel.grid.major = element_blank())
+p1
+f_savePlot(last_plot(),
+           sprintf(file_name, "CFR_vs_Lena"), dpi=300)
+p1+geom_text_repel(aes(label=nombre_comuna), alpha=.8)
+f_savePlot(last_plot(),
+           sprintf(file_name, "CFR_vs_Lena_name"), dpi=300)
+
+# Consumo lena
+p1 <- df_modelo %>% 
+  filter(!is.na(mp25)) %>% 
+  filter(Zona!="s/i") %>% 
+  mutate(nombre_comuna=if_else(poblacion>1e5|mp25>30,
+                               nombre_comuna,"")) %>% #Label solo pob mayor a 100 mil
+  ggplot(aes(cons_lena_kg, perc_letalidad, col=Zona))+
+  geom_point(alpha=.7, aes(size=poblacion))+
+  # scale_color_viridis_d()+
+  scale_size(labels=function(x) format(x,big.mark = " ", digits=0, scientific = F))+
+  guides(colour = guide_legend(override.aes = list(size=4)))+
+  ylim(0,6)+
+  labs(x="Consumo anual leña Casen 2013 [kg/hogar]", 
+       y="% CFR [muertes/casos]",
+       size="Poblacion",
+       color="")+
+  theme_bw(20)+theme(panel.grid.major = element_blank())
+f_savePlot(last_plot(),
+           sprintf(file_name, "CFR_vs_LenaCons"), dpi=150)
+p1+geom_text_repel(aes(label=nombre_comuna), alpha=.8)
+f_savePlot(last_plot(),
+           sprintf(file_name, "CFR_vs_LenaCons_name"), dpi=150)
+
+## Correlacion ISAPRE ----------
+p1 <- df_modelo %>% 
+  filter(!is.na(mp25)) %>% 
+  filter(Zona!="s/i") %>% 
+  mutate(nombre_comuna=if_else(poblacion>1e5|mp25>30,
+                               nombre_comuna,"")) %>% #Label solo pob mayor a 100 mil
+  ggplot(aes(perc_isapre, perc_letalidad, col=Zona))+
+  geom_point(alpha=.7, aes(size=poblacion))+
+  # scale_color_viridis_d()+
+  scale_size(labels=function(x) format(x,big.mark = " ", digits=0, scientific = F))+
+  guides(colour = guide_legend(override.aes = list(size=4)))+
+  ylim(0,6)+
+  labs(x="% Población en previsión de salud Isapre", 
+       y="% CFR [muertes/casos]",
+       size="Poblacion",
+       color="")+
+  theme_bw(20)+theme(panel.grid.major = element_blank())
+f_savePlot(last_plot(),
+           sprintf(file_name, "CFR_vs_Isapre"), dpi=300)
+p1+geom_text_repel(aes(label=nombre_comuna), alpha=.8)
+f_savePlot(last_plot(),
+           sprintf(file_name, "CFR_vs_Isapre_name"), dpi=300)
+
+
+## Correlacion Ingreso ----------
+p1 <- df_modelo %>% 
+  filter(!is.na(mp25)) %>% 
+  filter(Zona!="s/i") %>% 
+  mutate(nombre_comuna=if_else(poblacion>1e5|mp25>30,
+                               nombre_comuna,"")) %>% #Label solo pob mayor a 100 mil
+  ggplot(aes(ingresoAutonomo_media/1e3, perc_letalidad, col=Zona))+
+  geom_point(alpha=.7, aes(size=poblacion))+
+  # scale_color_viridis_d()+
+  scale_size(labels=function(x) format(x,big.mark = " ", digits=0, scientific = F))+
+  guides(colour = guide_legend(override.aes = list(size=4)))+
+  ylim(0,6)+
+  labs(x="Media ingreso autonomo [miles CLP/mes] per capita", 
+       y="% CFR [muertes/casos]",
+       size="Poblacion",
+       color="")+
+  theme_bw(20)+theme(panel.grid.major = element_blank())
+f_savePlot(last_plot(),
+           sprintf(file_name, "CFR_vs_Ingreso"), dpi=300)
+p1+geom_text_repel(aes(label=nombre_comuna), alpha=.8)
+f_savePlot(last_plot(),
+           sprintf(file_name, "CFR_vs_Ingreso_name"), dpi=300)
+
+
 
 ## EoF

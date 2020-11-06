@@ -61,7 +61,7 @@ fig_mapaChile_facet(df_aux, var, facets=~key, limites=c(0,100),
                     titulo = "% Uso de leña como combustible \n 
                     principal en calefacción")
 f_savePlot(last_plot(),
-           file_path =sprintf(file_name,"MapaChileLenavsMP25"),dpi=300)
+           file_path =sprintf(file_name,"MapaChileLenavsMP25"),dpi=600)
 
 
 # EoF
