@@ -27,7 +27,8 @@ df_modelo <- df_modelo %>%
          tasa_pulmonar=def_pulmonar/poblacion*1e5,
          tasa_allcauses=def_allCauses/poblacion*1e5,
          tasa_total=def_total/poblacion*1e5,
-         tasa_cancer=def_cancer/poblacion*1e5)
+         tasa_cancer=def_cancer/poblacion*1e5,
+         ingresoAutonomo_media_aux=ingresoAutonomo_media/1e3)
 
 
 
@@ -46,15 +47,16 @@ labels_y <- c("Tasa Mortalidad COVID [muertes/100mil hab]",
               "Tasa Mortalidad Total (+ External) \n 2017-2019 [muertes/100mil hab]")
 
 
-eje_x <- c("mp25", "perc_lenaCalefaccion", "ingresoAutonomo_media", "perc_isapre")
+eje_x <- c("mp25", "perc_lenaCalefaccion", "ingresoAutonomo_media_aux", "perc_isapre")
 labels_x <- c("Concentración MP2.5 2017-2019 [ug/m3]",
               "% Uso leña como combustible principal en Calefacción",
-              "% Población en previsión de salud Isapre",
-              "Media ingreso autonomo [miles CLP/mes] per capita")
+              "Media ingreso autonomo [miles CLP/mes] per capita",
+              "% Población en previsión de salud Isapre")
 
 
 # Loop
-pdf("Scripts/Analisis_General/Figuras/scatter_name.pdf",
+pdf("Scripts/Analisis_General/Figuras/scatter.pdf",
+# pdf("Scripts/Analisis_General/Figuras/scatter_name.pdf",
     width = 14.87, height = 9.30)
 for (y in 1:length(eje_y)){
   for (x in 1:length(eje_x)){
@@ -73,8 +75,8 @@ for (y in 1:length(eje_y)){
            size="Poblacion",
            color="")+
       theme_bw(20)+theme(panel.grid.major = element_blank())
-    # print(p1)
-    print(p1+geom_text_repel(aes(label=nombre_comuna), alpha=.8))
+    print(p1)
+    # print(p1+geom_text_repel(aes(label=nombre_comuna), alpha=.8))
   }
 }
 dev.off()
