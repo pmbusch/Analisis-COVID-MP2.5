@@ -11,8 +11,8 @@
 library(RColorBrewer)
 
 df_modelo %>% names()
-mapa <- left_join(mapa_comuna, df_modelo)
-
+mapa <- left_join(mapa_comuna, df_modelo, by=c("codigo_comuna")) %>% 
+  rename(region=region.x)
 
 library(leaflet)
 library(htmltools)

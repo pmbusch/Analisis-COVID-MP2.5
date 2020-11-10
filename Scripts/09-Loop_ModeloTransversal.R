@@ -156,9 +156,9 @@ for (z in 1:length(dependiente)){
   
   # primera Muerte
   if (off[z] %in% c("offset(log(poblacion))","offset(log(pob65))","offset(log(pob75))")){
-    explicativas_dep <- c(explicativas,primeraMuerte_explicativa)
+    explicativas_dep <- c(explicativas_dep,primeraMuerte_explicativa)
   }else{
-    explicativas_dep <- explicativas
+    explicativas_dep <- explicativas_dep
   }
   
   
