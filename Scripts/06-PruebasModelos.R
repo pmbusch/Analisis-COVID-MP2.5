@@ -3,6 +3,18 @@
 ## Modelo Binomial negativo con y sin efectos aleatorios
 ## PBH Septiembre 2020
 
+
+## NOTA:
+# df_modelo tiene todos los datos conjuntamente!
+# df_modelo <- read_rds("Data/Data_Modelo/Datos_Modelo.rsd")
+# Los siguientes DF tienen los datos separados por datos de comuna (estaticos)
+# datos COVID y datos de defunciones generales
+# JOIN ES POR codigo_comuna, usar left_join(, by=c("codigo_comuna"))
+# df_datosComuna <- read_rds("Data/Data_Modelo/Datos_Comuna.rsd")
+# df_datosCovid <- read_rds("Data/Data_Modelo/Datos_Covid.rsd")
+# df_datosMortalidad <- read_rds("Data/Data_Modelo/Datos_Mortalidad.rsd")
+
+
 # Load library ----------
 source("Scripts/00-CargaLibrerias.R", encoding = "UTF-8")
 theme_set(theme_bw(16)+theme(panel.grid.major = element_blank()))
