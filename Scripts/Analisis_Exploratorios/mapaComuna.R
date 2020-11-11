@@ -30,6 +30,14 @@ f_savePlot(last_plot(),
            file_path =sprintf(file_name,"MapaChileCFRFacet"),dpi=300)
 
 
+# MR Cardiopulmonar --------
+df_modelo %>% 
+  mutate(mr_cardiopulmonar=def_cardioPulmonar/poblacion*1e5) %>% 
+  fig_mapaChile_facet(mr_cardiopulmonar, limites=c(0,450),
+                    titulo = "MR CardioPulmonar \n [muertes/100 mil hab]")
+f_savePlot(last_plot(),
+           file_path =sprintf(file_name,"MapaChileMRCardioPulmonarFacet"),dpi=300)
+
 
 ## MP2.5 + Monitor --------
 ## Cargar datos distancia
