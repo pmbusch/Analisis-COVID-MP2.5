@@ -20,6 +20,8 @@ Códigos
 * [`06-PruebasModelos.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/06-PruebasModelos.R): Script para probar otros Modelos Transversales
 * [`06-Stepwise_AnalisisTransversal.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/06-Stepwise_AnalisisTransversal.R): Implementación de algoritmo Stepwise para ajustar Modelo Transversal *(cross-sectional analysis)*
 * [`07-AnalisisTransversal_AllCauses.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/07-AnalisisTransversal_AllCauses.R): Modelo Transversal para causas todas las causas de defunción en Chile *(cross-sectional analysis)*
+* [`08-ExcelModelos.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/08-ExcelModelos.R): Genera un excel resumen para los modelos probados individualmente.
+* [`09-Loop_ModeloTransversal.R`](https://github.com/pmbusch/Analisis-COVID-MP2.5/tree/master/Scripts/09-Loop_ModeloTransversal.R): Loop para probar sensibilidad de parametros escogidos en demografia, socioeconomico, meteorologia y leña. Guarda los modelos en un excel resumen.
 
 
 **Otros códigos de análisis:**
